@@ -65,15 +65,6 @@ const Signup = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-pink-100">
-      <h1 className="text-4xl font-bold mb-8 text-indigo-800">Join Us Today</h1>
-      <button
-        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-        onClick={() => setOpenPopUp(true)}
-      >
-        Sign Up
-      </button>
-
-      {openPopUp && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between bg-indigo-600 text-white p-6 rounded-t-lg">
@@ -182,7 +173,6 @@ const Signup = () => {
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 };

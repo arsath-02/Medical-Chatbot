@@ -1,0 +1,8 @@
+langchain
+httpx
+deep_translator
+dotenv
+groq
+langdetect
+flask
+flask_cors
