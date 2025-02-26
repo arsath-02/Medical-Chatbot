@@ -18,7 +18,7 @@ const HomePage = () => {
       // Hide controls after 2 seconds
       const timer = setTimeout(() => {
         setShowControls(false);
-      }, 2000);
+      }, 4000);
 
       // Clean up the timer if component unmounts before timeout
       return () => clearTimeout(timer);

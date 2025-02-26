@@ -59,10 +59,10 @@ const Login = () => {
             <div className="flex items-center justify-between bg-indigo-900 text-white p-6 rounded-t-lg">
               <h2 className="text-2xl font-semibold">Login</h2>
               <button
-                onClick={() => setOpenPopUp(false)}
+                onClick={() => navigate("/")}
                 className="text-white hover:text-purple-200 transition duration-200"
               >
-                <X size={24} />
+                <X size={24}  />
               </button>
             </div>
             <form className="p-6" onSubmit={handleSubmit}>
