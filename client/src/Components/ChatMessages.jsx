@@ -10,7 +10,7 @@ const TypingEffect = ({ text }) => {
       setDisplayedText(text.substring(0, index));
       index++;
       if (index > text.length) clearInterval(interval);
-    }, 20); // Speed of typing
+    }, 20);
 
     return () => clearInterval(interval);
   }, [text]);

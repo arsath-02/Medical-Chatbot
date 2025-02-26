@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
 import '../styles.css'; // Import the CSS file
 
-import { getAuth, onAuthStateChanged } from "firebase/auth"; 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function Chatbot() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const handleSendMessage = async () => {
   if (!inputValue.trim() || isLoading) return;
 
   // Get userId from localStorage (set this when the user logs in via Firebase)
-  const userId = localStorage.getItem("userId"); 
+  const userId = localStorage.getItem("userId");
   if (!userId) {
     console.error("User not authenticated");
     setError("User not authenticated. Please log in again.");
@@ -48,7 +48,7 @@ const handleSendMessage = async () => {
 
   try {
     // Send request to Node.js backend
-    const response = await fetch('http://127.0.0.1:8000/api/chatbot', {  
+    const response = await fetch('http://127.0.0.1:8000/api/chatbot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, message: inputValue })
@@ -108,17 +108,17 @@ const handleSendMessage = async () => {
 
   }
 const handlechatbot=()=>{
-  navigate("/");
+  navigate("/chatbot");
 }
 
   return (
     <div className="min-h-screen flex bg-white dark:bg-gray-900">
-      <Sidebar 
-        handleRefreshChat={handleRefreshChat} 
-        handleToggleChatHistory={handleToggleChatHistory} 
-        handleShareChat={handleShareChat} 
-        isDarkMode={isDarkMode} 
-        setIsDarkMode={setIsDarkMode} 
+      <Sidebar
+        handleRefreshChat={handleRefreshChat}
+        handleToggleChatHistory={handleToggleChatHistory}
+        handleShareChat={handleShareChat}
+        isDarkMode={isDarkMode}
+        setIsDarkMode={setIsDarkMode}
         handleLogin={handleLogin}
         showChatHistory={showChatHistory}
         handleVoice={handleVoice}

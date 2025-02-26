@@ -150,7 +150,7 @@ export default function Voice() {
     navigate("/voice");
   };
   const handlechatbot = () => {
-    navigate("/");
+    navigate("/chatbot");
   };
 
   return (

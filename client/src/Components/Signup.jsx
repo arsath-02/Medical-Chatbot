@@ -1,4 +1,3 @@
-"use client"
 
 import { useState } from "react";
 import { X, User, Mail, Lock, Phone } from "lucide-react";
@@ -20,8 +19,6 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
-
-  // Email/Password Signup
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -35,7 +32,7 @@ const Signup = () => {
       await updateProfile(user, { displayName: name });
 
       console.log("Signup successful", user);
-      navigate("/login"); 
+      navigate("/login");
     } catch (err) {
       console.error("Signup error", err.message);
     }
@@ -62,14 +59,17 @@ const Signup = () => {
       console.error("GitHub Signup Error:", err.message);
     }
   };
+  const handleclick=()=>{
+    navigate('/chatbot');
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-pink-100">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between bg-indigo-600 text-white p-6 rounded-t-lg">
+            <div className="flex items-center justify-between bg-indigo-900 text-white p-6 rounded-t-lg">
               <h2 className="text-2xl font-semibold">Create Account</h2>
-              <button onClick={() => setOpenPopUp(false)} className="text-white hover:text-indigo-200">
+              <button onClick={handleclick} className="text-white hover:text-indigo-200">
                 <X size={24} />
               </button>
             </div>
@@ -138,7 +138,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md">
+              <button type="submit" className="w-full bg-indigo-900 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md">
                 Create Account
               </button>
             </form>
@@ -148,7 +148,7 @@ const Signup = () => {
 
 
             <div className="flex justify-center gap-4">
-            <button 
+            <button
                  type="button"
                  onClick={handleGoogleSignup}
                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-gray-300 transition duration-300 hover:bg-gray-100"
@@ -156,15 +156,15 @@ const Signup = () => {
                  <img src={google} alt="Google Logo" className="w-8 h-8 rounded-full" />
                </button>
 
-               <button 
+               <button
                  type="button"
-                 onClick={handleGithubSignup} 
+                 onClick={handleGithubSignup}
                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-gray-300 transition duration-300 hover:bg-gray-100"
                >
                  <img src={Github} alt="GitHub Logo" className="w-8 h-8 rounded-full" />
-               </button>                                            
+               </button>
              </div>
-            
+
             <div className="px-6 pb-6 mt-2 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{" "}

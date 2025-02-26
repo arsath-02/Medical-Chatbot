@@ -16,8 +16,10 @@ const Login = () => {
     e.preventDefault();
     try{
         await signInWithEmailAndPassword(auth,email,password);
+        localStorage.setItem("Email",email);
+        console.log(localStorage.getItem("Email"));
         console.log("Signup successful");
-        navigate("/");
+        navigate("/chatbot");
     }
     catch(err)
     {
@@ -51,12 +53,12 @@ const Login = () => {
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
-      
+
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between bg-purple-600 text-white p-6 rounded-t-lg">
+            <div className="flex items-center justify-between bg-indigo-900 text-white p-6 rounded-t-lg">
               <h2 className="text-2xl font-semibold">Login</h2>
-              <button 
+              <button
                 onClick={() => setOpenPopUp(false)}
                 className="text-white hover:text-purple-200 transition duration-200"
               >
@@ -87,10 +89,10 @@ const Login = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
-                <button 
-                  type="submit" 
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
-                
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-900 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+
                 >
                   Sign In
                 </button>
@@ -99,7 +101,7 @@ const Login = () => {
                   <p className="text-gray-600">or</p>
                 </div>
                  <div className="flex justify-center gap-4">
-                  <button 
+                  <button
                     type="button"
                     onClick={handleGoogleSignIn}
                     className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-gray-300 transition duration-300 hover:bg-gray-100"
@@ -107,9 +109,9 @@ const Login = () => {
                     <img src={google} alt="Google Logo" className="w-8 h-8 rounded-full" />
                   </button>
 
-                  <button 
+                  <button
                     type="button"
-                    onClick={handleGithubSignIn} 
+                    onClick={handleGithubSignIn}
                     className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-gray-300 transition duration-300 hover:bg-gray-100"
                   >
                     <img src={Github} alt="GitHub Logo" className="w-8 h-8 rounded-full" />
@@ -124,12 +126,12 @@ const Login = () => {
                           Sign Up
                       </a>
                       </p>
-                </div> 
+                </div>
                 <div className="px-6 pb-6 text-center">
                   <a href="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
                     Home
-                  </a>  
-                </div>              
+                  </a>
+                </div>
               </div>
             </form>
           </div>
