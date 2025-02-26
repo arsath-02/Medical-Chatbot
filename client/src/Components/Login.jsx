@@ -30,8 +30,10 @@ const Login = () => {
   const handleGoogleSignIn = async (e) => {
     try{
       const result  = await signInWithPopup(auth , GoogleProvider);
-      console.log("Google sign in successful",result.user);
-      navigate("/");
+      console.log("Google sign in successful",result.user.email);
+      localStorage.setItem("Email",result.user.email);
+      console.log(localStorage.getItem("Email"));
+      navigate("/chatbot");
     }
     catch (err)
     {
@@ -43,7 +45,9 @@ const Login = () => {
     try{
       const result = await signInWithPopup(auth, GithubProvider);
       console.log("Github sign-In successful",result.user);
-      navigate("/");
+      localStorage.setItem("Email",result.user.email);
+      console.log(localStorage.getItem("Email"));
+      navigate("/chatbot");
     }
     catch (err)
     {
