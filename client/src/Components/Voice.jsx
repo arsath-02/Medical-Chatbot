@@ -5,6 +5,7 @@ import { IoAccessibilitySharp } from "react-icons/io5";
 import { RiMic2Line } from "react-icons/ri";
 import video from "../assets/video.mp4";
 import { SiChatbot } from "react-icons/si";
+import Sidebar from "./Sidebar";
 export default function Voice() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -155,80 +156,8 @@ export default function Voice() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex">
-      {/* Main Sidebar */}
-      <div className="w-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-6 z-20">
-        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-sm font-bold">
-          M
-        </div>
-        <div className="space-y-6">
-          <button onClick={handleRefreshChat} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <ArrowRepeat className="w-5 h-5 text-gray-500 dark:text-gray-400 ml-3" />
-          </button>
-          <button
-            onClick={handleToggleChatHistory}
-            className={`p-2 ${showChatHistory ? 'bg-gray-200 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-800'} rounded-lg transition-colors`}
-          >
-            <Newspaper className={`w-5 h-5 ml-3 ${showChatHistory ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400'}`} />
-          </button>
-          <button onClick={handleShareChat} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Share2 className="w-5 h-5 text-gray-500 dark:text-gray-400 ml-3" />
-          </button>
-          <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <div className="ml-4">
-              <IoAccessibilitySharp color="gray" size={20} onClick={handleVoice} />
-            </div>
-          </div>
-           <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                      <div className="ml-4">
-                    <SiChatbot color="gray" size={20} onClick={handlechatbot} />
-                    </div>
-                    </div>
-        </div>
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          {isDarkMode ? (
-            <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          )}
-        </button>
-        <button className="mt-auto p-2 bg-gray-200 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300" onClick={handleLogin}>
-          Login
-        </button>
-      </div>
 
-      {/* Chat History Sidebar */}
-      {showChatHistory && (
-        <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen absolute left-16 z-10">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h2 className="font-medium text-gray-800 dark:text-gray-200">Recent Chats</h2>
-            <button onClick={handleToggleChatHistory} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
-              <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {chatHistory.map(chat => (
-              <div
-                key={chat.id}
-                className="p-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-              >
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-medium text-sm text-gray-800 dark:text-gray-200 truncate">{chat.title}</h3>
-                  <span className="text-xs text-gray-500">{chat.date}</span>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{chat.preview}</p>
-              </div>
-            ))}
-          </div>
-          <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-            <button className="w-full py-2 px-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 transition-colors">
-              View All Chats
-            </button>
-          </div>
-        </div>
-      )}
+      <Sidebar />
 
       {/* Microphone Button and Video */}
       <div className="flex-1 flex flex-col items-center justify-center rounded-full">
