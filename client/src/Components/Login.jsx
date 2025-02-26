@@ -8,7 +8,6 @@ import Github from '../assets/github.png';
 
 const Login = () => {
     const navigate = useNavigate();
-  const [openPopUp, setOpenPopUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
