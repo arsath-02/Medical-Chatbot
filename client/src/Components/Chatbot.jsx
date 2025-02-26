@@ -5,6 +5,7 @@ import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
 import '../styles.css'; // Import the CSS file
+import { v4 as uuidv4 } from "uuid";  
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -19,6 +20,7 @@ export default function Chatbot() {
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const userMessage = { text: inputValue, sender: "user" };
 
   useEffect(() => {
     if (isDarkMode) {
@@ -29,10 +31,20 @@ export default function Chatbot() {
   }, [isDarkMode]);
 // Import Firebase auth
 
+
+useEffect(() => {
+  let sessionId = localStorage.getItem("chatSessionId");
+  if (!sessionId) {
+    sessionId = uuidv4(); // Generate new session ID
+    localStorage.setItem("chatSessionId", sessionId);
+  }
+}, []);
+
+const [sessionId, setSessionId] = useState(localStorage.getItem("sessionId") || "");
+
 const handleSendMessage = async () => {
   if (!inputValue.trim() || isLoading) return;
 
-  // Get userId from localStorage (set this when the user logs in via Firebase)
   const userId = localStorage.getItem("userId");
   if (!userId) {
     console.error("User not authenticated");
@@ -41,17 +53,20 @@ const handleSendMessage = async () => {
   }
 
   const userMessage = { text: inputValue, sender: "user" };
-  setMessages(prev => [...prev, userMessage]);
+  setMessages((prev) => [...prev, userMessage]);
   setInputValue("");
   setIsLoading(true);
   setError(null);
 
   try {
-    // Send request to Node.js backend
-    const response = await fetch('http://127.0.0.1:8000/api/chatbot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, message: inputValue })
+    const response = await fetch("http://127.0.0.1:8000/api/chatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        message: inputValue,
+        sessionId: sessionId || Date.now().toString(), // Use timestamp if no sessionId exists
+      }),
     });
 
     if (!response.ok) {
@@ -61,7 +76,13 @@ const handleSendMessage = async () => {
     const data = await response.json();
     const botMessage = { text: data.response, sender: "bot" };
 
-    setMessages(prev => [...prev, botMessage]);
+    // If it's a new session, store sessionId
+    if (!sessionId) {
+      setSessionId(data.sessionId);
+      localStorage.setItem("sessionId", data.sessionId);
+    }
+
+    setMessages((prev) => [...prev, botMessage]);
   } catch (err) {
     setError("Failed to get response. Please try again.");
     console.error("Chat API Error:", err);
@@ -69,6 +90,7 @@ const handleSendMessage = async () => {
     setIsLoading(false);
   }
 };
+
 
 
 
