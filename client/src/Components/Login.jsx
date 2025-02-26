@@ -124,7 +124,12 @@ const Login = () => {
                           Sign Up
                       </a>
                       </p>
-                </div>                
+                </div> 
+                <div className="px-6 pb-6 text-center">
+                  <a href="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                    Home
+                  </a>  
+                </div>              
               </div>
             </form>
           </div>

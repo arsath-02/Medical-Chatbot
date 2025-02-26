@@ -241,7 +241,7 @@ Always end conversations with a reminder to consult a mental health professional
 
 memory = ConversationBufferMemory()
 
-@app.route('/chat', methods=['POST'])
+@app.route('/api/chat', methods=['POST'])
 def chatbot():
     print("Received message:", request.json)  # Add this line
     print("Headers:", request.headers)
