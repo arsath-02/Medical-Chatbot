@@ -30,8 +30,9 @@ const Login = () => {
   const handleGoogleSignIn = async (e) => {
     try{
       const result  = await signInWithPopup(auth , GoogleProvider);
-      console.log("Google sign in successful",result.user.email);
+      console.log("Google sign in successful",result.user.displayName);
       localStorage.setItem("Email",result.user.email);
+      localStorage.setItem("Name",result.user.displayName);
       console.log(localStorage.getItem("Email"));
       navigate("/chatbot");
     }

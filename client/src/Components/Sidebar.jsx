@@ -3,10 +3,11 @@ import { RepeatIcon as ArrowRepeat, Newspaper, Share2, Moon, Sun } from "lucide-
 import { IoAccessibilitySharp } from "react-icons/io5";
 import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
-
-export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, isDarkMode, setIsDarkMode, handleLogin, showChatHistory, handleVoice, handlechatbot }) {
+import {useNavigate} from "react-router-dom";
+import { MdHealthAndSafety } from "react-icons/md";
+export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, isDarkMode, setIsDarkMode, handleLogin, showChatHistory, handleVoice }) {
   const [userInitial, setUserInitial] = useState(null);
-
+  const navigate=useNavigate();
   useEffect(() => {
     // Check localStorage for email when component mounts
     const storedEmail = localStorage.getItem("Email");
@@ -26,6 +27,10 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
     // Redirect to login page
     window.location.href = "/login"; // Adjust this URL as needed for your routing
   };
+  const handlechatbot=()=>{
+    navigate("/chatbot");
+  }
+
 
   return (
     <div className="w-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-6 z-20">
@@ -33,16 +38,16 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
         M
       </div>
       <div className="space-y-6">
-        <button onClick={handleRefreshChat} className="p-2 hover-bg rounded-lg transition-colors">
+        <button onClick={handleRefreshChat} className="p-2  rounded-lg  hover:bg-gray-700 transition-colors">
           <ArrowRepeat className="w-5 h-5 icon ml-3" />
         </button>
         <button
           onClick={handleToggleChatHistory}
-          className={`p-2 ${showChatHistory ? 'bg-gray-200 dark:bg-gray-700' : 'hover-bg'} rounded-lg transition-colors`}
+          className={`p-2 hover:bg-gray-700 rounded-lg transition-colors`}
         >
           <Newspaper className={`w-5 h-5 ml-3 ${showChatHistory ? 'text-blue-500' : 'icon'}`} />
         </button>
-        <button onClick={handleShareChat} className="p-2 hover-bg rounded-lg transition-colors">
+        <button onClick={handleShareChat} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
           <Share2 className="w-5 h-5 icon ml-3" />
         </button>
       </div>
@@ -54,6 +59,11 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <SiChatbot color="gray" size={20} onClick={handlechatbot} />
+        </div>
+      </div>
+      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <div className="ml-1">
+          <MdHealthAndSafety color="gray" size={20} onClick={handlechatbot} />
         </div>
       </div>
 
@@ -79,7 +89,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
       {/* User avatar or login button */}
       {userInitial ? (
-        <div className="mt-auto w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+         <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold">
           {userInitial}
         </div>
       ) : (

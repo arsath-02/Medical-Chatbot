@@ -5,7 +5,7 @@ import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
 import '../styles.css'; // Import the CSS file
-import { v4 as uuidv4 } from "uuid";  
+import { v4 as uuidv4 } from "uuid";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -13,8 +13,9 @@ export default function Chatbot() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const name=localStorage.getItem("Name");
   const [messages, setMessages] = useState([
-    { text: "Hi, I'm Medi~ Ask me anything! 😊", sender: "bot" }
+    { text: "Hi "+name+", I am MediBot 😊", sender: "bot" }
   ]);
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
@@ -129,9 +130,6 @@ const handleSendMessage = async () => {
   navigate("/voice");
 
   }
-const handlechatbot=()=>{
-  navigate("/chatbot");
-}
 
   return (
     <div className="min-h-screen flex bg-white dark:bg-gray-900">
@@ -144,7 +142,7 @@ const handlechatbot=()=>{
         handleLogin={handleLogin}
         showChatHistory={showChatHistory}
         handleVoice={handleVoice}
-        handlechatbot={handlechatbot}
+       
       />
       {showChatHistory && <ChatHistory chatHistory={chatHistory} loadChat={loadChat} handleToggleChatHistory={handleToggleChatHistory} />}
       <div className="flex-1 flex flex-col h-screen">
