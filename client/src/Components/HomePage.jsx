@@ -58,8 +58,8 @@ const HomePage = () => {
         </div>
       )}
 
-      <div className="absolute flex flex-col items-center gap-4">
-        <h1 className="text-4xl font-bold text-black text-center">
+      <div className="absolute flex flex-col items-center gap-4 mt-120">
+        <h1 className="text-5xl font-bold text-yellow-400 text-center">
           MEDI
         </h1>
         <button

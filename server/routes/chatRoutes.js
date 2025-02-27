@@ -45,21 +45,4 @@ router.post("/chatbot", async (req, res) => {
   }
 });
 
-
-// Fetch messages for a session
-router.get("/chats/:sessionId", async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-
-    // Get the correct model for this session
-    const ChatModel = getChatModel(sessionId);
-    const messages = await ChatModel.find().sort({ timestamp: 1 });
-
-    res.json(messages);
-  } catch (error) {
-    console.error("Error fetching chat history:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 module.exports = router;
