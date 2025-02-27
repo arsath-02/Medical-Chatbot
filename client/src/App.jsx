@@ -32,7 +32,7 @@ function App() {
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/chatbot" element={ <Chatbot />} /> {/* Redirect if not logged in */}
+          <Route path="/chatbot" element={ <Chatbot />} />
           <Route path="/voice" element={<Voice />}/>
           <Route path="/" element={<HomePage />}/>
           <Route path="/login" element={<Login />} />

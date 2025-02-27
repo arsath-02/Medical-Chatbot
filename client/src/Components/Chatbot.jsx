@@ -5,15 +5,21 @@ import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
 import '../styles.css'; // Import the CSS file
+<<<<<<< HEAD
 import { v4 as uuidv4 } from "uuid";  
+=======
+import { v4 as uuidv4 } from "uuid";
+
+>>>>>>> 35861621bf761dd7b4ab787fc2134fc06e83c2c2
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function Chatbot() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const name=localStorage.getItem("Name");
   const [messages, setMessages] = useState([
-    { text: "Hi, I'm Medi~ Ask me anything! 😊", sender: "bot" }
+    { text: "Hi "+name+", I am MediBot 😊", sender: "bot" }
   ]);
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
@@ -164,6 +170,7 @@ export default function Chatbot() {
     navigate("/login");
   };
 
+<<<<<<< HEAD
   const handleVoice = () => {
     navigate("/voice");
   };
@@ -171,6 +178,9 @@ export default function Chatbot() {
   const handleChatbot = () => {
     navigate("/chatbot");
   };
+=======
+  }
+>>>>>>> 35861621bf761dd7b4ab787fc2134fc06e83c2c2
 
   return (
     <div className="min-h-screen flex bg-white dark:bg-gray-900">
@@ -183,7 +193,11 @@ export default function Chatbot() {
         handleLogin={handleLogin}
         showChatHistory={showChatHistory}
         handleVoice={handleVoice}
+<<<<<<< HEAD
         handleChatbot={handleChatbot}
+=======
+       
+>>>>>>> 35861621bf761dd7b4ab787fc2134fc06e83c2c2
       />
       {showChatHistory && <ChatHistory chatHistory={chatHistory} loadChat={loadChat} handleToggleChatHistory={handleToggleChatHistory} />}
       <div className="flex-1 flex flex-col h-screen">
