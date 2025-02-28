@@ -30,6 +30,9 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   const handlechatbot=()=>{
     navigate("/chatbot");
   }
+  const handlehealth=()=>{
+    navigate("/FitbitLogin");
+  }
 
 
   return (
@@ -66,7 +69,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </div>
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
-          <MdHealthAndSafety color="gray" size={20} onClick={handlechatbot} />
+          <MdHealthAndSafety color="gray" size={20} onClick={handlehealth} />
         </div>
       </div>
 
@@ -83,7 +86,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
       {/* Show logout door icon if user is logged in */}
       {userInitial && (
-        <div className="p-2 mt-27 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+        <div className="p-2 mt-28 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
           <div className="ml-1 ">
             <GiEntryDoor color="gray" size={20} />
           </div>
