@@ -5,7 +5,7 @@ import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
 import '../styles.css'; // Import the CSS file
-import { v4 as uuidv4 } from "uuid";  
+import { v4 as uuidv4 } from "uuid";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function Chatbot() {
@@ -47,7 +47,8 @@ export default function Chatbot() {
   }, [sessionId]);
 
   const fetchChatHistory = async () => {
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("Email");
+    console.log("User ID:", userId);
     if (!userId) {
       setError("User not authenticated. Please log in again.");
       return;

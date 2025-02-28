@@ -27,7 +27,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
     setUserInitial(null);
 
     // Redirect to login page
-    window.location.href = "/login"; 
+    window.location.href = "/login";
   };
   const handlechatbot=()=>{
     navigate("/chatbot");
@@ -36,7 +36,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
     navigate("/FitbitLogin");
   }
 
- 
+
 
 
   return (
@@ -89,24 +89,25 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </button>
 
       {/* Show logout door icon if user is logged in */}
-      {userInitial && (
-        <div className="p-2 mt-28 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
-          <div className="ml-1 ">
-            <GiEntryDoor color="gray" size={20} />
-          </div>
-        </div>
-      )}
 
-      {/* User avatar or login button */}
-      {userInitial ? (
-         <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold">
-          {userInitial}
-        </div>
-      ) : (
-        <button className="mt-auto p-2 bg-gray-200 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300" onClick={handleLogin}>
-          Login
-        </button>
-      )}
+
+{userInitial ? (
+  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold">
+    {userInitial}
+  </div>
+) : (
+  <button className="mt-auto p-2 bg-gray-200 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300" onClick={handleLogin}>
+    Login
+  </button>
+)}
+
+{userInitial && (
+<div className="p-2 mt-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+<div className="ml-2 flex items-center">
+<GiEntryDoor color="gray" size={25} />
+</div>
+</div>
+)}
     </div>
   );
 }

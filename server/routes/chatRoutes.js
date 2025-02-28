@@ -14,7 +14,7 @@ router.post("/chatbot", async (req, res) => {
 
     // Generate a timestamp-based sessionId if not provided (new session)
     const session = sessionId || Date.now().toString(); // Convert timestamp to string
-
+     
     // Dynamically create a collection for each session
     const Chat = require("../models/chatbot")(session);
 
