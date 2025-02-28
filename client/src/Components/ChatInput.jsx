@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Play } from "lucide-react";
 import { MdMic } from "react-icons/md";
+import axios from "axios";
 
 export default function ChatInput({ handleSendMessage, inputValue, setInputValue, isLoading }) {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const [targetLanguage, setTargetLanguage] = useState("en"); // Default target language is English
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
@@ -37,16 +39,40 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
     }
   };
 
+  const detectAndTranslateText = async (text) => {
+    try {
+      // Detect the language of the text
+      const detectResponse = await axios.post(`https://libretranslate.com/detect`, {
+        q: text,
+      });
+      const detectedLanguage = detectResponse.data[0].language;
+      console.log("Detected Language:", detectedLanguage);
+
+      // Translate the text to the target language
+      const translateResponse = await axios.post(`https://libretranslate.com/translate`, {
+        q: text,
+        source: detectedLanguage,
+        target: targetLanguage,
+      });
+      return translateResponse.data.translatedText;
+    } catch (error) {
+      console.error("Translation error:", error);
+      return text;
+    }
+  };
+
   if (recognition) {
     recognition.onstart = () => {
       console.log("Listening...");
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       console.log("Transcript:", transcript);
-      handleSendMessage(transcript);
-      setInputValue(transcript);
+      const translatedText = await detectAndTranslateText(transcript);
+      console.log("Translated Text:", translatedText);
+      setInputValue(translatedText);
+      handleSendMessage(translatedText);
     };
 
     recognition.onerror = (event) => {
@@ -117,6 +143,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
                 <Play className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
+            
           </div>
         </div>
       </div>
