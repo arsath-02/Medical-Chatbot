@@ -10,9 +10,9 @@ const FitbitCallback = () => {
       if (!code) return;
 
 
-      const CLIENT_ID = "23Q4CC";
-      const CLIENT_SECRET = "0270ece95e90f8910ccc89b43fdd020a";
-      const REDIRECT_URI = "http://localhost:5173/callback";
+      const CLIENT_ID = import.meta.env.VITE_FITBIT_CLIENT_ID;
+      const CLIENT_SECRET = import.meta.env.VITE_FITBIT_CLIENT_SECRET;
+      const REDIRECT_URI = import.meta.env.VITE_FITBIT_REDIRECT_URI;
 
       const tokenUrl = "https://api.fitbit.com/oauth2/token";
       const authHeader = `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`;

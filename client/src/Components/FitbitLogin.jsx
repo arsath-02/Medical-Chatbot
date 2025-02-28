@@ -2,9 +2,10 @@ import React from "react";
 import Sidebar from "./Sidebar";
 
 const FitbitLogin = () => {
-  const CLIENT_ID = "23Q4CC";
-  const REDIRECT_URI = "http://localhost:5173/callback";
-
+  const CLIENT_ID = import.meta.env.VITE_FITBIT_CLIENT_ID;
+  const REDIRECT_URI = import.meta.env.VITE_FITBIT_REDIRECT_URI;
+  console.log(REDIRECT_URI);
+  console.log(CLIENT_ID);
   const AUTH_URL = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=activity%20heartrate%20sleep%20profile`;
 
   return (

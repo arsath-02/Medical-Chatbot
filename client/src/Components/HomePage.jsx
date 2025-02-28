@@ -7,6 +7,7 @@ const HomePage = () => {
   const [showControls, setShowControls] = useState(false);
 
   const handleclick = () => {
+    console.log(import.meta.env.REACT_APP_FITBIT_REDIRECT_URI);
     navigate('/chatbot');
   };
 
@@ -39,6 +40,7 @@ const HomePage = () => {
       clearTimeout(initialTimer);
     };
   }, []);
+
 
   return (
     <div className="w-full h-screen flex justify-center items-center relative">
