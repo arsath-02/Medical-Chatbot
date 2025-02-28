@@ -37,20 +37,23 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-sm font-bold">
         M
       </div>
-      <div className="space-y-6">
-        <button onClick={handleRefreshChat} className="p-2  rounded-lg  hover:bg-gray-700 transition-colors">
-          <ArrowRepeat className="w-5 h-5 icon ml-3" />
-        </button>
-        <button
-          onClick={handleToggleChatHistory}
-          className={`p-2 hover:bg-gray-700 rounded-lg transition-colors`}
-        >
-          <Newspaper className={`w-5 h-5 ml-3 ${showChatHistory ? 'text-blue-500' : 'icon'}`} />
-        </button>
-        <button onClick={handleShareChat} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-          <Share2 className="w-5 h-5 icon ml-3" />
-        </button>
-      </div>
+
+      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ">
+      <div className="ml-1">
+          <ArrowRepeat size={20} color="gray" onClick={handleRefreshChat}/>
+          </div>
+          </div>
+        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+        <div className="ml-1">
+          <Newspaper size={20} color="gray" onClick={handleToggleChatHistory} />
+          </div>
+          </div>
+        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <div className="ml-1">
+          <Share2 color="gray" size={20} onClick={handleShareChat} />
+          </div>
+          </div>
+
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <IoAccessibilitySharp color="gray" size={20} onClick={handleVoice} />
@@ -80,7 +83,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
       {/* Show logout door icon if user is logged in */}
       {userInitial && (
-        <div className="p-2 mt-43 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+        <div className="p-2 mt-27 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
           <div className="ml-1 ">
             <GiEntryDoor color="gray" size={20} />
           </div>

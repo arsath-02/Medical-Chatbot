@@ -70,7 +70,7 @@ export default function Chatbot() {
   useEffect(() => {
     fetchChatSessions();
   }, []);
-  
+
   const fetchChatSessions = async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/sessions"); // Verify this URL
@@ -86,20 +86,20 @@ export default function Chatbot() {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
-  
+
     const userId = localStorage.getItem("userId");
     if (!userId) {
       console.error("User not authenticated");
       setError("User not authenticated. Please log in again.");
       return;
     }
-  
+
     const userMessage = { text: inputValue, sender: "user" };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
     setError(null);
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/chatbot", { // Verify this URL
         method: "POST",
@@ -110,20 +110,20 @@ export default function Chatbot() {
           sessionId: sessionId || Date.now().toString(), // Use timestamp if no sessionId exists
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       const botMessage = { text: data.response, sender: "bot" };
-  
+
       // If it's a new session, store sessionId
       if (!sessionId) {
         setSessionId(data.sessionId);
         localStorage.setItem("sessionId", data.sessionId);
       }
-  
+
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       setError("Failed to get response. Please try again.");
@@ -132,9 +132,10 @@ export default function Chatbot() {
       setIsLoading(false);
     }
   };
-  
+
   const handleRefreshChat = () => {
-    setMessages([{ text: "Hi, I'm Medi~ Ask me anything! 😊", sender: "bot" }]);
+    setMessages([{ text: "Hi "+name+", I am MediBot 😊", sender: "bot" }]);
+    navigate('/chatbot');
   };
 
   const handleToggleChatHistory = () => {
