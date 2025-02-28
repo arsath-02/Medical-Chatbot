@@ -143,16 +143,6 @@ export default function Voice() {
     alert("Chat link copied to clipboard!");
   };
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleVoice = () => {
-    navigate("/voice");
-  };
-  const handlechatbot = () => {
-    navigate("/chatbot");
-  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex">
@@ -171,6 +161,7 @@ export default function Voice() {
                 src={video} controls={false}
                 autoPlay
                 onEnded={() => setShowVideo(false)}
+                loop
               />
             </div>
           </div>
