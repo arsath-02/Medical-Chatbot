@@ -5,8 +5,10 @@ import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
 import {useNavigate} from "react-router-dom";
 import { MdHealthAndSafety } from "react-icons/md";
+
 export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, isDarkMode, setIsDarkMode, handleLogin, showChatHistory, handleVoice }) {
   const [userInitial, setUserInitial] = useState(null);
+
   const navigate=useNavigate();
   useEffect(() => {
     // Check localStorage for email when component mounts
@@ -25,7 +27,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
     setUserInitial(null);
 
     // Redirect to login page
-    window.location.href = "/login"; // Adjust this URL as needed for your routing
+    window.location.href = "/login"; 
   };
   const handlechatbot=()=>{
     navigate("/chatbot");
@@ -33,6 +35,8 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   const handlehealth=()=>{
     navigate("/FitbitLogin");
   }
+
+ 
 
 
   return (
