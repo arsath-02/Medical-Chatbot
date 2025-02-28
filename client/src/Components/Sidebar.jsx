@@ -83,7 +83,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
       {/* Show logout door icon if user is logged in */}
       {userInitial && (
-        <div className="p-2 mt-27 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+        <div className="p-2 mt-auto hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
           <div className="ml-1 ">
             <GiEntryDoor color="gray" size={20} />
           </div>
