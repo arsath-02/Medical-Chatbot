@@ -30,7 +30,7 @@ router.post("/chatbot", async (req, res) => {
     chat.messages.push({ text: message, sender: "user", timestamp: new Date() });
 
     // Send user input to the AI model backend
-    const modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", { message });
+    const modelResponse = await axios.post("https://medical-chatbot-lgog.onrender.com/api/chat", { message });
 
     const botMessage = { text: modelResponse.data.response, sender: "bot", timestamp: new Date() };
 
