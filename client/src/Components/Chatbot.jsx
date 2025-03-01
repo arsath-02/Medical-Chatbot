@@ -134,6 +134,8 @@ export default function Chatbot() {
     }
   };
 
+  
+
   const handleRefreshChat = () => {
     setMessages([{ text: "Hi "+name+", I am MediBot 😊", sender: "bot" }]);
     navigate('/chatbot');
