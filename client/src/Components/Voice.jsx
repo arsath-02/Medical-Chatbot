@@ -87,7 +87,7 @@ export default function Voice() {
   const handleSendMessage = async (textar) => {
     console.log("Textar:", textar);
     try {
-      const response = await fetch('https://medical-chatbot-lgog.onrender.com/api/chat', {
+      const response = await fetch('http://127.0.0.1:5000/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
