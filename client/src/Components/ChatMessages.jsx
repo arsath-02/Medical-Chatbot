@@ -2,19 +2,26 @@ import React, { useEffect, useRef, useState } from "react";
 
 const TypingEffect = ({ text }) => {
   const [displayedText, setDisplayedText] = useState("");
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
+    setDisplayedText("");
+    setIsDone(false);
+
     let index = 0;
     const interval = setInterval(() => {
       setDisplayedText(text.substring(0, index));
       index++;
-      if (index > text.length) clearInterval(interval);
+      if (index > text.length) {
+        clearInterval(interval);
+        setIsDone(true);
+      }
     }, 20);
 
     return () => clearInterval(interval);
   }, [text]);
 
-  return <span>{displayedText}</span>;
+  return <span>{displayedText}{!isDone && "█"}</span>;
 };
 
 const UserAvatar = ({ initial }) => (
@@ -24,22 +31,28 @@ const UserAvatar = ({ initial }) => (
 );
 
 const BotAvatar = () => (
-  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-700 font-bold shadow-md">
+  <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
     M
   </div>
 );
 
-const MessageBubble = ({ message,userInitial }) => (
+const MessageBubble = ({ message, userInitial, isLatestBotMessage }) => (
   <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
     {message.sender === 'bot' && <BotAvatar />}
 
-<div className={`max-w-[80%] rounded-lg p-3 mx-2 ${
-  message.sender === 'user' ? ' text-white' : '  text-gray-800 dark:text-gray-200'
-}`}>
+    <div className={`max-w-[80%] rounded-lg p-3 mx-2 ${
+      message.sender === 'user'
+        ? ' text-white'
+        : ' text-gray-800 dark:text-gray-200 shadow-md'
+    }`}>
       <p className="text-sm whitespace-pre-wrap">
-        {message.sender === "bot" ? <TypingEffect text={message.text} /> : message.text}
+        {message.sender === "bot" && isLatestBotMessage ?
+          <TypingEffect text={message.text} /> :
+          message.text
+        }
       </p>
     </div>
+
     {message.sender === 'user' && <UserAvatar initial={userInitial} />}
   </div>
 );
@@ -49,10 +62,13 @@ export default function ChatMessages({ messages, isLoading, error }) {
   const [userInitial, setUserInitial] = useState("U");
 
   useEffect(() => {
-    // Check localStorage for email when component mounts
+    // Check localStorage for name or email when component mounts
+    const storedName = localStorage.getItem("Name");
     const storedEmail = localStorage.getItem("Email");
-    if (storedEmail && storedEmail.length > 0) {
-      // Get the first character of the email
+
+    if (storedName && storedName.length > 0) {
+      setUserInitial(storedName.charAt(0).toUpperCase());
+    } else if (storedEmail && storedEmail.length > 0) {
       setUserInitial(storedEmail.charAt(0).toUpperCase());
     }
   }, []);
@@ -64,17 +80,26 @@ export default function ChatMessages({ messages, isLoading, error }) {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <div className="max-w-3xl mx-auto space-y-4 p-4">
-      {messages.map((message, index) => (
-          <MessageBubble key={index} message={message} userInitial={userInitial} />
+        {messages.map((message, index) => (
+          <MessageBubble
+            key={index}
+            message={message}
+            userInitial={userInitial}
+            isLatestBotMessage={
+              message.sender === 'bot' &&
+              index === messages.findLastIndex(m => m.sender === 'bot')
+            }
+          />
         ))}
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="rounded-lg p-3  ml-12">
+            <BotAvatar />
+            <div className="rounded-lg p-3 bg-white dark:bg-gray-800 shadow-md ml-2">
               <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-100"></div>
+                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-200"></div>
               </div>
             </div>
           </div>
@@ -84,6 +109,12 @@ export default function ChatMessages({ messages, isLoading, error }) {
           <div className="flex justify-center">
             <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg p-3 text-sm">
               {error}
+              <button
+                className="ml-2 underline"
+                onClick={() => window.location.reload()}
+              >
+                Retry
+              </button>
             </div>
           </div>
         )}
