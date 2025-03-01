@@ -5,6 +5,7 @@ import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
 import {useNavigate} from "react-router-dom";
 import { MdHealthAndSafety } from "react-icons/md";
+import { IoLogoGameControllerB } from "react-icons/io";
 
 export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, isDarkMode, setIsDarkMode, handleLogin, showChatHistory, handleVoice }) {
   const [userInitial, setUserInitial] = useState(null);
@@ -40,7 +41,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
 
   return (
-    <div className="w-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-6 z-20">
+    <div className="fixed w-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-7 z-20">
       <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-sm font-bold">
         M
       </div>
@@ -89,10 +90,14 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </button>
 
       {/* Show logout door icon if user is logged in */}
-
+      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <div className="ml-1">
+          <IoLogoGameControllerB color="gray" size={20} />
+        </div>
+      </div>
 
 {userInitial ? (
-  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold">
+  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold mt-10">
     {userInitial}
   </div>
 ) : (
