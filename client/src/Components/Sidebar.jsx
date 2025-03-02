@@ -46,18 +46,21 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   const handlehealth=()=>{
     navigate("/FitbitLogin");
   }
+  const handlegame=()=>{
+    navigate("/game-selector");
+  }
 
 
 
 
   return (
     <div
-      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-10 space-y-7 z-20
+      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-5 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
 
-    <div 
-      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold 
+    <div
+      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold
         ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}
     >
       M
@@ -97,7 +100,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </div>
 
       <button
-        onClick={ToogleTheme} 
+        onClick={ToogleTheme}
         className="p-2 hover-bg rounded-lg transition-colors"
       >
         {isDarkMode ? (
@@ -110,21 +113,21 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       {/* Show logout door icon if user is logged in */}
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
-          <IoLogoGameControllerB color="gray" size={20} />
+          <IoLogoGameControllerB color="gray" size={20} onClick={handlegame}/>
         </div>
       </div>
 
       {userInitial ? (
-  <div 
-    className={`mt-auto w-10 h-10 rounded-full flex items-center justify-center font-bold 
+  <div
+    className={`mt-auto w-10 h-10 rounded-full flex items-center justify-center font-bold
       ${isDarkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"}`}
   >
     {userInitial}
   </div>
 ) : (
-  <button 
-    className={`mt-auto p-2 rounded-lg text-sm transition-all 
-      ${isDarkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`} 
+  <button
+    className={`mt-auto p-2 rounded-lg text-sm transition-all
+      ${isDarkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
     onClick={handleLogin}
   >
     Login
@@ -133,7 +136,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
 
 {userInitial && (
-<div className="p-2 mt-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+<div className="p-2 mt-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
 <div className="ml-2 flex items-center">
 <GiEntryDoor color="gray" size={25} />
 </div>
