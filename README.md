@@ -13,8 +13,8 @@ This project is an AI-powered **Medical Chatbot** that can interact with users, 
 
 ## 🛠 Tech Stack
 - **Backend**: Python (Flask / FastAPI), TensorFlow / PyTorch (for fine-tuned model)
-- **Frontend**: React / React Native
-- **Database**: MongoDB / Firebase
+- **Frontend**: React / React Vite
+- **Database**: MongoDB , Firebase
 - **Voice Processing**: Google Speech-to-Text, OpenAI Whisper
 - **Health Monitoring**: IoT Devices / Wearable APIs
 
@@ -32,14 +32,16 @@ pip install -r requirements.txt
 
 ### 3️⃣ Run the Backend
 ```sh
+cd server
+cd model
 python app.py
 ```
 
 ### 4️⃣ Run the Frontend
 ```sh
-cd frontend
+cd client
 npm install
-npm start
+npm run dev
 ```
 
 ## 📷 Screenshots
