@@ -26,9 +26,17 @@ export default function Chatbot() {
   const [currentSessionTitle, setCurrentSessionTitle] = useState("New Chat");
 
   useEffect(() => {
-    const name = localStorage.getItem("Name") || "User";
-    setMessages([{ text: `Hi ${name}, I am MediBot 😊`, sender: "bot" }]);
-  }, [isDarkMode]); 
+    const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
+    if (storedMessages) {
+      setMessages(storedMessages);
+    } else {
+      const name = localStorage.getItem("Name") || "User";
+      const initialMessage = [{ text: `Hi ${name}, I am MediBot 😊`, sender: "bot" }];
+      setMessages(initialMessage);
+      localStorage.setItem("chatMessages", JSON.stringify(initialMessage));
+    }
+  }, []);  // ✅ Runs only once when component mounts
+  
 
 
   // Initialize session ID
@@ -78,55 +86,54 @@ export default function Chatbot() {
     }
   };
 
-  // Function to handle sending messages
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
-
+  
     const userId = localStorage.getItem("Email");
     if (!userId) {
       setError("User not authenticated. Please log in again.");
       navigate('/login');
       return;
     }
-
+  
     const userMessage = { text: inputValue, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue("");
     setIsLoading(true);
     setError(null);
-
+  
     try {
-      // If this is the first message and we don't have a title yet, use it as title
       let currentTitle = currentSessionTitle;
       if (currentSessionTitle === "New Chat" && messages.length === 1) {
         currentTitle = inputValue.length > 30 ? inputValue.substring(0, 30) + "..." : inputValue;
         setCurrentSessionTitle(currentTitle);
+        localStorage.setItem("chatSessionTitle", currentTitle); // ✅ Store title
       }
-
+  
       const response = await fetch("http://127.0.0.1:8000/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
           message: inputValue,
-          sessionId: sessionId,
+          sessionId,
           title: currentTitle
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      const botMessage = { text: data.response, sender: "bot" };
-
-      setMessages(prevMessages => [...prevMessages, botMessage]);
-
-      // Refresh chat history if this was a new chat
-      if (messages.length <= 2) {
-        fetchChatSessions();
-      }
+      const botMessage = { text: data.response, sender: "bot" }; // ✅ Defined inside try block
+  
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages, botMessage]; 
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // ✅ Store messages
+        return updatedMessages;
+      });
+  
     } catch (err) {
       setError("Failed to get response. Please try again.");
       console.error("Chat API Error:", err);
@@ -134,23 +141,26 @@ export default function Chatbot() {
       setIsLoading(false);
     }
   };
+  
 
   // Function to start a new chat
   const handleRefreshChat = () => {
-    // Generate a new session ID
     const newSessionId = uuidv4();
     setSessionId(newSessionId);
     localStorage.setItem("chatSessionId", newSessionId);
-
-    // Reset messages and title
-    setMessages([{ text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }]);
+  
+    const initialMessage = [{ text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }];
+    setMessages(initialMessage);
+    localStorage.setItem("chatMessages", JSON.stringify(initialMessage));  // ✅ Save messages
+  
     setCurrentSessionTitle("New Chat");
-
-    // Close chat history if open
+    localStorage.setItem("chatSessionTitle", "New Chat");
+  
     if (showChatHistory) {
       setShowChatHistory(false);
     }
   };
+  
 
   // Function to toggle chat history panel
   const handleToggleChatHistory = () => {
@@ -270,7 +280,7 @@ export default function Chatbot() {
   <div className={`border-b p-3 text-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
     <h2 className="font-medium">{currentSessionTitle || "New Chat"}</h2>
   </div>
-
+  
     
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <ChatMessages messages={messages} isLoading={isLoading} error={error} />
