@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Sidebar from './Sidebar'
 import logo1 from '../assets/game1.png'
 import logo2 from '../assets/game2.png'
@@ -6,9 +6,11 @@ import logo3 from '../assets/game3.png'
 import logo4 from '../assets/game4.png'
 import logo5 from '../assets/game5.png'
 import logo6 from '../assets/game6.png'
+import { ThemeContext } from './ThemeContext'
 
 const GameSelector = () => {
   const [selectedGame, setSelectedGame] = useState(null);
+  const {isDarkMode} = useContext(ThemeContext);
 
   const games = [
     { id: 1, image: logo1, name: "Game 1", description: "Action-packed adventure", link: "https://my.spline.design/platformerrabbitcopy-40e708c7abbfe2d6c57b4b6af8db1fe5/" },
@@ -34,7 +36,7 @@ const GameSelector = () => {
       </div>
 
       <div className="py-8  shadow-sm">
-        <h1 className="text-center text-black text-4xl font-bold">
+        <h1 className={`text-center ${isDarkMode ? "text-white": "text-black"}  text-4xl font-bold`}>
           Select The Game You Like
         </h1>
       </div>
