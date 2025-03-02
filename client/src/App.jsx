@@ -9,6 +9,7 @@ import HomePage from "./Components/HomePage";
 import FitbitLogin from "./Components/FitbitLogin";
 import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
+import GameSelector from "./Components/GameSelector";
 function App() {
   const [user, setUser] = useState(null); // Track logged-in user
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/FitbitLogin" element={<FitbitLogin />} />
          <Route path="/callback" element={<FitbitCallback />} />
          <Route path="/dashboard" element={<Dashboard />} />
+         <Route path="/game-selector" element={<GameSelector />} />
         </Routes>
       </BrowserRouter>
     </div>
