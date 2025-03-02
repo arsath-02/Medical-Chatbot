@@ -186,7 +186,6 @@ export default function Chatbot() {
     }
   };
 
-  // Function to load a specific chat by sessionId
   const loadChat = async (selectedSessionId) => {
     try {
       setIsLoading(true);
