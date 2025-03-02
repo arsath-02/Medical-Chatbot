@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useContext } from "react";
 import { RepeatIcon as ArrowRepeat, Newspaper, Share2, Moon, Sun, X } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { IoAccessibilitySharp } from "react-icons/io5";
@@ -6,9 +6,11 @@ import { RiMic2Line } from "react-icons/ri";
 import video from "../assets/video.mp4";
 import { SiChatbot } from "react-icons/si";
 import Sidebar from "./Sidebar";
+import { ThemeContext } from "./ThemeContext";
+
 export default function Voice() {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [error, setError] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
