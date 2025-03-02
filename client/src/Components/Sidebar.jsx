@@ -56,9 +56,13 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
 
-      <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-sm font-bold">
-        M
-      </div>
+    <div 
+      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold 
+        ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}
+    >
+      M
+    </div>
+
 
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ">
       <div className="ml-1">
@@ -110,15 +114,23 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
         </div>
       </div>
 
-{userInitial ? (
-  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold ">
+      {userInitial ? (
+  <div 
+    className={`mt-auto w-10 h-10 rounded-full flex items-center justify-center font-bold 
+      ${isDarkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"}`}
+  >
     {userInitial}
   </div>
 ) : (
-  <button className="mt-auto p-2 bg-gray-200 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300" onClick={handleLogin}>
+  <button 
+    className={`mt-auto p-2 rounded-lg text-sm transition-all 
+      ${isDarkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`} 
+    onClick={handleLogin}
+  >
     Login
   </button>
 )}
+
 
 {userInitial && (
 <div className="p-2 mt-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>

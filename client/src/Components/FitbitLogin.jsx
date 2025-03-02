@@ -22,10 +22,17 @@ const FitbitLogin = () => {
             Sync your activity, heart rate, and sleep data.
           </p>
           <a href={AUTH_URL}>
-            <button className="bg-gray-900 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all">
-              Login 
+            <button 
+              className={`font-semibold px-6 py-3 rounded-lg transition-all 
+                ${isDarkMode 
+                  ? "bg-gray-200 hover:bg-gray-600 text-gray-900"  // Dark Mode
+                  : "bg-gray-900 hover:bg-blue-700 text-white" // Light Mode
+                }`}
+            >
+              Login
             </button>
           </a>
+
         </div>
       </div>
     </div>

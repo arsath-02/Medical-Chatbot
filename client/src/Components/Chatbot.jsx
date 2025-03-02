@@ -250,7 +250,6 @@ export default function Chatbot() {
     handleToggleChatHistory={handleToggleChatHistory}
     handleShareChat={handleShareChat}
     isDarkMode={isDarkMode}
-    setIsDarkMode={setIsDarkMode}
     handleLogin={handleLogin}
     showChatHistory={showChatHistory}
     handleVoice={handleVoice}
@@ -263,13 +262,15 @@ export default function Chatbot() {
       loadChat={loadChat}
       handleToggleChatHistory={handleToggleChatHistory}
       currentSessionId={sessionId}
+      isDarkMode={isDarkMode}
     />
   )}
 
-  <div className="flex-1 flex flex-col h-screen">
-    <div className="border-b border-gray-200 dark:border-gray-700 p-3 text-center">
-      <h2 className="font-medium text-gray-800 dark:text-gray-200">{currentSessionTitle}</h2>
-    </div>
+<div className={`flex-1 flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+  <div className={`border-b p-3 text-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
+    <h2 className="font-medium">{currentSessionTitle || "New Chat"}</h2>
+  </div>
+
     
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <ChatMessages messages={messages} isLoading={isLoading} error={error} />
