@@ -1,9 +1,9 @@
 import React from "react";
 import { X, Trash2, Calendar } from "lucide-react";
 
-export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHistory, currentSessionId }) {
+export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHistory, isDarkMode, currentSessionId }) {
   const deleteChat = async (sessionId, e) => {
-    e.stopPropagation(); // Prevent clicking the parent div
+    e.stopPropagation(); // Prevent parent div click
 
     if (window.confirm("Are you sure you want to delete this chat?")) {
       try {
@@ -18,8 +18,7 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
           throw new Error("Failed to delete chat");
         }
 
-        // Refresh the page or update chat history
-        window.location.reload();
+        window.location.reload(); // Refresh chat history
       } catch (error) {
         console.error("Error deleting chat:", error);
         alert("Failed to delete chat. Please try again.");
@@ -28,26 +27,36 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
   };
 
   return (
-    <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen absolute left-16 z-10">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+    <div
+      className={`w-64 border-r flex flex-col h-screen absolute left-16 z-10 
+      ${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-200"}`}
+    >
+      {/* Header */}
+      <div className="p-4 border-b flex items-center justify-between border-gray-200 dark:border-gray-700">
         <h2 className="font-medium text-gray-800 dark:text-gray-200">Recent Chats</h2>
-        <button onClick={handleToggleChatHistory} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+        <button 
+          onClick={handleToggleChatHistory} 
+          className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
           <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
         </button>
       </div>
 
+      {/* Chat List */}
       <div className="flex-1 overflow-y-auto">
         {chatHistory.length > 0 ? (
           chatHistory.map((chat) => (
             <div
               key={chat.id}
               onClick={() => loadChat(chat.id)}
-              className={`p-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer relative ${
-                currentSessionId === chat.id ? "bg-blue-50 dark:bg-blue-900/20" : ""
-              }`}
+              className={`p-3 border-b cursor-pointer truncate relative
+                ${isDarkMode ? "border-gray-700 hover:bg-gray-700" : "border-gray-100 hover:bg-gray-50"}
+                ${currentSessionId === chat.id ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
             >
               <div className="flex justify-between items-start mb-1">
-                <h3 className="font-medium text-sm text-gray-800 dark:text-gray-200 truncate w-4/5">{chat.title}</h3>
+                <h3 className={`font-medium text-sm truncate ${isDarkMode ? "text-gray-200" : "text-gray-800"}`}>
+                  {chat.title}
+                </h3>
                 <button
                   onClick={(e) => deleteChat(chat.id, e)}
                   className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full absolute right-2 top-2"
@@ -59,7 +68,9 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
                 <Calendar className="w-3 h-3 mr-1" />
                 <span>{chat.date}</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{chat.preview || "Click to load this chat"}</p>
+              <p className={`text-xs truncate mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                {chat.preview || "Click to load this chat"}
+              </p>
             </div>
           ))
         ) : (

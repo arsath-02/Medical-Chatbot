@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
 
 const TypingEffect = ({ text }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -30,34 +31,43 @@ const UserAvatar = ({ initial }) => (
   </div>
 );
 
-const BotAvatar = () => (
-  <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-    M
+const BotAvatar = ({ isDarkMode }) => (
+  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md ${
+    isDarkMode ? "bg-gray-900 text-white" : "bg-gradient-to-br from-pink-500 to-purple-600 text-white"
+  }`}>
+    B
   </div>
 );
 
-const MessageBubble = ({ message, userInitial, isLatestBotMessage }) => (
-  <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-    {message.sender === 'bot' && <BotAvatar />}
 
-    <div className={`max-w-[80%] rounded-lg p-3 mx-2 ${
-      message.sender === 'user'
-        ? ' text-white'
-        : ' text-gray-800 dark:text-gray-200 shadow-md'
-    }`}>
+const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage }) => (
+  <div className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
+    {message.sender === "bot" && <BotAvatar isDarkMode={isDarkMode} />}
+
+    <div
+      className={`max-w-[80%] rounded-lg p-3 mx-2 ${
+        message.sender === "user"
+          ? "bg-blue-500 text-white"
+          : isDarkMode
+          ? "bg-gray-700 text-white"  // ✅ Dark mode: dark background, white text
+          : "bg-gray-200 text-gray-800" // ✅ Light mode: light background, dark text
+      }`}
+    >
       <p className="text-sm whitespace-pre-wrap">
-        {message.sender === "bot" && isLatestBotMessage ?
-          <TypingEffect text={message.text} /> :
+        {message.sender === "bot" && isLatestBotMessage ? (
+          <TypingEffect text={message.text} />
+        ) : (
           message.text
-        }
+        )}
       </p>
     </div>
 
-    {message.sender === 'user' && <UserAvatar initial={userInitial} />}
+    {message.sender === "user" && <UserAvatar initial={userInitial} />}
   </div>
 );
 
-export default function ChatMessages({ messages, isLoading, error }) {
+
+export default function ChatMessages({ messages, isLoading, error, isDarkMode }) {
   const messagesEndRef = useRef(null);
   const [userInitial, setUserInitial] = useState("U");
 
@@ -84,6 +94,7 @@ export default function ChatMessages({ messages, isLoading, error }) {
           <MessageBubble
             key={index}
             message={message}
+            isDarkMode={isDarkMode}
             userInitial={userInitial}
             isLatestBotMessage={
               message.sender === 'bot' &&

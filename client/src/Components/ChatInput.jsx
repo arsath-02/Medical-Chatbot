@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Play } from "lucide-react";
 import { MdMic } from "react-icons/md";
 import axios from "axios";
+import { ThemeContext } from "./ThemeContext";
 
 export default function ChatInput({ handleSendMessage, inputValue, setInputValue, isLoading }) {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState("en"); // Default target language is English
+
+  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
@@ -86,7 +89,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
   }
 
   return (
-    <div className="border-t dark:border-gray-700 bg-white dark:bg-gray-900 px-4 pb-7 pt-2">
+    <div className={`border-t ${isDarkMode ? "bg-gray-900": "bg-white"} px-4 pb-7 pt-2`}>
       <div className="max-w-3xl mx-auto">
         <div className="relative">
           <div className={`absolute left-8 transition-all duration-500 ease-bounce ${
@@ -121,12 +124,12 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
         </div>
 
         <div className="relative">
-          <div className="mt-2 border dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800">
+          <div className={`mt-2 border dark:border-gray-900 rounded-lg shadow-sm ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}>
             <div className="px-4 pb-4">
               <input
                 type="text"
                 placeholder="Ask Medi..."
-                className="w-full p-2 outline-none text-gray-700 dark:text-gray-200 bg-transparent"
+                className={`w-full p-2 outline-none bg-transparent ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 value={inputValue}
@@ -137,10 +140,10 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
             </div>
             <div className="border-t dark:border-gray-700 flex justify-end p-2 space-x-2">
               <button onClick={handleVoiceMessage} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <MdMic className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <MdMic className="w-5 h-5 text-gray-200 dark:text-gray-400" />
               </button>
               <button onClick={() => handleSendMessage(inputValue)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <Play className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <Play className="w-5 h-5 text-gray-200 dark:text-gray-400" />
               </button>
             </div>
             

@@ -4,17 +4,20 @@ import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
-import '../styles.css'; // Import the CSS file
+import '../styles.css'; 
 import { v4 as uuidv4 } from "uuid";
+import { useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
 
 export default function Chatbot() {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const {isDarkMode} = useContext(ThemeContext);
   const [inputValue, setInputValue] = useState("");
   const name = localStorage.getItem("Name") || "User";
   const [messages, setMessages] = useState([
     { text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }
   ]);
+  
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,14 +25,11 @@ export default function Chatbot() {
   const [sessionId, setSessionId] = useState("");
   const [currentSessionTitle, setCurrentSessionTitle] = useState("New Chat");
 
-  // Handle dark mode
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
+    const name = localStorage.getItem("Name") || "User";
+    setMessages([{ text: `Hi ${name}, I am MediBot 😊`, sender: "bot" }]);
+  }, [isDarkMode]); 
+
 
   // Initialize session ID
   useEffect(() => {
@@ -244,40 +244,44 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-gray-900">
-      <Sidebar
-        handleRefreshChat={handleRefreshChat}
-        handleToggleChatHistory={handleToggleChatHistory}
-        handleShareChat={handleShareChat}
-        isDarkMode={isDarkMode}
-        setIsDarkMode={setIsDarkMode}
-        handleLogin={handleLogin}
-        showChatHistory={showChatHistory}
-        handleVoice={handleVoice}
-        handleChatbot={handleChatbot}
-      />
-      {showChatHistory && (
-        <ChatHistory
-          chatHistory={chatHistory}
-          loadChat={loadChat}
-          handleToggleChatHistory={handleToggleChatHistory}
-          currentSessionId={sessionId}
-        />
-      )}
-      <div className="flex-1 flex flex-col h-screen">
-        <div className="border-b border-gray-200 dark:border-gray-700 p-3 text-center">
-          <h2 className="font-medium text-gray-800 dark:text-gray-200">{currentSessionTitle}</h2>
-        </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <ChatMessages messages={messages} isLoading={isLoading} error={error} />
-        </div>
-        <ChatInput
-          handleSendMessage={handleSendMessage}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          isLoading={isLoading}
-        />
-      </div>
+<div className={`min-h-screen flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+  <Sidebar
+    handleRefreshChat={handleRefreshChat}
+    handleToggleChatHistory={handleToggleChatHistory}
+    handleShareChat={handleShareChat}
+    isDarkMode={isDarkMode}
+    setIsDarkMode={setIsDarkMode}
+    handleLogin={handleLogin}
+    showChatHistory={showChatHistory}
+    handleVoice={handleVoice}
+    handleChatbot={handleChatbot}
+  />
+  
+  {showChatHistory && (
+    <ChatHistory
+      chatHistory={chatHistory}
+      loadChat={loadChat}
+      handleToggleChatHistory={handleToggleChatHistory}
+      currentSessionId={sessionId}
+    />
+  )}
+
+  <div className="flex-1 flex flex-col h-screen">
+    <div className="border-b border-gray-200 dark:border-gray-700 p-3 text-center">
+      <h2 className="font-medium text-gray-800 dark:text-gray-200">{currentSessionTitle}</h2>
     </div>
-  );
+    
+    <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <ChatMessages messages={messages} isLoading={isLoading} error={error} />
+    </div>
+    
+    <ChatInput
+      handleSendMessage={handleSendMessage}
+      inputValue={inputValue}
+      setInputValue={setInputValue}
+      isLoading={isLoading}
+    />
+  </div>
+</div>
+  )
 }

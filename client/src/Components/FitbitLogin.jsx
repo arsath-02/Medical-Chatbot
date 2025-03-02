@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import Sidebar from "./Sidebar";
+import { ThemeContext } from "./ThemeContext";
 
 const FitbitLogin = () => {
+  const {isDarkMode , setIsDarkMode} = useContext(ThemeContext);
   const CLIENT_ID = import.meta.env.VITE_FITBIT_CLIENT_ID;
   const REDIRECT_URI = import.meta.env.VITE_FITBIT_REDIRECT_URI;
   console.log(REDIRECT_URI);
@@ -11,12 +13,12 @@ const FitbitLogin = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900">
-        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full text-center">
-          <h2 className="text-2xl font-bold text-blue-700 mb-4">
-            Connect with Your Watch
+      <div className={`flex flex-col items-center justify-center min-h-screen w-full ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
+        <div className={`p-8 rounded-2xl shadow-lg max-w-sm w-full text-center ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}>
+          <h2 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"} mb-4`}>
+            Connect with Fitbit
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className={`mb-6 ${isDarkMode? "text-white" : "text-gray-900" }`}>
             Sync your activity, heart rate, and sleep data.
           </p>
           <a href={AUTH_URL}>

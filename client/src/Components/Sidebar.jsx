@@ -5,10 +5,20 @@ import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
 import {useNavigate} from "react-router-dom";
 import { MdHealthAndSafety } from "react-icons/md";
+
 import { IoLogoGameControllerB } from "react-icons/io";
 
-export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, isDarkMode, setIsDarkMode, handleLogin, showChatHistory, handleVoice }) {
+import { useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
+
+
+export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, handleLogin, showChatHistory, handleVoice }) {
+  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const [userInitial, setUserInitial] = useState(null);
+
+  const ToogleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
 
   const navigate=useNavigate();
   useEffect(() => {
@@ -41,7 +51,11 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
 
   return (
-    <div className="fixed w-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 space-y-7 z-20">
+    <div
+      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-4 space-y-7 z-20
+        ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
+    >
+
       <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-sm font-bold">
         M
       </div>
@@ -79,7 +93,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </div>
 
       <button
-        onClick={() => setIsDarkMode(!isDarkMode)}
+        onClick={ToogleTheme} 
         className="p-2 hover-bg rounded-lg transition-colors"
       >
         {isDarkMode ? (
@@ -97,7 +111,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       </div>
 
 {userInitial ? (
-  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold mt-10">
+  <div className="mt-auto w-10 h-10 bg-white text-gray-700 rounded-full flex items-center justify-center font-bold ">
     {userInitial}
   </div>
 ) : (

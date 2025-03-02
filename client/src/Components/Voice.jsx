@@ -145,7 +145,7 @@ export default function Voice() {
 
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex">
+    <div className={`min-h-screen ${isDarkMode? "bg-gray-900" : "text-white" } flex`}>
 
       <Sidebar />
 
