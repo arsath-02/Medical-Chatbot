@@ -49,8 +49,8 @@ const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage })
         message.sender === "user"
           ? "bg-blue-500 text-white"
           : isDarkMode
-          ? "bg-gray-700 text-white"  // ✅ Dark mode: dark background, white text
-          : "bg-gray-700 text-white" // ✅ Light mode: light background, dark text
+          ? "bg-gray-700 text-white"
+          : "bg-gray-700 text-white"
       }`}
     >
       <p className="text-sm whitespace-pre-wrap">

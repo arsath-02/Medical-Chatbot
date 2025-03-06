@@ -4,7 +4,7 @@ import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
 import Sidebar from "./Sidebar";
 import ChatHistory from "./ChatHistory";
-import '../styles.css'; 
+import '../styles.css';
 import { v4 as uuidv4 } from "uuid";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
@@ -17,7 +17,7 @@ export default function Chatbot() {
   const [messages, setMessages] = useState([
     { text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }
   ]);
-  
+
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function Chatbot() {
       localStorage.setItem("chatMessages", JSON.stringify(initialMessage));
     }
   }, []);  // ✅ Runs only once when component mounts
-  
+
 
 
   // Initialize session ID
@@ -88,20 +88,20 @@ export default function Chatbot() {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
-  
+
     const userId = localStorage.getItem("Email");
     if (!userId) {
       setError("User not authenticated. Please log in again.");
       navigate('/login');
       return;
     }
-  
+
     const userMessage = { text: inputValue, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue("");
     setIsLoading(true);
     setError(null);
-  
+
     try {
       let currentTitle = currentSessionTitle;
       if (currentSessionTitle === "New Chat" && messages.length === 1) {
@@ -109,7 +109,7 @@ export default function Chatbot() {
         setCurrentSessionTitle(currentTitle);
         localStorage.setItem("chatSessionTitle", currentTitle); // ✅ Store title
       }
-  
+
       const response = await fetch("http://127.0.0.1:8000/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,20 +120,20 @@ export default function Chatbot() {
           title: currentTitle
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       const botMessage = { text: data.response, sender: "bot" }; // ✅ Defined inside try block
-  
+
       setMessages(prevMessages => {
-        const updatedMessages = [...prevMessages, botMessage]; 
+        const updatedMessages = [...prevMessages, botMessage];
         localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // ✅ Store messages
         return updatedMessages;
       });
-  
+
     } catch (err) {
       setError("Failed to get response. Please try again.");
       console.error("Chat API Error:", err);
@@ -141,26 +141,26 @@ export default function Chatbot() {
       setIsLoading(false);
     }
   };
-  
+
 
   // Function to start a new chat
   const handleRefreshChat = () => {
     const newSessionId = uuidv4();
     setSessionId(newSessionId);
     localStorage.setItem("chatSessionId", newSessionId);
-  
+
     const initialMessage = [{ text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }];
     setMessages(initialMessage);
     localStorage.setItem("chatMessages", JSON.stringify(initialMessage));  // ✅ Save messages
-  
+
     setCurrentSessionTitle("New Chat");
     localStorage.setItem("chatSessionTitle", "New Chat");
-  
+
     if (showChatHistory) {
       setShowChatHistory(false);
     }
   };
-  
+
 
   // Function to toggle chat history panel
   const handleToggleChatHistory = () => {
@@ -265,7 +265,7 @@ export default function Chatbot() {
     handleVoice={handleVoice}
     handleChatbot={handleChatbot}
   />
-  
+
   {showChatHistory && (
     <ChatHistory
       chatHistory={chatHistory}
@@ -273,6 +273,7 @@ export default function Chatbot() {
       handleToggleChatHistory={handleToggleChatHistory}
       currentSessionId={sessionId}
       isDarkMode={isDarkMode}
+      handleRefreshChat={handleRefreshChat}
     />
   )}
 
@@ -280,12 +281,12 @@ export default function Chatbot() {
   <div className={`border-b p-3 text-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
     <h2 className="font-medium">{currentSessionTitle || "New Chat"}</h2>
   </div>
-  
-    
+
+
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <ChatMessages messages={messages} isLoading={isLoading} error={error} />
     </div>
-    
+
     <ChatInput
       handleSendMessage={handleSendMessage}
       inputValue={inputValue}

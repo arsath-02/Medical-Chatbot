@@ -67,11 +67,11 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
     </div>
 
 
-      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ">
+      {/* <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ">
       <div className="ml-1">
           <ArrowRepeat size={20} color="gray" onClick={handleRefreshChat}/>
           </div>
-          </div>
+          </div> */}
         <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
         <div className="ml-1">
           <Newspaper size={20} color="gray" onClick={handleToggleChatHistory} />
