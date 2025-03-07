@@ -32,44 +32,49 @@ const UserAvatar = ({ initial }) => (
 );
 
 const BotAvatar = ({ isDarkMode }) => (
-  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md ${
-    isDarkMode ? "bg-gray-900 text-white" : "bg-gradient-to-br from-pink-500 to-purple-600 text-white"
-  }`}>
+  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md bg-gradient-to-br from-pink-500 to-purple-600 text-white`}>
     B
   </div>
 );
 
 
-const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage }) => (
-  <div className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
-    {message.sender === "bot" && <BotAvatar isDarkMode={isDarkMode} />}
+const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage }) => {
+  console.log("isDarkMode:", isDarkMode);
+  if (!message || !message.sender || !message.text) return null;
 
-    <div
-      className={`max-w-[80%] rounded-lg p-3 mx-2 ${
-        message.sender === "user"
-          ? "bg-blue-500 text-white"
-          : isDarkMode
-          ? "bg-gray-700 text-white"
-          : "bg-gray-700 text-white"
-      }`}
-    >
-      <p className="text-sm whitespace-pre-wrap">
-        {message.sender === "bot" && isLatestBotMessage ? (
-          <TypingEffect text={message.text} />
-        ) : (
-          message.text
-        )}
-      </p>
+  return (
+    <div className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
+      {message.sender === "bot" && <BotAvatar isDarkMode={isDarkMode} />}
+      
+
+      <div
+        className={`max-w-[80%] rounded-lg p-3 mx-2 ${
+          message.sender === "user"
+            ? "bg-gray-600 text-white"
+            : isDarkMode
+            ? "bg-gray-900 text-white"
+            : "bg-white text-gray-900"
+        }`}
+      >
+        <p className="text-sm whitespace-pre-wrap">
+          {message.sender === "bot" && isLatestBotMessage ? (
+            <TypingEffect text={message.text} />
+          ) : (
+            message.text
+          )}
+        </p>
+      </div>
+
+      {message.sender === "user" && <UserAvatar initial={userInitial} />}
     </div>
-
-    {message.sender === "user" && <UserAvatar initial={userInitial} />}
-  </div>
-);
+  );
+};
 
 
-export default function ChatMessages({ messages, isLoading, error, isDarkMode }) {
+export default function ChatMessages({ messages, isLoading, error }) {
   const messagesEndRef = useRef(null);
   const [userInitial, setUserInitial] = useState("U");
+  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
 
   useEffect(() => {
     // Check localStorage for name or email when component mounts

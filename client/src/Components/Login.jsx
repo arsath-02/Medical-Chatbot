@@ -60,7 +60,7 @@ const Login = () => {
 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between bg-indigo-900 text-white p-6 rounded-t-lg">
+            <div className="flex items-center justify-between bg-gray-800 text-white p-6 rounded-t-lg">
               <h2 className="text-2xl font-semibold">Login</h2>
               <button
                 onClick={() => navigate("/")}
@@ -79,7 +79,7 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md "
                   />
                 </div>
                 <div className='flex items-baseline'>
@@ -90,12 +90,12 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md "
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-indigo-900 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+                  className="w-full bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
 
                 >
                   Sign In
@@ -126,13 +126,13 @@ const Login = () => {
                 <div className="px-6 pb-6 text-center">
                       <p className="text-sm text-gray-600">
                         Don't have an account?{" "}
-                      <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                      <a href="/signup" className="text-gray-600 hover:text-gray-800 font-medium">
                           Sign Up
                       </a>
                       </p>
                 </div>
                 <div className="px-6 pb-6 text-center">
-                  <a href="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                  <a href="/" className="text-gray-600 hover:text-gray-800 font-medium">
                     Home
                   </a>
                 </div>

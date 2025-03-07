@@ -60,14 +60,14 @@ const Signup = () => {
     }
   };
   const handleclick=()=>{
-    navigate('/chatbot');
+    navigate('/');
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-pink-100">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between bg-indigo-900 text-white p-6 rounded-t-lg">
+            <div className="flex items-center justify-between bg-gray-800 text-white p-6 rounded-t-lg">
               <h2 className="text-2xl font-semibold">Create Account</h2>
               <button onClick={handleclick} className="text-white hover:text-indigo-200">
                 <X size={24} />
@@ -84,7 +84,7 @@ const Signup = () => {
                     placeholder="Enter your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
                     required
                   />
                 </div>
@@ -100,7 +100,7 @@ const Signup = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
                     required
                   />
                 </div>
@@ -116,7 +116,7 @@ const Signup = () => {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md"
                     required
                   />
                 </div>
@@ -132,13 +132,13 @@ const Signup = () => {
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
                     required
                   />
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-indigo-900 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md">
+              <button type="submit" className="w-full bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">
                 Create Account
               </button>
             </form>
@@ -168,7 +168,7 @@ const Signup = () => {
             <div className="px-6 pb-6 mt-2 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{" "}
-                <a href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">Login</a>
+                <a href="/login" className="text-gray-600 hover:text-gray-800 font-medium">Login</a>
               </p>
             </div>
           </div>
