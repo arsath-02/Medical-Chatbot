@@ -10,7 +10,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
   const [isClicked, setIsClicked] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState("en"); // Default target language is English
 
-  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
+  const {isDarkMode} = useContext(ThemeContext);
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;

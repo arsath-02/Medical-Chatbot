@@ -55,15 +55,15 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
   return (
     <div
-      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-10 space-y-7 z-20
+      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-19 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
 
     <div
-      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold
+      className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold
         ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}
     >
-      M
+      B
     </div>
 
 
