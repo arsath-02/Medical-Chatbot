@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { TbReportAnalytics } from "react-icons/tb";
-
+import Report from './Report';
 export default function Chatbot() {
   const navigate = useNavigate();
   const {isDarkMode} = useContext(ThemeContext);
@@ -25,7 +25,8 @@ export default function Chatbot() {
   const [sessionId, setSessionId] = useState("");
   const [currentSessionTitle, setCurrentSessionTitle] = useState("New Chat");
   const [isFirstMessageSent, setIsFirstMessageSent] = useState(false);
-
+  const [userReport, setUserReport] = useState(false);
+  const [reportData,setReportData]=useState("");
   useEffect(() => {
     const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
     if (storedMessages && storedMessages.length > 0) {
@@ -262,15 +263,15 @@ export default function Chatbot() {
     const formattedMessages = messages
       .map(msg => `${msg.sender}: ${msg.text}`)
       .join('\n');
-  
+
     const userId = localStorage.getItem("Email");  // ✅ Corrected to match the rest of the code
     const sessionId = localStorage.getItem("chatSessionId");
-  
+
     if (!userId || !sessionId) {
       console.error("User ID or Session ID not found in localStorage.");
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/analyze", {
         method: "POST",
@@ -283,16 +284,24 @@ export default function Chatbot() {
           messages: formattedMessages
         })
       });
-  
+
       const data = await response.json();
+      setReportData(data.chatReport);
+      console.log(reportData);
       console.log("Response from API:", data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
-  
+  useEffect(() => {
+    console.log("✅ Updated Report Data:", reportData);
+    setUserReport(true);
 
+  }, [reportData]);
 
+  const handleClose = () => {
+    setUserReport(false);
+  };
   return (
     <div className={`min-h-screen italic flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Sidebar
@@ -321,7 +330,19 @@ export default function Chatbot() {
       <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
   <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
   <TbReportAnalytics onClick={handleReport} size={25}/>
-</div>
+</div>{userReport && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-130 relative">
+            <button
+              onClick={handleClose}
+              className="absolute top-2 right-2 text-gray-600 hover:text-red-500"
+            >
+              ✖
+            </button>
+            <Report info={reportData} func={setReportData} />
+          </div>
+        </div>
+      )}
 
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -333,6 +354,7 @@ export default function Chatbot() {
           inputValue={inputValue}
           setInputValue={setInputValue}
           isLoading={isLoading}
+
         />
       </div>
     </div>
