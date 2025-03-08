@@ -3,9 +3,10 @@ import { ThemeContext } from './ThemeContext';
 import { Moon, Sun, Mic, Send, MessageCircle, Gamepad2, Volume2, History } from "lucide-react";
 import { Link } from 'react-scroll';
 import { useNavigate } from 'react-router-dom';
-
+import '../styles.css';
 const HomePage = () => {
   const { isDarkMode, setIsDarkMode } = useContext(ThemeContext);
+  
   const navigate = useNavigate();
 
   const toggleTheme = () => {
@@ -39,6 +40,9 @@ const HomePage = () => {
   const [chatHistory, setChatHistory] = useState([]); // Store chat history
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [displayedMessage, setDisplayedMessage] = useState('');
+  const [typingIndex, setTypingIndex] = useState(0);
+  const [animatedText, setAnimatedText]= useState('');
 
   const handleSendMessage = async () => {
     if (!messages.trim()) return; // Prevent sending empty messages
@@ -51,7 +55,7 @@ const HomePage = () => {
     setMessages(""); // Clear input field
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/chat", {
+      const response = await fetch("http://127.0.0.1:5000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.text }),
@@ -78,6 +82,27 @@ const HomePage = () => {
     }
   };
 
+  useEffect(() => {
+    const latestBotMessage = chatHistory.findLast((msg) => msg.sender === 'bot')?.text || '';
+
+    if (latestBotMessage && typingIndex === chatHistory.length) return; // Prevent retyping old messages
+
+    if (latestBotMessage) {
+      setDisplayedMessage(''); // Clear the displayed message before starting typing
+      let index = 0;
+
+      const interval = setInterval(() => {
+        if (index < latestBotMessage.length) {
+          setDisplayedMessage(latestBotMessage.slice(0, index + 1));
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 50);
+
+      setTypingIndex(chatHistory.length); // Track message count to prevent retyping
+    }
+  }, [chatHistory]);
 
   useEffect(() => {
     // Set the initial greeting message
@@ -86,6 +111,7 @@ const HomePage = () => {
   }, []);
 
   return (
+    <div className="sidebar flex-1 custom-scrollbar">
     <div className={`min-h-screen overflow-hidden ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
       <header className='fixed top-0 left-0 w-full z-50'>
         <nav className={`border-gray-100 px-4 lg:px-6 py-2.5 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
@@ -118,58 +144,110 @@ const HomePage = () => {
         </nav>
       </header>
 
-      <section id="home" className='py-20 md:py-28 px-15'>
-        <div className='container px-4 md:px-30'>
-          <div className='grid gap-6 lg:grid-cols-2 lg:gap-12 items-center'>
-            <div className='flex flex-col justify-center space-y-4'>
-              <div className='space-y-2'>
-                <h1 className={`text-3xl font-bold tracking-tighter px-6 sm:text-4xl md:text-5xl lg:text-6xl ${isDarkMode ? "text-gray-100" : "text-gray-700"}`}>Your Emotional Support Companion</h1>
-                <p className={`max-w-[600px] ${isDarkMode ? "text-gray-400" : "text-gray-600"} px-6 md:text-xl`}>Connect with MindfulChat, an AI-powered mental health assistant that listens, learns, and supports you on your journey.</p>
+      <section id="home" className="py-20 md:py-28 px-15">
+      <div
+        id="chat-container"
+        className="flex-1 overflow-y-auto p-4 space-y-4 [&::-webkit-scrollbar]:hidden scrollbar-none"
+      >
+        <div className="container px-4 md:px-30">
+          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+            <div className="flex flex-col justify-center space-y-4">
+              <div className="space-y-2">
+                <h1
+                  className={`text-3xl font-bold tracking-tighter px-6 sm:text-4xl md:text-5xl lg:text-6xl ${
+                    isDarkMode ? 'text-gray-100' : 'text-gray-700'
+                  }`}
+                >
+                  Your Emotional Support Companion
+                </h1>
+                <p
+                  className={`max-w-[600px] ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  } px-6 md:text-xl`}
+                >
+                  Connect with MindfulChat, an AI-powered mental health assistant that listens,
+                  learns, and supports you on your journey.
+                </p>
               </div>
             </div>
-            <div className={`mx-auto lg:mx-0 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} p-4 shadow-lg lg:order-last`}>
-              <div className='flex flex-col h-[400px] w-full max-w-md'>
-                <div className='p-3 border-b border-gray-200 dark:border-gray-800'>
-                  <h3 className={`font-medium ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>Chat Preview</h3>
+
+            <div
+              className={`mx-auto lg:mx-0 rounded-lg border ${
+                isDarkMode ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'
+              } p-4 shadow-lg lg:order-last`}
+            >
+              <div className="flex flex-col h-[400px] w-full max-w-md">
+                <div className="p-3 border-b border-gray-200 dark:border-gray-800">
+                  <h3 className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                    Chat Preview
+                  </h3>
                 </div>
-                <div id='chat-container' className='flex-1 overflow-y-auto p-4 space-y-4'>
+
+                <div id="chat-container" className="flex-1 overflow-y-auto p-4 space-y-4">
                   {chatHistory.map((msg, index) => (
-                    <div key={index} className={`flex justify-${msg.sender === "user" ? "end" : "start"}`}>
+                    <div key={index} className={`flex justify-${msg.sender === 'user' ? 'end' : 'start'}`}>
                       <div className={`flex items-start gap-2 max-w-[80%]`}>
-                        <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 border border-gray-200 dark:border-gray-800'>
-                          <div className='h-full w-full rounded-full bg-gray-700 flex items-center justify-center text-white text-xs'>{msg.sender === "user" ? "U" : "B"}</div>
+                        <span className="relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 border border-gray-200 dark:border-gray-800">
+                          <div
+                            className="h-full w-full rounded-full bg-gray-700 flex items-center justify-center text-white text-xs"
+                          >
+                            {msg.sender === 'user' ? 'U' : 'B'}
+                          </div>
                         </span>
-                        <div className={`rounded-lg px-3 py-2 ${msg.sender === "user" ? (isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black") : (isDarkMode ? "bg-gray-800 text-gray-100" : "bg-gray-100 text-gray-900")}`}>
-                          <p className='text-sm'>{msg.text}</p>
+                        <div
+                          className={`rounded-lg px-3 py-2 ${
+                            msg.sender === 'user'
+                              ? isDarkMode
+                                ? 'bg-gray-700 text-white'
+                                : 'bg-gray-200 text-black'
+                              : isDarkMode
+                              ? 'bg-gray-800 text-gray-100'
+                              : 'bg-gray-100 text-gray-900'
+                          }`}
+                        >
+                          <p className="text-sm">
+                            {msg.sender === 'bot' && index === chatHistory.length - 1
+                              ? displayedMessage
+                              : msg.text}
+                          </p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className={`p-3 border-t ${isDarkMode ? "border-gray-800" : "border-gray-200"}`}>
-                  <div className='flex items-center gap-2'>
+
+                <div className={`p-3 border-t ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+                  <div className="flex items-center gap-2">
                     <input
-                      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:${isDarkMode ? "text-gray-300" : "text-gray-700"} focus:outline-none focus:ring-0`}
-                      placeholder='Type a message...'
+                      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                      } focus:outline-none focus:ring-0`}
+                      placeholder="Type a message..."
                       value={messages}
                       onChange={(e) => setMessages(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     />
-                    <button 
-                      className={`h-10 w-10 flex items-center justify-center rounded-md ${isDarkMode ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-gray-200 text-black hover:bg-gray-300"} focus:outline-none focus:ring-0`}
+                    <button
+                      className={`h-10 w-10 flex items-center justify-center rounded-md ${
+                        isDarkMode
+                          ? 'bg-gray-700 text-white hover:bg-gray-800'
+                          : 'bg-gray-200 text-black hover:bg-gray-300'
+                      } focus:outline-none focus:ring-0`}
                       onClick={handleSendMessage}
                     >
                       <Send className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>} {/* Display error message */}
-                {isLoading && <p className="text-gray-500 text-sm mt-2">Loading...</p>} {/* Display loading message */}
+
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                {isLoading && <p className="text-gray-500 text-sm mt-2">Loading...</p>}
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
       
       <section id="features" className={`py-12 ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}>
         <div className='container px-4 md:px-6'>
@@ -292,6 +370,7 @@ const HomePage = () => {
 
 
 
+    </div>
     </div>
   );
 };
