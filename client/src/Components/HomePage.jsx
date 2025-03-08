@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ThemeContext } from './ThemeContext';
 import { Moon, Sun, Mic, Send, MessageCircle, Gamepad2, Volume2, History } from "lucide-react";
 import { Link } from 'react-scroll';
@@ -33,8 +33,57 @@ const HomePage = () => {
       position: "Marketing Specialist",
       feedback: "Strategizing and executing impactful marketing campaigns."
     }
-];
+  ];
 
+  const [messages, setMessages] = useState(""); // Initialize as an empty string for input
+  const [chatHistory, setChatHistory] = useState([]); // Store chat history
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSendMessage = async () => {
+    if (!messages.trim()) return; // Prevent sending empty messages
+
+    setIsLoading(true);
+    setError(null);
+
+    const userMessage = { text: messages, sender: "user" };
+    setChatHistory(prevMessages => [...prevMessages, userMessage]); // Append message correctly
+    setMessages(""); // Clear input field
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage.text }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const botMessage = { text: data.response, sender: "bot" };
+
+      setChatHistory(prevMessages => {
+        const updatedMessages = [...prevMessages, botMessage];
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // Store messages
+        return updatedMessages;
+      });
+
+    } catch (err) {
+      setError("Failed to get response. Please try again.");
+      console.error("Chat API Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    // Set the initial greeting message
+    const greetingMessage = { text: "Hi there! I'm Dr. Chat. How are you feeling today?", sender: "bot" };
+    setChatHistory([greetingMessage]);
+  }, []);
 
   return (
     <div className={`min-h-screen overflow-hidden ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
@@ -42,7 +91,6 @@ const HomePage = () => {
         <nav className={`border-gray-100 px-4 lg:px-6 py-2.5 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
           <div className='flex justify-between items-center mx-auto max-w-screen-xl'>
             <span className={`text-xl font-semibold ${isDarkMode ? "text-white" : "text-gray-600"}`}>🅓r. 𝙲𝚑𝚊𝚝</span>
-            
             <div className='hidden lg:flex items-center space-x-8'>
               <ul className='flex space-x-6 font-medium'>
                 <li><Link to="home" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Home</Link></li>
@@ -51,7 +99,6 @@ const HomePage = () => {
                 <li><Link to="contact" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Contact</Link></li>
               </ul>
             </div>
-            
             <div className='flex items-center space-x-4'>
               <button onClick={toggleTheme} className='p-2 hover:bg-gray-400 rounded-lg transition-colors'>
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -66,7 +113,7 @@ const HomePage = () => {
                 className={`px-4 py-2 text-sm font-medium rounded-lg ${isDarkMode ? "bg-white text-black hover:bg-gray-300" : "bg-gray-600 text-white hover:bg-gray-700"}`}>
                 Sign Up
               </button>
-              </div>
+            </div>
           </div>
         </nav>
       </header>
@@ -76,42 +123,48 @@ const HomePage = () => {
           <div className='grid gap-6 lg:grid-cols-2 lg:gap-12 items-center'>
             <div className='flex flex-col justify-center space-y-4'>
               <div className='space-y-2'>
-                <h1 className={`text-3xl font-bold tracking-tighter px-6 sm:text-4xl md:text-5xl lg:text-6xl  ${isDarkMode? "text-gray-100":"text-gray-700"} `}>Your Emotional Support Companion</h1>
-                <p className={`max-w-[600px] ${isDarkMode? "text-gray-400":"text-gray-600"}  px-6 md:text-xl`}>Connect with MindfulChat, an AI-powered mental health assistant that listens, learns, and supports you on your journey.</p>
+                <h1 className={`text-3xl font-bold tracking-tighter px-6 sm:text-4xl md:text-5xl lg:text-6xl ${isDarkMode ? "text-gray-100" : "text-gray-700"}`}>Your Emotional Support Companion</h1>
+                <p className={`max-w-[600px] ${isDarkMode ? "text-gray-400" : "text-gray-600"} px-6 md:text-xl`}>Connect with MindfulChat, an AI-powered mental health assistant that listens, learns, and supports you on your journey.</p>
               </div>
             </div>
-            <div className={`mx-auto lg:mx-0 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "boredr-gray-200 bg-white"} p-4 shadow-lg lg:order-last`}>
-              <div className='flex flex-col h-[400px] w-full max-w-md '>
+            <div className={`mx-auto lg:mx-0 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} p-4 shadow-lg lg:order-last`}>
+              <div className='flex flex-col h-[400px] w-full max-w-md'>
                 <div className='p-3 border-b border-gray-200 dark:border-gray-800'>
                   <h3 className={`font-medium ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>Chat Preview</h3>
                 </div>
                 <div id='chat-container' className='flex-1 overflow-y-auto p-4 space-y-4'>
-                  <div className='flex justify-start'>
-                    <div className='flex items-start gap-2 max-w-[80%] '>
-                      <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 border border-gray-200 dark:border-gray-800'>
-                        <div className='h-full w-full rounded-full bg-gray-700 flex items-center justify-center text-white text-xs'> B </div>
-                      </span>
-                      <div className={`rounded-lg px-3 py-2 ${isDarkMode ? "bg-gray-800 text-gray-100" : "bggray-200 text-gray-900"}`}>
-                        <p className='text-sm'> Hi there! I'm Dr. Chat. How are you feeling today?</p>
+                  {chatHistory.map((msg, index) => (
+                    <div key={index} className={`flex justify-${msg.sender === "user" ? "end" : "start"}`}>
+                      <div className={`flex items-start gap-2 max-w-[80%]`}>
+                        <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 border border-gray-200 dark:border-gray-800'>
+                          <div className='h-full w-full rounded-full bg-gray-700 flex items-center justify-center text-white text-xs'>{msg.sender === "user" ? "U" : "B"}</div>
+                        </span>
+                        <div className={`rounded-lg px-3 py-2 ${msg.sender === "user" ? (isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black") : (isDarkMode ? "bg-gray-800 text-gray-100" : "bg-gray-100 text-gray-900")}`}>
+                          <p className='text-sm'>{msg.text}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-                <div className={`p-3 border-t ${isDarkMode ? "border-gray-800" : "border-gray-200"} `}>
+                <div className={`p-3 border-t ${isDarkMode ? "border-gray-800" : "border-gray-200"}`}>
                   <div className='flex items-center gap-2'>
-                  <button className={`h-10 w-10 flex items-center justify-center rounded-md border border-input ${isDarkMode ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-gray-200 text-black hover:bg-gray-300"} focus:outline-none focus:ring-0`}>
-                    <Mic className="w-5 h-5" />
-                    <span className='sr-only'>Voice Input</span>
-                  </button>
-                  <input
-                    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:${isDarkMode ? "text-gray-300" : "text-gray-700"} focus:outline-none focus:ring-0`}
-                    placeholder='Type a message...'
-                  />
-                  <button className={`h-10 w-10 flex items-center justify-center rounded-md ${isDarkMode ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-gray-200 text-black hover:bg-gray-300"} focus:outline-none focus:ring-0`}>
-                    <Send className="w-5 h-5" />
-                  </button>
+                    <input
+                      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:${isDarkMode ? "text-gray-300" : "text-gray-700"} focus:outline-none focus:ring-0`}
+                      placeholder='Type a message...'
+                      value={messages}
+                      onChange={(e) => setMessages(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    />
+                    <button 
+                      className={`h-10 w-10 flex items-center justify-center rounded-md ${isDarkMode ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-gray-200 text-black hover:bg-gray-300"} focus:outline-none focus:ring-0`}
+                      onClick={handleSendMessage}
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>} {/* Display error message */}
+                {isLoading && <p className="text-gray-500 text-sm mt-2">Loading...</p>} {/* Display loading message */}
               </div>
             </div>
           </div>
