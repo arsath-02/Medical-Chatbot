@@ -229,7 +229,7 @@ export const StepsComponent = () => {
 };
 
 // Sleep Component - Fixing to handle empty sleep data
-export const SleepComponent = () => {
+const SleepComponent = () => {
   const [sleepData, setSleepData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -243,92 +243,37 @@ export const SleepComponent = () => {
         return;
       }
 
-      try {
-        const headers = { Authorization: `Bearer ${token}` };
+      const headers = { Authorization: `Bearer ${token}` };
 
-        // From your logs, I see the sleep endpoint returns an empty array
-        // Let's try the simpler endpoint first
-        const sleepResponse = await axios.get(
-          `https://api.fitbit.com/1.2/user/-/sleep/date/today.json`,
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(new Date().getDate() - 7);
+        const formattedSevenDaysAgo = sevenDaysAgo.toISOString().split('T')[0];
+
+        // Fetch weekly data
+        const sleepRangeResponse = await axios.get(
+          `https://api.fitbit.com/1.2/user/-/sleep/date/${formattedSevenDaysAgo}/${today}.json`,
           { headers }
         );
 
-        console.log("Sleep Data Today:", sleepResponse.data);
+        const formattedSleepData = sleepRangeResponse.data.sleep?.map((sleep) => ({
+          date: sleep.dateOfSleep,
+          deep: sleep.levels?.summary.deep?.minutes / 60 || 0,
+          light: sleep.levels?.summary.light?.minutes / 60 || 0,
+          rem: sleep.levels?.summary.rem?.minutes / 60 || 0,
+          wake: sleep.levels?.summary.wake?.minutes / 60 || 0,
+          totalHours: sleep.duration / (1000 * 60 * 60),
+        }));
 
-        // If we get sleep data for today, let's try the last week
-        if (sleepResponse.data.sleep && sleepResponse.data.sleep.length > 0) {
-          const today = new Date();
-          const formattedToday = today.toISOString().split('T')[0];
-
-          // Calculate date 7 days ago
-          const sevenDaysAgo = new Date(today);
-          sevenDaysAgo.setDate(today.getDate() - 7);
-          const formattedSevenDaysAgo = sevenDaysAgo.toISOString().split('T')[0];
-
-          const sleepRangeResponse = await axios.get(
-            `https://api.fitbit.com/1.2/user/-/sleep/date/${formattedSevenDaysAgo}/${formattedToday}.json`,
-            { headers }
-          );
-
-          console.log("Sleep Range Data:", sleepRangeResponse.data);
-
-          // Format sleep data if we have any
-          if (sleepRangeResponse.data.sleep && sleepRangeResponse.data.sleep.length > 0) {
-            const formattedSleepData = sleepRangeResponse.data.sleep.map((sleep) => {
-              // Convert duration from milliseconds to hours
-              const durationHours = sleep.duration / (1000 * 60 * 60);
-
-              return {
-                date: sleep.dateOfSleep,
-                deep: sleep.levels.summary.deep?.minutes / 60 || 0, // Convert to hours
-                light: sleep.levels.summary.light?.minutes / 60 || 0,
-                rem: sleep.levels.summary.rem?.minutes / 60 || 0, // Some devices might not track REM
-                wake: sleep.levels.summary.wake?.minutes / 60 || 0,
-                totalHours: durationHours,
-              };
-            });
-
-            setSleepData(formattedSleepData);
-          } else {
-            // No sleep data in range
-            setError("No sleep data available for the past week");
-          }
+        if (formattedSleepData?.length > 0) {
+          setSleepData(formattedSleepData);
         } else {
-          // No sleep data for today
-          setError("No sleep data available");
+          setError("No sleep data available for the past week.");
         }
       } catch (error) {
         console.error("Error fetching Fitbit sleep data:", error);
         setError("Failed to load sleep data");
-
-        // Try a more basic sleep endpoint as fallback
-        try {
-          const headers = { Authorization: `Bearer ${token}` };
-
-          const sleepTimeSeriesResponse = await axios.get(
-            `https://api.fitbit.com/1/user/-/sleep/minutesAsleep/date/today/1w.json`,
-            { headers }
-          );
-
-          console.log("Sleep Minutes Data:", sleepTimeSeriesResponse.data);
-
-          if (sleepTimeSeriesResponse.data["sleep-minutesAsleep"]) {
-            const basicSleepData = sleepTimeSeriesResponse.data["sleep-minutesAsleep"].map(item => ({
-              date: item.dateTime,
-              totalHours: parseInt(item.value) / 60,
-              // We don't have sleep stages in this data
-              light: 0,
-              deep: 0,
-              rem: 0,
-              wake: 0
-            }));
-
-            setSleepData(basicSleepData);
-            setError(null); // Clear the error since we have some data
-          }
-        } catch (fallbackError) {
-          console.error("Error with fallback sleep data:", fallbackError);
-        }
       } finally {
         setLoading(false);
       }
@@ -336,7 +281,6 @@ export const SleepComponent = () => {
 
     fetchSleepData();
   }, []);
-
   if (loading) {
     return (
       <div className="dashboard-container mt-8">
@@ -499,12 +443,12 @@ export const ActivityComponent = () => {
 // Updated Main Dashboard Component
 const Dashboard = () => {
   return (
-    <div className="flex bg-gray-900 min-h-screen">
+    <div className="flex bg-gray-900 min-h-screen  overflow-y-auto custom-scrollbar">
     {/* Sidebar */}
     <Sidebar />
 
     {/* Main Content */}
-    <div className="flex-1 p-6">
+    <div className="flex-1 pl-20 p-6 ">
       <h1 className="text-white text-2xl font-bold mb-6">Fitness Dashboard</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
