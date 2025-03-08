@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
-
+import { TbReportAnalytics } from "react-icons/tb";
 const TypingEffect = ({ text }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [isDone, setIsDone] = useState(false);
@@ -37,28 +37,12 @@ const BotAvatar = ({ isDarkMode }) => (
   </div>
 );
 
-
-const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage }) => {
-  const [showTypingEffect, setShowTypingEffect] = useState(isLatestBotMessage && message.sender === "bot");
-
-  console.log("isDarkMode:", isDarkMode);
+const MessageBubble = ({ message, userInitial, isDarkMode, shouldShowTypingEffect }) => {
   if (!message || !message.sender || !message.text) return null;
-
-  useEffect(() => {
-    if (showTypingEffect) {
-      const timer = setTimeout(() => {
-        setShowTypingEffect(false);
-      }, message.text.length * 20 + 100); // Adding a small buffer
-
-      return () => clearTimeout(timer);
-    }
-  }, [showTypingEffect, message.text]);
-
 
   return (
     <div className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
       {message.sender === "bot" && <BotAvatar isDarkMode={isDarkMode} />}
-      
 
       <div
         className={`max-w-[80%] rounded-lg p-3 mx-2 ${
@@ -70,7 +54,7 @@ const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage })
         }`}
       >
         <p className="text-sm whitespace-pre-wrap">
-          {message.sender === "bot" && isLatestBotMessage ? (
+          {message.sender === "bot" && shouldShowTypingEffect ? (
             <TypingEffect text={message.text} />
           ) : (
             message.text
@@ -86,7 +70,12 @@ const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage })
 export default function ChatMessages({ messages, isLoading, error }) {
   const messagesEndRef = useRef(null);
   const [userInitial, setUserInitial] = useState("U");
-  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
+  const { isDarkMode } = useContext(ThemeContext);
+  const [showTypingEffect, setShowTypingEffect] = useState(false);
+  const [typingMessageIndex, setTypingMessageIndex] = useState(null);
+  const prevMessagesRef = useRef([]);
+  const isInitialLoadRef = useRef(true);
+  const name = localStorage.getItem("Name") || "User";
 
   useEffect(() => {
     // Check localStorage for name or email when component mounts
@@ -101,29 +90,80 @@ export default function ChatMessages({ messages, isLoading, error }) {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Skip the effect for initial load of messages
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      prevMessagesRef.current = [...messages];
+      return;
+    }
+
+    // Check if a new message was added
+    if (messages.length > prevMessagesRef.current.length) {
+      const lastMessageIndex = messages.length - 1;
+      const lastMessage = messages[lastMessageIndex];
+
+      // Only show typing effect for new bot messages
+      if (lastMessage.sender === "bot") {
+        setShowTypingEffect(true);
+        setTypingMessageIndex(lastMessageIndex);
+
+        // Auto-disable typing effect after it would finish
+        const timer = setTimeout(() => {
+          setShowTypingEffect(false);
+        }, lastMessage.text.length * 20 + 100);
+
+        return () => clearTimeout(timer);
+      }
+    }
+
+    // Update previous messages reference
+    prevMessagesRef.current = [...messages];
   }, [messages]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+// font-serif font-sans font-mono
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar">
+    <div className="flex-1 overflow-y-auto custom-scrollbar italic">
       <div className="max-w-3xl mx-auto space-y-4 p-4">
-        {messages.map((message, index) => (
-          <MessageBubble
-            key={index}
-            message={message}
-            isDarkMode={isDarkMode}
-            userInitial={userInitial}
-            isLatestBotMessage={
-              message.sender === 'bot' &&
-              index === messages.findLastIndex(m => m.sender === 'bot')
-            }
-          />
-        ))}
+        {messages.length > 0 ? (
+          // If there are messages, display them
+          messages.map((message, index) => (
+            <MessageBubble
+              key={index}
+              message={message}
+              isDarkMode={isDarkMode}
+              userInitial={userInitial}
+              shouldShowTypingEffect={showTypingEffect && index === typingMessageIndex}
+            />
+          ))
+        ) : (
+          // If no messages, show welcome message with name
+          <div className="flex justify-start mb-4">
+            <BotAvatar isDarkMode={isDarkMode} />
+            <div
+              className={`max-w-[80%] rounded-lg p-3 mx-2 ${
+                isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+              }`}
+            >
+              <div>
+              <TbReportAnalytics />
+
+                </div>
+              <p className="text-sm whitespace-pre-wrap">
+                <TypingEffect text={`Hi ${name}, I am Dr.Chat 😊`} />
+              </p>
+            </div>
+          </div>
+        )}
 
         {isLoading && (
           <div className="flex justify-start">
-            <BotAvatar />
-            <div className="rounded-lg p-3 bg-white dark:bg-gray-800 shadow-md ml-2">
+            <BotAvatar isDarkMode={isDarkMode} />
+            <div className={`rounded-lg p-3 shadow-md ml-2 ${
+              isDarkMode ? "bg-gray-800" : "bg-white"
+            }`}>
               <div className="flex space-x-2">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-100"></div>

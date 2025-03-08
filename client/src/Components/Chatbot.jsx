@@ -8,15 +8,15 @@ import '../styles.css';
 import { v4 as uuidv4 } from "uuid";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
+import { TbReportAnalytics } from "react-icons/tb";
 
 export default function Chatbot() {
   const navigate = useNavigate();
   const {isDarkMode} = useContext(ThemeContext);
   const [inputValue, setInputValue] = useState("");
   const name = localStorage.getItem("Name") || "User";
-  const [messages, setMessages] = useState([
-    { text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }
-  ]);
+  // Start with an empty messages array
+  const [messages, setMessages] = useState([]);
 
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
@@ -24,20 +24,19 @@ export default function Chatbot() {
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [currentSessionTitle, setCurrentSessionTitle] = useState("New Chat");
+  const [isFirstMessageSent, setIsFirstMessageSent] = useState(false);
 
   useEffect(() => {
     const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
-    if (storedMessages) {
+    if (storedMessages && storedMessages.length > 0) {
       setMessages(storedMessages);
+      setIsFirstMessageSent(true);
     } else {
-      const name = localStorage.getItem("Name") || "User";
-      const initialMessage = [{ text: `Hi ${name}, I am MediBot 😊`, sender: "bot" }];
-      setMessages(initialMessage);
-      localStorage.setItem("chatMessages", JSON.stringify(initialMessage));
+      // Start with empty messages for new users
+      setMessages([]);
+      localStorage.setItem("chatMessages", JSON.stringify([]));
     }
   }, []);  // ✅ Runs only once when component mounts
-
-
 
   // Initialize session ID
   useEffect(() => {
@@ -96,6 +95,13 @@ export default function Chatbot() {
       return;
     }
 
+    // Add the welcome message if this is the first message in the conversation
+    if (!isFirstMessageSent) {
+      const welcomeMessage = { text: `Hi ${name}, I am Dr.Chat 😊`, sender: "bot" };
+      setMessages(prevMessages => [...prevMessages, welcomeMessage]);
+      setIsFirstMessageSent(true);
+    }
+
     const userMessage = { text: inputValue, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue("");
@@ -104,10 +110,10 @@ export default function Chatbot() {
 
     try {
       let currentTitle = currentSessionTitle;
-      if (currentSessionTitle === "New Chat" && messages.length === 1) {
+      if (currentSessionTitle === "New Chat" && messages.length <= 1) {
         currentTitle = inputValue.length > 30 ? inputValue.substring(0, 30) + "..." : inputValue;
         setCurrentSessionTitle(currentTitle);
-        localStorage.setItem("chatSessionTitle", currentTitle); // ✅ Store title
+        localStorage.setItem("chatSessionTitle", currentTitle);
       }
 
       const response = await fetch("http://127.0.0.1:8000/api/chatbot", {
@@ -126,11 +132,11 @@ export default function Chatbot() {
       }
 
       const data = await response.json();
-      const botMessage = { text: data.response, sender: "bot" }; // ✅ Defined inside try block
+      const botMessage = { text: data.response, sender: "bot" };
 
       setMessages(prevMessages => {
         const updatedMessages = [...prevMessages, botMessage];
-        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // ✅ Store messages
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
         return updatedMessages;
       });
 
@@ -142,25 +148,24 @@ export default function Chatbot() {
     }
   };
 
-
   // Function to start a new chat
   const handleRefreshChat = () => {
     const newSessionId = uuidv4();
     setSessionId(newSessionId);
     localStorage.setItem("chatSessionId", newSessionId);
 
-    const initialMessage = [{ text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }];
-    setMessages(initialMessage);
-    localStorage.setItem("chatMessages", JSON.stringify(initialMessage));  // ✅ Save messages
+    setMessages([]);
+    localStorage.setItem("chatMessages", JSON.stringify([]));
 
     setCurrentSessionTitle("New Chat");
     localStorage.setItem("chatSessionTitle", "New Chat");
+
+    setIsFirstMessageSent(false);
 
     if (showChatHistory) {
       setShowChatHistory(false);
     }
   };
-
 
   // Function to toggle chat history panel
   const handleToggleChatHistory = () => {
@@ -179,7 +184,7 @@ export default function Chatbot() {
 
     // Create a formatted text version of the chat
     const chatText = messages.map(msg =>
-      `${msg.sender === 'user' ? name : 'MediBot'}: ${msg.text}`
+      `${msg.sender === 'user' ? name : 'Dr.Chat'}: ${msg.text}`
     ).join('\n\n');
 
     // Use the Web Share API if available
@@ -209,8 +214,6 @@ export default function Chatbot() {
       // Update the session ID
       setSessionId(selectedSessionId);
       localStorage.setItem("chatSessionId", selectedSessionId);
-
-      // Find the chat in history to get its title
       const selectedChat = chatHistory.find(chat => chat.id === selectedSessionId);
       if (selectedChat) {
         setCurrentSessionTitle(selectedChat.title);
@@ -225,10 +228,12 @@ export default function Chatbot() {
           }));
 
       if (formattedMessages.length === 0) {
-        // If no messages, initialize with greeting
-        setMessages([{ text: "Hi " + name + ", I am MediBot 😊", sender: "bot" }]);
+        // If no messages, initialize with empty array but set isFirstMessageSent to false
+        setMessages([]);
+        setIsFirstMessageSent(false);
       } else {
         setMessages(formattedMessages);
+        setIsFirstMessageSent(true);
       }
 
       // Close chat history panel
@@ -253,47 +258,73 @@ export default function Chatbot() {
     navigate("/chatbot");
   };
 
+  const handleReport = async () => {
+    const formattedMessages = messages
+      .map(msg => `${msg.sender}: ${msg.text}`)
+      .join('\n');
+    console.log("Formatted messages:", formattedMessages);
+    try {
+      const response = await fetch("http://localhost:8000/api/chatreport", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messages: formattedMessages // ✅ Send it as a string
+        })
+      });
+
+      const data = await response.json();
+      console.log("Response from API:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+
+
   return (
-<div className={`min-h-screen flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-  <Sidebar
-    handleRefreshChat={handleRefreshChat}
-    handleToggleChatHistory={handleToggleChatHistory}
-    handleShareChat={handleShareChat}
-    isDarkMode={isDarkMode}
-    handleLogin={handleLogin}
-    showChatHistory={showChatHistory}
-    handleVoice={handleVoice}
-    handleChatbot={handleChatbot}
-  />
+    <div className={`min-h-screen flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+      <Sidebar
+        handleRefreshChat={handleRefreshChat}
+        handleToggleChatHistory={handleToggleChatHistory}
+        handleShareChat={handleShareChat}
+        isDarkMode={isDarkMode}
+        handleLogin={handleLogin}
+        showChatHistory={showChatHistory}
+        handleVoice={handleVoice}
+        handleChatbot={handleChatbot}
+      />
 
-  {showChatHistory && (
-    <ChatHistory
-      chatHistory={chatHistory}
-      loadChat={loadChat}
-      handleToggleChatHistory={handleToggleChatHistory}
-      currentSessionId={sessionId}
-      isDarkMode={isDarkMode}
-      handleRefreshChat={handleRefreshChat}
-    />
-  )}
+      {showChatHistory && (
+        <ChatHistory
+          chatHistory={chatHistory}
+          loadChat={loadChat}
+          handleToggleChatHistory={handleToggleChatHistory}
+          currentSessionId={sessionId}
+          isDarkMode={isDarkMode}
+          handleRefreshChat={handleRefreshChat}
+        />
+      )}
 
-<div className={`flex-1 flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-  <div className={`border-b p-3 text-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
-    <h2 className="font-medium">{currentSessionTitle || "New Chat"}</h2>
-  </div>
-
-
-    <div className="flex-1 overflow-y-auto custom-scrollbar">
-      <ChatMessages messages={messages} isLoading={isLoading} error={error} />
-    </div>
-
-    <ChatInput
-      handleSendMessage={handleSendMessage}
-      inputValue={inputValue}
-      setInputValue={setInputValue}
-      isLoading={isLoading}
-    />
-  </div>
+      <div className={`flex-1 flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+      <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
+  <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
+  <TbReportAnalytics onClick={handleReport} />
 </div>
-  )
+
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <ChatMessages messages={messages} isLoading={isLoading} error={error} />
+        </div>
+
+        <ChatInput
+          handleSendMessage={handleSendMessage}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          isLoading={isLoading}
+        />
+      </div>
+    </div>
+  );
 }

@@ -22,7 +22,7 @@ export default function Voice() {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-
+  console.log("Recognition:", recognition);
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");

@@ -262,6 +262,121 @@ def chat_bot():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/chatreport', methods=['POST'])
+def report():
+    # Print everything we receive to help debug
+    print("Received request at /api/chatreport")
+    print("Headers:", request.headers)
+    print("Request JSON:", request.json)
+    print("Data type:", type(request.json))
+
+    try:
+        # Get the data from the request
+        data = request.json
+
+        # Debug - print all keys in the request
+        print("Keys in request:", list(data.keys() if data else []))
+
+        # Extract messages with better error handling
+        messages = data.get("messages", "") if data else ""
+        print("Messages extracted:", messages)
+        print("Type of messages:", type(messages))
+        print("Length of messages:", len(messages) if messages else 0)
+
+        # Initialize variables
+        conversation_text = ""
+        message_count = 0
+
+        # Handle different formats of the messages field
+        if isinstance(messages, str):
+            # If messages is a string, use it directly
+            conversation_text = messages
+            message_count = 1 if messages.strip() else 0
+        elif isinstance(messages, list):
+            # If messages is a list, process each message
+            message_count = len(messages)
+            for message in messages:
+                if isinstance(message, dict):
+                    role = message.get("role", "")
+                    content = message.get("content", "")
+                    conversation_text += f"{role}: {content}\n"
+                else:
+                    # If message is not a dict, add it directly
+                    conversation_text += str(message) + "\n"
+        else:
+            # If messages is neither string nor list, convert to string
+            conversation_text = str(messages)
+            message_count = 1 if conversation_text.strip() else 0
+
+        print("Processed conversation text:", conversation_text)
+        print("Message count:", message_count)
+
+        # Default values
+        sentiment = "neutral"
+        summary = "No conversation content to analyze."
+
+        # List of models available on Groq
+        available_models = ["llama-3.1-8b-instant", "llama-3.1-70b", "gemma-7b-it"]
+        model_to_use = available_models[0]  # Use the first one by default
+
+        if conversation_text and conversation_text.strip():
+            print("Analyzing conversation...")
+            # Generate prompts for sentiment analysis and summarization
+            sentiment_prompt = f"Analyze the sentiment of the following text and classify it as positive, negative, or neutral:\n\n{conversation_text}"
+            summary_prompt = f"Provide a concise summary of the following text:\n\n{conversation_text}"
+
+            # Call the model for sentiment analysis
+            sentiment_response = client.chat.completions.create(
+                model=model_to_use,
+                messages=[
+                    {"role": "system", "content": "You are a sentiment analysis expert. Respond with only 'positive', 'negative', or 'neutral'."},
+                    {"role": "user", "content": sentiment_prompt}
+                ]
+            )
+            sentiment = sentiment_response.choices[0].message.content.strip().lower()
+            print("Sentiment detected:", sentiment)
+
+            # Ensure sentiment is one of the expected values
+            if sentiment not in ["positive", "negative", "neutral"]:
+                sentiment = "neutral"
+
+            # Call the model for summarization (using same model)
+            summary_response = client.chat.completions.create(
+                model=model_to_use,
+                messages=[
+                    {"role": "system", "content": "You are a text summarization expert. Provide a concise summary in 1-2 sentences."},
+                    {"role": "user", "content": summary_prompt}
+                ]
+            )
+            summary = summary_response.choices[0].message.content.strip()
+            print("Summary generated:", summary)
+        else:
+            print("No content to analyze")
+
+        # Prepare and return the result
+        result = {
+            "status": "processed",
+            "message_count": message_count,
+            "analysis": {
+                "sentiment": sentiment,
+                "summary": summary
+            }
+        }
+
+        print("Sending response:", result)
+        return jsonify(result)
+
+    except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        print("ERROR in /api/chatreport:", error_detail)
+
+        # Return detailed error for debugging
+        return jsonify({
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "traceback": error_detail
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

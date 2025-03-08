@@ -63,7 +63,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
       className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold
         ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}
     >
-      B
+      Dr
     </div>
 
 

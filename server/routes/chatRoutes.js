@@ -6,6 +6,8 @@ const Summary = require("../models/SummarizedHistory"); // Fixed import
 
 const router = express.Router();
 
+// Ensure this matches your actual model file
+
 
 router.post("/chatbot", async (req, res) => {
     try {
@@ -91,6 +93,29 @@ async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botRe
 
 module.exports = router;
 
+router.post("/chatreport", async (req, res) => {
+    console.log("chatreport endpoint hit");
+
+    try {
+        const { userId, sessionId, summary } = req.body;
+
+        // Sending data from Node.js (8000) to Python (5000)
+        const response = await axios.post("http://127.0.0.1:5000/api/chatreport", {
+            userId,
+            sessionId,
+            summary
+        });
+
+        console.log("Response from Python:", response.data);
+
+        // Send the Python response back to the client
+        res.status(200).json(response.data);
+
+    } catch (error) {
+        console.error("Error in chatreport:", error.message);
+        res.status(500).json({ error: "Failed to process chat report" });
+    }
+});
 
 router.get("/sessions", async (req, res) => {
     try {
