@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { RepeatIcon as ArrowRepeat, Newspaper, Share2, Moon, Sun, X } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { IoAccessibilitySharp } from "react-icons/io5";
@@ -18,14 +18,7 @@ export default function Voice() {
   const [isListening, setIsListening] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const videoRef = useRef(null);
-
-  const [chatHistory, setChatHistory] = useState([
-    { id: 1, title: "How to use React hooks", date: "Feb 20, 2025", preview: "I explained the basics of useState and useEffect..." },
-    { id: 2, title: "JavaScript array methods", date: "Feb 18, 2025", preview: "We discussed map, filter, reduce..." },
-    { id: 3, title: "CSS Grid tutorial", date: "Feb 15, 2025", preview: "I showed how to create responsive layouts..." },
-    { id: 4, title: "Coding best practices", date: "Feb 12, 2025", preview: "We talked about code organization..." },
-    { id: 5, title: "Python vs JavaScript", date: "Feb 10, 2025", preview: "I compared the syntax and use cases..." }
-  ]);
+  const [apiResponse, setApiResponse] = useState("");
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
@@ -76,16 +69,6 @@ export default function Voice() {
     };
   }
 
-  const handleRefreshChat = () => {
-    setMessages([{
-      text: "Hi, I'm Medi~ Ask me anything. I'm here to help! 😊",
-      sender: "bot"
-    }]);
-    setInputValue("");
-    setError(null);
-    setShowVideo(false);
-  };
-
   const handleSendMessage = async (textar) => {
     console.log("Textar:", textar);
     try {
@@ -105,6 +88,9 @@ export default function Voice() {
 
       const data = await response.json();
       console.log(data.response);
+
+      // Set the API response to display in the cloud
+      setApiResponse(data.response);
 
       // Hide any previous video before speaking
       setShowVideo(false);
@@ -136,50 +122,79 @@ export default function Voice() {
     }
   };
 
-  const handleToggleChatHistory = () => {
-    setShowChatHistory(!showChatHistory);
-  };
-
-  const handleShareChat = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert("Chat link copied to clipboard!");
-  };
-
-
   return (
-    <div className={`min-h-screen ${isDarkMode? "bg-gray-900" : "text-white" } flex`}>
+    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-white"} ${isDarkMode ? "text-white" : "text-gray-900"} flex`}>
+      {/* Left sidebar - Removed border */}
+      <aside className="w-64 h-screen flex-shrink-0">
+        <Sidebar />
+      </aside>
 
-      <Sidebar />
+      {/* Main content - split into two sections */}
+      <div className="flex-1 flex flex-row">
+        {/* Left section - Avatar/iframe */}
+        <div className="w-1/2 flex items-center justify-center">
+          <div className="w-full max-w-md flex items-center justify-center">
+            <iframe
+              src="https://my.spline.design/avatarcopy-6a59820ff247b7a3c68fd762797be041/"
+              width={500}
+              height={500}
+              frameBorder={0}
+              className="mx-auto"
+              allowFullScreen
+            />
+          </div>
+        </div>
 
-      {/* Microphone Button and Video */}
-      <div className="flex-1 flex flex-col items-center justify-center rounded-full">
-        {/* Video displayed when shown */}
-        {showVideo && (
-          <div className="mb-8 ml-15">
-            <div className="relative w-64 h-64">
-              <video
-                ref={videoRef}
-                className="h-50 w-50 rounded-full shadow-lg object-cover"
-                src={video} controls={false}
-                autoPlay
-                onEnded={() => setShowVideo(false)}
-                loop
-              />
+        {/* Right section - Response cloud and mic button */}
+        <div className="w-1/2 flex flex-col items-center justify-center p-6">
+          {/* Improved cloud-shaped response container */}
+          {apiResponse && (
+            <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
+              {/* Multiple cloud bumps to create more natural shape */}
+              <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 -left-2"></div>
+              <div className="absolute w-24 h-24 rounded-full bg-blue-50 -top-8 left-12"></div>
+              <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 left-32"></div>
+              <div className="absolute w-16 h-16 rounded-full bg-blue-50 -top-4 right-12"></div>
+              <div className="absolute w-12 h-12 rounded-full bg-blue-50 -top-2 right-2"></div>
+
+              {/* Response text */}
+              <p className="text-gray-800 text-center font-medium z-10 relative pt-4">
+                {apiResponse}
+              </p>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Microphone Button - Only show when video is not playing */}
-        {!showVideo && (
-          <div
-            className={`flex items-center justify-center h-16 w-16 rounded-full cursor-pointer ${
-              isClicked ? "bg-white text-blue-500" : "bg-transparent text-red-400"
-            }`}
-            onClick={handleMicClick}
-          >
-            <RiMic2Line size={50} />
+          {/* Placeholder when no response */}
+          {!apiResponse && (
+            <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
+              {/* Multiple cloud bumps to create more natural shape */}
+              <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 -left-2"></div>
+              <div className="absolute w-24 h-24 rounded-full bg-blue-50 -top-8 left-12"></div>
+              <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 left-32"></div>
+              <div className="absolute w-16 h-16 rounded-full bg-blue-50 -top-4 right-12"></div>
+              <div className="absolute w-12 h-12 rounded-full bg-blue-50 -top-2 right-2"></div>
+
+              <p className="text-gray-500 text-center font-medium z-10 relative pt-4">
+                Speak to start a conversation...
+              </p>
+            </div>
+          )}
+
+          {/* Microphone Button */}
+          <div className="mt-4">
+            <div
+              className={`flex items-center justify-center h-16 w-16 rounded-full cursor-pointer ${
+                isClicked ? "bg-white text-blue-500" : "bg-blue-500 text-white"
+              } shadow-lg mx-auto transition-all duration-200 hover:scale-110`}
+              onClick={handleMicClick}
+            >
+              <RiMic2Line size={30} />
+            </div>
+            <p className="mt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+              {isListening ? "Listening..." : "Click to speak"}
+            </p>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
