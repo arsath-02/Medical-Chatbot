@@ -40,7 +40,7 @@ const HomePage = () => {
       <header className='fixed top-0 left-0 w-full z-50'>
         <nav className={`border-gray-100 px-4 lg:px-6 py-2.5 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
           <div className='flex justify-between items-center mx-auto max-w-screen-xl'>
-            <span className={`text-xl font-semibold ${isDarkMode ? "text-white" : "text-gray-600"}`}>Dr. Chat</span>
+            <span className={`text-xl font-semibold ${isDarkMode ? "text-white" : "text-gray-600"}`}>🅓r. 𝙲𝚑𝚊𝚝</span>
             
             <div className='hidden lg:flex items-center space-x-8'>
               <ul className='flex space-x-6 font-medium'>
