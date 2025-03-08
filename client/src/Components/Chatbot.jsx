@@ -284,7 +284,7 @@ export default function Chatbot() {
 
 
   return (
-    <div className={`min-h-screen flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+    <div className={`min-h-screen italic flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Sidebar
         handleRefreshChat={handleRefreshChat}
         handleToggleChatHistory={handleToggleChatHistory}

@@ -30,7 +30,7 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
 
   return (
     <div
-      className={`w-64 border-r flex flex-col h-screen absolute left-16 z-10
+      className={`w-64 border-r flex italic flex-col h-screen absolute left-16 z-10
       ${isDarkMode ? "bg-gray-900 text-gray-200 border-gray-700" : "bg-white text-gray-900 border-gray-200"}`}
     >
       {/* Header */}

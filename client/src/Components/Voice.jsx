@@ -123,7 +123,7 @@ export default function Voice() {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-white"} ${isDarkMode ? "text-white" : "text-gray-900"} flex`}>
+    <div className={`min-h-screen italic ${isDarkMode ? "bg-gray-900" : "bg-white"} ${isDarkMode ? "text-white" : "text-gray-900"} flex`}>
       {/* Left sidebar - Removed border */}
       <aside className="w-64 h-screen flex-shrink-0">
         <Sidebar />

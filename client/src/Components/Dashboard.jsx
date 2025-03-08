@@ -443,7 +443,7 @@ export const ActivityComponent = () => {
 // Updated Main Dashboard Component
 const Dashboard = () => {
   return (
-    <div className="flex bg-gray-900 min-h-screen  overflow-y-auto custom-scrollbar">
+    <div className="flex italic bg-gray-900 min-h-screen  overflow-y-auto custom-scrollbar">
     {/* Sidebar */}
     <Sidebar />
 

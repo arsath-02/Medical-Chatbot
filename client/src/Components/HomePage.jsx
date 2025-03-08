@@ -151,7 +151,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="flex-1 custom-scrollbar">
+    <div className="flex-1 custom-scrollbar italic">
       <div className={`min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
         {/* Header/Navigation */}
         <header className='fixed top-0 left-0 w-full z-50'>

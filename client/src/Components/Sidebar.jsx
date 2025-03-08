@@ -55,7 +55,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
   return (
     <div
-      className={`fixed w-16 backdrop-blur-sm border-r flex flex-col items-center py-19 space-y-7 z-20
+      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-19 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
 

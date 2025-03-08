@@ -89,7 +89,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
   }
 
   return (
-    <div className={`border-t ${isDarkMode ? "bg-gray-900": "bg-white"} px-4 pb-7 pt-2`}>
+    <div className={`border-t ${isDarkMode ? "bg-gray-900": "bg-white"} px-4 pb-7 pt-2 italic`}>
       <div className="max-w-3xl mx-auto">
         <div className="relative">
           <div className={`absolute left-8 transition-all duration-500 ease-bounce ${
@@ -146,7 +146,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
                 <Play className="w-5 h-5 text-gray-200 dark:text-gray-400" />
               </button>
             </div>
-            
+
           </div>
         </div>
       </div>
