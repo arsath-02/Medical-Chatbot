@@ -12,31 +12,32 @@ const HomePage = () => {
     setIsDarkMode((prev) => !prev);
   };
 
-  const testimonials = [
+  const Developers = [
     {
-      name: "Alice Johnson",
-      position: "Product Manager",
-      feedback: "This tool has transformed the way we communicate with our users. Highly recommend!"
+      name: "Mohamed Arsath H",
+      position: "Backend Engineer",
+      feedback: "Passionate about building scalable and efficient backend systems."
     },
     {
-      name: "Bob Smith",
-      position: "Software Engineer",
-      feedback: "An incredible experience! The features are intuitive and user-friendly."
+      name: "Ragav R",
+      position: "Database Administrator",
+      feedback: "Ensuring data integrity and optimizing database performance."
     },
     {
-      name: "Catherine Lee",
-      position: "UX Designer",
-      feedback: "A game changer for our team. It has streamlined our workflow significantly."
+      name: "Mohammed Sameer B",
+      position: "Frontend Engineer",
+      feedback: "Crafting intuitive and visually engaging user interfaces."
     },
     {
-      name: "David Brown",
+      name: "Sherin Aamina I",
       position: "Marketing Specialist",
-      feedback: "Fantastic platform! It has helped us engage with our audience more effectively."
+      feedback: "Strategizing and executing impactful marketing campaigns."
     }
-  ];
+];
+
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
+    <div className={`min-h-screen overflow-hidden ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
       <header className='fixed top-0 left-0 w-full z-50'>
         <nav className={`border-gray-100 px-4 lg:px-6 py-2.5 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
           <div className='flex justify-between items-center mx-auto max-w-screen-xl'>
@@ -46,7 +47,7 @@ const HomePage = () => {
               <ul className='flex space-x-6 font-medium'>
                 <li><Link to="home" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Home</Link></li>
                 <li><Link to="features" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Features</Link></li>
-                <li><Link to="testimonials" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Testimonals</Link></li>
+                <li><Link to="developers" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Developers</Link></li>
                 <li><Link to="contact" smooth={true} duration={500} offset={-50} className='hover:text-gray-500 cursor-pointer'>Contact</Link></li>
               </ul>
             </div>
@@ -70,8 +71,8 @@ const HomePage = () => {
         </nav>
       </header>
 
-      <section id="home" className='py-20 md:py-28'>
-        <div className='container px-4 md:px-6'>
+      <section id="home" className='py-20 md:py-28 px-15'>
+        <div className='container px-4 md:px-30'>
           <div className='grid gap-6 lg:grid-cols-2 lg:gap-12 items-center'>
             <div className='flex flex-col justify-center space-y-4'>
               <div className='space-y-2'>
@@ -80,7 +81,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className={`mx-auto lg:mx-0 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "boredr-gray-200 bg-white"} p-4 shadow-lg lg:order-last`}>
-              <div className='flex flex-col h-[400px] w-full max-w-md'>
+              <div className='flex flex-col h-[400px] w-full max-w-md '>
                 <div className='p-3 border-b border-gray-200 dark:border-gray-800'>
                   <h3 className={`font-medium ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>Chat Preview</h3>
                 </div>
@@ -167,62 +168,77 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="testimonials" className={`py-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-  <div className="container px-4 md:px-6">
-    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-      <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
-        Testimonials
+      <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+  <div className="container mx-auto">
+    <div className="flex flex-col items-center justify-center space-y-2 text-center">
+      <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
+        Developers
       </h2>
-      <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400" : "text-gray-700"} md:text-xl`}>
-        Our chatbot combines advanced AI with thoughtful features to provide personalized support.
+      <p className={`max-w-[700px] text-sm sm:text-base md:text-lg ${isDarkMode ? "text-gray-400" : "text-gray-700"}`}>
+        Meet the team behind the innovation, dedicated to building seamless experiences.
       </p>
     </div>
-    <div className="px-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-8">
-      {testimonials.map((testimonial, index) => (
+    
+    {/* Adjusted spacing here */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-1 sm:gap-2 mt-4 place-items-center -mt-2">
+      {Developers.map((testimonial, index) => (
         <div
           key={index}
-          className={`flex flex-col items-center text-center p-6 rounded-lg border ${
+          className={`w-full max-w-[400px] flex flex-col items-center text-center p-3 sm:p-4 rounded-lg border ${
             isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"
           } shadow-sm transition-all hover:shadow-md`}
         >
-          <h3 className={`text-xl font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
+          <h3 className={`text-lg sm:text-xl font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
             {testimonial.name}
           </h3>
-          <h4 className={`text-md font-medium mb-2 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+          <h4 className={`text-sm sm:text-md font-medium mb-1 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
             {testimonial.position}
           </h4>
-          <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
+          <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
         </div>
       ))}
     </div>
   </div>
 </section>
 
-<section id='contact' className={`py-20 ${isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"}`}>
-  <div className='container px-4 md:px-6'>
-    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-      <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
-        Contact
-      </h2>
-      <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400" : "text-gray-700"} md:text-xl`}>
-        Our chatbot combines advanced AI with thoughtful features to provide personalized support.
+
+
+<section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+  <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center md:items-start">
+    {/* Left Side - Branding */}
+    <div className="text-center md:text-left mb-6 md:mb-0 px-8">
+      <h2 className="text-2xl font-bold">🅓r. 𝙲𝚑𝚊𝚝</h2>
+      <p className="text-gray-400">Your companion for emotional support and mental wellbeing.</p>
+      <p className="text-gray-400">
+        Mail us at <a href="mailto:drchat@gmail.com" className={` ${isDarkMode ? "text-gray-200" : "text-gray-600"} hover:underline`}>drchat@gmail.com</a>
       </p>
     </div>
-    <div className='py-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto'>
-      {[
-        { title: "Email", icon: "✉", info: "hello@teleporthq.io" },
-        { title: "Phone", icon: "📞", info: "+1 (555) 000-0000" },
-        { title: "Office", icon: "📍", info: "456 Test Ave, Bucharest" }
-      ].map((item, index) => (
-        <div key={index} className={`text-center p-6 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} shadow-md`}>
-          <div className='text-3xl mb-4'>{item.icon}</div>
-          <h3 className={`text-xl font-semibold mb-2`}>{item.title}</h3>
-          <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{item.info}</p>
-        </div>
-      ))}
+
+
+    {/* Right Side - Links */}
+    <div className="flex flex-row space-x-12">
+      <div>
+        <h3 className="text-lg font-semibold">Links</h3>
+        <ul className="text-gray-400 space-y-1">
+          <li><a href="">LinkedIn</a></li>
+          <li><a href="">Github</a></li>
+        </ul>
+      </div>
+
     </div>
   </div>
+
+  {/* Footer */}
+  <div className="text-center text-gray-500 mt-8 text-sm">
+    © 2025 Dr. Chat. All rights reserved.
+  </div>
 </section>
+
+
+
+
+
+
     </div>
   );
 };
