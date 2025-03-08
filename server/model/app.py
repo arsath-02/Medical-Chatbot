@@ -215,5 +215,53 @@ def chatbot():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
+
+@app.route('/chat', methods=['POST'])
+def chatbot():
+    print("Received message:", request.json)
+    print("Headers:", request.headers)
+    data = request.json
+    user_message = data.get("message", "")
+
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
+
+    try:
+        user_message_english = user_message
+
+        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
+
+        conversation_history = memory_context.get("buffer", "")
+
+        prompt = PROMPT_TEMPLATE.format(
+            history=conversation_history,
+            user_input=user_message_english
+        )
+
+
+        response = client.chat.completions.create(
+            model="qwen-2.5-32b",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": user_message_english}
+            ]
+        )
+
+        chatbot_response_english = response.choices[0].message.content.strip().split('\n')[:2]
+        concise_response = ' '.join(chatbot_response_english)
+
+        memory.save_context(
+            inputs={"user_input": user_message_english},
+            outputs={"response": concise_response}
+        )
+
+        return jsonify({"response": concise_response})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
