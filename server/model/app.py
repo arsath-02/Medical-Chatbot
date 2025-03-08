@@ -219,7 +219,7 @@ def chatbot():
 
 
 @app.route('/chat', methods=['POST'])
-def chatbot():
+def chat_bot():
     print("Received message:", request.json)
     print("Headers:", request.headers)
     data = request.json

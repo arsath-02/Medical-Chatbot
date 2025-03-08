@@ -5,9 +5,8 @@ const Session = require("../models/session");
 const Summary = require("../models/SummarizedHistory"); // Fixed import
 
 const router = express.Router();
-// Ensure this matches your actual model file
 
-// Modify chatbot handler
+
 router.post("/chatbot", async (req, res) => {
     try {
         const { userId, message, sessionId, title } = req.body;
@@ -15,8 +14,6 @@ router.post("/chatbot", async (req, res) => {
         if (!userId || !message || !sessionId) {
             return res.status(400).json({ error: "Missing required fields" });
         }
-
-        console.log("Received message:", { userId, message });
 
         let chat = await Chat.findOne({ sessionId, userId });
         if (!chat) {
@@ -53,6 +50,7 @@ router.post("/chatbot", async (req, res) => {
 
         console.log("Sending payload to Python:", modelPayload);
 
+        // Send payload to the Python model
         const modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
 
         const botMessage = {
@@ -64,11 +62,14 @@ router.post("/chatbot", async (req, res) => {
         chat.messages.push(botMessage);
         await chat.save();
 
-        if (modelResponse.data.summarized_history) {
-            await saveSummarizedHistory(userId, sessionId, modelResponse.data.summarized_history, botMessage.text);
-        }
-
+        // Return the bot's response immediately
         res.json({ sessionId, response: botMessage.text });
+
+        // Save summarized history asynchronously (doesn't block the response)
+        if (modelResponse.data.summarized_history) {
+            saveSummarizedHistory(userId, sessionId, modelResponse.data.summarized_history, botMessage.text)
+                .catch(err => console.error("Error saving summary:", err));
+        }
 
     } catch (error) {
         console.error("Chat API Error:", error.message || error);
@@ -76,6 +77,7 @@ router.post("/chatbot", async (req, res) => {
     }
 });
 
+// Async Summary Saving Function
 async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botResponse) {
     const summaryDoc = new Summary({
         userId,
@@ -87,6 +89,7 @@ async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botRe
     await summaryDoc.save();
 }
 
+module.exports = router;
 
 
 router.get("/sessions", async (req, res) => {
