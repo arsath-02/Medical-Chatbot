@@ -16,46 +16,43 @@ router.post("/chatbot", async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        console.log("Received message from user:", userId, message);
+        console.log("Received message:", { userId, message });
 
-        // Find or create chat document
         let chat = await Chat.findOne({ sessionId, userId });
         if (!chat) {
             chat = new Chat({ sessionId, userId, messages: [] });
         }
 
-        // Find or create session document
         let session = await Session.findOne({ sessionId, userId });
         if (!session) {
             session = new Session({
                 sessionId,
                 userId,
                 title: title || "New Chat",
-                preview: message.length > 50 ? message.substring(0, 50) + "..." : message,
+                preview: message.slice(0, 50) + (message.length > 50 ? "..." : "")
             });
             await session.save();
         } else if (title && session.title === "New Chat") {
             session.title = title;
-            session.preview = message.length > 50 ? message.substring(0, 50) + "..." : message;
+            session.preview = message.slice(0, 50) + (message.length > 50 ? "..." : "");
             session.lastUpdated = new Date();
             await session.save();
         }
 
-        // Save user message into chat history
         chat.messages.push({ text: message, sender: "user", timestamp: new Date() });
         await chat.save();
 
-        // 🔥 Fetch the latest summarized history for this user-session (if available)
         const latestSummary = await Summary.findOne({ userId, sessionId }).sort({ timestamp: -1 });
 
-        // Prepare the payload for the Python model
         const modelPayload = {
-            message,          // Latest user message
-            user_id: userId,   // User ID for memory tracking
-            history_summary: latestSummary ? latestSummary.summary : ""  // Pass summarized history if exists
+            message,
+            user_id: userId,
+            sessionId,
+            history_summary: latestSummary ? latestSummary.summarizedHistory : ""
         };
 
-        // Send data to Python backend
+        console.log("Sending payload to Python:", modelPayload);
+
         const modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
 
         const botMessage = {
@@ -64,11 +61,9 @@ router.post("/chatbot", async (req, res) => {
             timestamp: new Date()
         };
 
-        // Save bot response into chat history
         chat.messages.push(botMessage);
         await chat.save();
 
-        // Save summarized history from Flask response (if provided)
         if (modelResponse.data.summarized_history) {
             await saveSummarizedHistory(userId, sessionId, modelResponse.data.summarized_history, botMessage.text);
         }
@@ -76,12 +71,10 @@ router.post("/chatbot", async (req, res) => {
         res.json({ sessionId, response: botMessage.text });
 
     } catch (error) {
-        console.error("Chat API Error:", error);
+        console.error("Chat API Error:", error.message || error);
         res.status(500).json({ error: "Failed to process chat" });
     }
 });
-
-
 
 async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botResponse) {
     const summaryDoc = new Summary({
@@ -91,9 +84,10 @@ async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botRe
         botResponse,
         timestamp: new Date(),
     });
-
     await summaryDoc.save();
 }
+
+
 
 router.get("/sessions", async (req, res) => {
     try {

@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const chatRoutes = require('./routes/chatRoutes');
-const SaveSummary= require('./routes/save-summary');
+const SaveSummary= require('./routes/saveSummary');
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 // Use Routes
 app.use('/api', chatRoutes);
-app.use('/api', SaveSummary);
+app.use('/api',SaveSummary);
 // Database Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

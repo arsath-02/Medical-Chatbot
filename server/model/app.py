@@ -6,17 +6,20 @@ import os
 from deep_translator import GoogleTranslator
 from langdetect import detect
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
+
 app = Flask(__name__)
 CORS(app)
 
 load_dotenv()
 
-translate= GoogleTranslator()
-
+translate = GoogleTranslator()
 
 client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+memory = ConversationBufferMemory(memory_key="history")
 
 PROMPT_TEMPLATE = """
+Your name is Dr.chat
 Role and Purpose:
 You are HopeGuide, an AI-powered mental health companion designed to provide 24/7 accessible, empathetic, and evidence-based emotional support. Your primary purpose is to:
 
@@ -149,16 +152,14 @@ If not, [CRISIS_TEXT_LINE] has trained listeners available now."
 Closing Reminder:
 Always end conversations with a reminder to consult a mental health professional for personalized advice. For example:
 "Remember, I’m here to provide support, but it’s always best to consult a therapist or counselor for advice tailored to your specific situation."
+{history}
+User: {user_input}
+AI:
 """
-
-
-
-
-memory = ConversationBufferMemory()
 
 @app.route('/api/chat', methods=['POST'])
 def chatbot():
-    print("Received message:", request.json)  # Add this line
+    print("Received message:", request.json)
     print("Headers:", request.headers)
     data = request.json
     user_message = data.get("message", "")
@@ -177,11 +178,16 @@ def chatbot():
         else:
             user_message_english = user_message
 
+        # Load memory context
+        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
 
-        memory_context=memory.load_memory_variables(inputs=user_message_english)
-        prompt=PROMPT_TEMPLATE.format(
-            history=memory_context.get("history", "")
+        # Format the prompt with context and message
+        prompt = PROMPT_TEMPLATE.format(
+            history=memory_context.get("history", ""),
+            user_input=user_message_english
         )
+
+        # Generate response
         response = client.chat.completions.create(
             model="qwen-2.5-32b",
             messages=[
@@ -192,11 +198,15 @@ def chatbot():
 
         chatbot_response_english = response.choices[0].message.content
 
+        # Save conversation to memory
+        memory.save_context(
+            inputs={"user_input": user_message_english},
+            outputs={"response": chatbot_response_english}
+        )
 
         if needs_translation_back:
             chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
             tanglish_response = chatbot_response.replace(" ", " ")
-
         else:
             tanglish_response = chatbot_response_english
 
@@ -204,7 +214,6 @@ def chatbot():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
