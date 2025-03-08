@@ -38,6 +38,7 @@ router.post("/chatbot", async (req, res) => {
             await session.save();
         }
 
+        // Append the new message securely
         chat.messages.push({ text: message, sender: "user", timestamp: new Date() });
         await chat.save();
 
@@ -52,11 +53,19 @@ router.post("/chatbot", async (req, res) => {
 
         console.log("Sending payload to Python:", modelPayload);
 
-        // Send payload to the Python model
-        const modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
+        // Improved error handling for Python model response
+        let modelResponse;
+        try {
+            modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
+        } catch (modelError) {
+            console.error("Model API Error:", modelError.response?.data || modelError.message);
+            return res.status(500).json({ error: "Failed to process chatbot response" });
+        }
+
+        const botMessageText = modelResponse.data.response || "I'm not sure how to respond to that right now.";
 
         const botMessage = {
-            text: modelResponse.data.response,
+            text: botMessageText,
             sender: "bot",
             timestamp: new Date()
         };
@@ -67,7 +76,7 @@ router.post("/chatbot", async (req, res) => {
         // Return the bot's response immediately
         res.json({ sessionId, response: botMessage.text });
 
-        // Save summarized history asynchronously (doesn't block the response)
+        // Save summarized history asynchronously
         if (modelResponse.data.summarized_history) {
             saveSummarizedHistory(userId, sessionId, modelResponse.data.summarized_history, botMessage.text)
                 .catch(err => console.error("Error saving summary:", err));
@@ -90,8 +99,6 @@ async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botRe
     });
     await summaryDoc.save();
 }
-
-module.exports = router;
 
 router.post("/chatreport", async (req, res) => {
     console.log("chatreport endpoint hit");

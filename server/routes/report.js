@@ -4,9 +4,6 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const ChatReport=require('../models/chatReport')
 
-// MongoDB Model Setup
-
-// Route for Analyzing and Storing Conversation
 router.post('/analyze', async (req, res) => {
   const { userId, sessionId, messages } = req.body;
 
@@ -45,5 +42,4 @@ router.post('/analyze', async (req, res) => {
       res.status(500).json({ success: false, error: error.response?.data || error.message });
   }
 });
-
 module.exports = router;

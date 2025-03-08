@@ -163,9 +163,10 @@ def chatbot():
     print("Headers:", request.headers)
     data = request.json
     user_message = data.get("message", "")
+    session_id = data.get("session_id", "")
 
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+    if not user_message or not session_id:
+        return jsonify({"error": "Message or Session ID missing"}), 400
 
     try:
         # Detect language
@@ -178,12 +179,17 @@ def chatbot():
         else:
             user_message_english = user_message
 
-        # Load memory context
-        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
+        # Load session-specific history
+        session_history = memory.load_session_memory(session_id=session_id)
 
-        # Format the prompt with context and message
+        # Format the history by joining messages in conversation flow
+        previous_messages = "\n".join(
+            [f"{msg['sender']}: {msg['text']}" for msg in session_history.get("messages", [])]
+        )
+
+        # Format the prompt with session-specific history
         prompt = PROMPT_TEMPLATE.format(
-            history=memory_context.get("history", ""),
+            history=previous_messages,
             user_input=user_message_english
         )
 
@@ -198,10 +204,23 @@ def chatbot():
 
         chatbot_response_english = response.choices[0].message.content
 
-        # Save conversation to memory
-        memory.save_context(
-            inputs={"user_input": user_message_english},
-            outputs={"response": chatbot_response_english}
+        # Save conversation in session-specific memory
+        new_message = {
+            "sender": "user",
+            "text": user_message_english,
+            "timestamp": str(datetime.now())
+        }
+
+        bot_response = {
+            "sender": "bot",
+            "text": chatbot_response_english,
+            "timestamp": str(datetime.now())
+        }
+
+        memory.save_session_context(
+            session_id=session_id,
+            inputs=new_message,
+            outputs=bot_response
         )
 
         if needs_translation_back:
@@ -214,8 +233,6 @@ def chatbot():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 
 
 @app.route('/chat', methods=['POST'])
@@ -262,54 +279,32 @@ def chat_bot():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
 @app.route('/api/chatreport', methods=['POST'])
 def report():
-    # Print everything we receive to help debug
-    print("Received request at /api/chatreport")
-    print("Headers:", request.headers)
-    print("Request JSON:", request.json)
-    print("Data type:", type(request.json))
-
     try:
         # Get the data from the request
         data = request.json
-
-        # Debug - print all keys in the request
-        print("Keys in request:", list(data.keys() if data else []))
-
-        # Extract messages with better error handling
-        messages = data.get("messages", "") if data else ""
-        print("Messages extracted:", messages)
-        print("Type of messages:", type(messages))
-        print("Length of messages:", len(messages) if messages else 0)
+        messages = data.get("messages", [])
 
         # Initialize variables
         conversation_text = ""
         message_count = 0
+        positive_count = 0
+        negative_count = 0
+        neutral_count = 0
 
-        # Handle different formats of the messages field
-        if isinstance(messages, str):
-            # If messages is a string, use it directly
-            conversation_text = messages
-            message_count = 1 if messages.strip() else 0
-        elif isinstance(messages, list):
-            # If messages is a list, process each message
+        # Process messages
+        if isinstance(messages, list):
             message_count = len(messages)
-            for message in messages:
-                if isinstance(message, dict):
-                    role = message.get("role", "")
-                    content = message.get("content", "")
-                    conversation_text += f"{role}: {content}\n"
-                else:
-                    # If message is not a dict, add it directly
-                    conversation_text += str(message) + "\n"
-        else:
-            # If messages is neither string nor list, convert to string
-            conversation_text = str(messages)
-            message_count = 1 if conversation_text.strip() else 0
-
-        print("Processed conversation text:", conversation_text)
-        print("Message count:", message_count)
+            conversation_text = "\n".join(
+                f"{msg.get('role', '')}: {msg.get('content', '')}" if isinstance(msg, dict) else str(msg)
+                for msg in messages
+            )
+        elif isinstance(messages, str):
+            conversation_text = messages.strip()
+            message_count = 1 if conversation_text else 0
 
         # Default values
         sentiment = "neutral"
@@ -317,41 +312,48 @@ def report():
 
         # List of models available on Groq
         available_models = ["llama-3.1-8b-instant", "llama-3.1-70b", "gemma-7b-it"]
-        model_to_use = available_models[0]  # Use the first one by default
+        model_to_use = available_models[0]
 
-        if conversation_text and conversation_text.strip():
+        if conversation_text:
             print("Analyzing conversation...")
-            # Generate prompts for sentiment analysis and summarization
-            sentiment_prompt = f"Analyze the sentiment of the following text and classify it as positive, negative, or neutral:\n\n{conversation_text}"
-            summary_prompt = f"Provide a concise summary of the following text:\n\n{conversation_text}"
 
-            # Call the model for sentiment analysis
-            sentiment_response = client.chat.completions.create(
-                model=model_to_use,
-                messages=[
-                    {"role": "system", "content": "You are a sentiment analysis expert. Respond with only 'positive', 'negative', or 'neutral'."},
-                    {"role": "user", "content": sentiment_prompt}
-                ]
+            # Sentiment Analysis for Each Message
+            for message in messages:
+                message_content = message.get('content', '') if isinstance(message, dict) else str(message)
+
+                sentiment_prompt = (
+                    f"Analyze the sentiment of the following text and classify it as positive, negative, or neutral:\n\n{message_content}"
+                )
+
+                sentiment_response = client.chat.completions.create(
+                    model=model_to_use,
+                    messages=[
+                        {"role": "system", "content": "You are a sentiment analysis expert. Respond with only 'positive', 'negative', or 'neutral'."},
+                        {"role": "user", "content": sentiment_prompt}
+                    ]
+                )
+                detected_sentiment = sentiment_response.choices[0].message.content.strip().lower()
+
+                if detected_sentiment == "positive":
+                    positive_count += 1
+                elif detected_sentiment == "negative":
+                    negative_count += 1
+                elif detected_sentiment == "neutral":
+                    neutral_count += 1
+
+            # Summarization
+            summary_prompt = (
+                f"Summarize the following conversation in 2-3 sentences. "
+                f"Include the total number of messages in the summary. Total messages: {message_count}\n\n{conversation_text}"
             )
-            sentiment = sentiment_response.choices[0].message.content.strip().lower()
-            print("Sentiment detected:", sentiment)
-
-            # Ensure sentiment is one of the expected values
-            if sentiment not in ["positive", "negative", "neutral"]:
-                sentiment = "neutral"
-
-            # Call the model for summarization (using same model)
             summary_response = client.chat.completions.create(
                 model=model_to_use,
                 messages=[
-                    {"role": "system", "content": "You are a text summarization expert. Provide a concise summary in 1-2 sentences."},
+                    {"role": "system", "content": "You are a text summarization expert. Provide a concise summary including the total message count."},
                     {"role": "user", "content": summary_prompt}
                 ]
             )
             summary = summary_response.choices[0].message.content.strip()
-            print("Summary generated:", summary)
-        else:
-            print("No content to analyze")
 
         # Prepare and return the result
         result = {
@@ -359,7 +361,10 @@ def report():
             "message_count": message_count,
             "analysis": {
                 "sentiment": sentiment,
-                "summary": summary
+                "summary": summary,
+                "positive_count": positive_count,
+                "negative_count": negative_count,
+                "neutral_count": neutral_count
             }
         }
 
@@ -371,7 +376,6 @@ def report():
         error_detail = traceback.format_exc()
         print("ERROR in /api/chatreport:", error_detail)
 
-        # Return detailed error for debugging
         return jsonify({
             "error": str(e),
             "error_type": type(e).__name__,
