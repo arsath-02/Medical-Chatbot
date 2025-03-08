@@ -39,8 +39,21 @@ const BotAvatar = ({ isDarkMode }) => (
 
 
 const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage }) => {
+  const [showTypingEffect, setShowTypingEffect] = useState(isLatestBotMessage && message.sender === "bot");
+
   console.log("isDarkMode:", isDarkMode);
   if (!message || !message.sender || !message.text) return null;
+
+  useEffect(() => {
+    if (showTypingEffect) {
+      const timer = setTimeout(() => {
+        setShowTypingEffect(false);
+      }, message.text.length * 20 + 100); // Adding a small buffer
+
+      return () => clearTimeout(timer);
+    }
+  }, [showTypingEffect, message.text]);
+
 
   return (
     <div className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
@@ -69,7 +82,6 @@ const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage })
     </div>
   );
 };
-
 
 export default function ChatMessages({ messages, isLoading, error }) {
   const messagesEndRef = useRef(null);

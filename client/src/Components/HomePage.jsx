@@ -168,53 +168,61 @@ const HomePage = () => {
       </section>
 
       <section id="testimonials" className={`py-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
-            Testimonials
-          </h2>
-          <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400":"text-gray-700"} md:text-xl`}>
-            Our chatbot combines advanced AI with thoughtful features to provide personalized support.
-          </p>
+  <div className="container px-4 md:px-6">
+    <div className="flex flex-col items-center justify-center space-y-4 text-center">
+      <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
+        Testimonials
+      </h2>
+      <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400" : "text-gray-700"} md:text-xl`}>
+        Our chatbot combines advanced AI with thoughtful features to provide personalized support.
+      </p>
+    </div>
+    <div className="px-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-8">
+      {testimonials.map((testimonial, index) => (
+        <div
+          key={index}
+          className={`flex flex-col items-center text-center p-6 rounded-lg border ${
+            isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"
+          } shadow-sm transition-all hover:shadow-md`}
+        >
+          <h3 className={`text-xl font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
+            {testimonial.name}
+          </h3>
+          <h4 className={`text-md font-medium mb-2 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+            {testimonial.position}
+          </h4>
+          <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
         </div>
-        <div className="px-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-8">
-          {testimonials.map((testimonial, index) => (
-             <div key={index} className={`flex flex-col items-center text-center p-6 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} shadow-sm transition-all hover:shadow-md`}>
-             <h3 className={`text-xl font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>{testimonial.name}</h3>
-             <h4 className={`text-md font-medium mb-2 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.position}</h4>
-             <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
-           </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      ))}
+    </div>
+  </div>
+</section>
 
-    <section id='contact' className={`py-20 ${isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"}`}>
-      <div className='container px-4 md:px-6'>
-      <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
-            Contact
-          </h2>
-          <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400":"text-gray-700"} md:text-xl`}>
-            Our chatbot combines advanced AI with thoughtful features to provide personalized support.
-          </p>
+<section id='contact' className={`py-20 ${isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"}`}>
+  <div className='container px-4 md:px-6'>
+    <div className="flex flex-col items-center justify-center space-y-4 text-center">
+      <h2 className={`text-3xl font-bold tracking-tighter md:text-4xl ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
+        Contact
+      </h2>
+      <p className={`max-w-[700px] ${isDarkMode ? "text-gray-400" : "text-gray-700"} md:text-xl`}>
+        Our chatbot combines advanced AI with thoughtful features to provide personalized support.
+      </p>
+    </div>
+    <div className='py-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto'>
+      {[
+        { title: "Email", icon: "✉", info: "hello@teleporthq.io" },
+        { title: "Phone", icon: "📞", info: "+1 (555) 000-0000" },
+        { title: "Office", icon: "📍", info: "456 Test Ave, Bucharest" }
+      ].map((item, index) => (
+        <div key={index} className={`text-center p-6 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} shadow-md`}>
+          <div className='text-3xl mb-4'>{item.icon}</div>
+          <h3 className={`text-xl font-semibold mb-2`}>{item.title}</h3>
+          <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{item.info}</p>
         </div>
-
-        <div className='py-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto'>
-          {[
-            { title: "Email", icon: "✉", info: "hello@teleporthq.io" },
-            { title: "Phone", icon: "📞", info: "+1 (555) 000-0000" },
-            { title: "Office", icon: "📍", info: "456 Test Ave, Bucharest" }
-          ].map((item, index) => (
-            <div key={index} className={`text-center p-6 rounded-lg border ${isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"} shadow-md`}>
-              <div className='text-3xl mb-4'>{item.icon}</div>
-              <h3 className={`text-xl font-semibold mb-2 `}>{item.title}</h3>
-              <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{item.info}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      ))}
+    </div>
+  </div>
+</section>
     </div>
   );
 };
