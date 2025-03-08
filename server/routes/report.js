@@ -1,50 +1,48 @@
-const express = require("express");
-const axios = require("axios");
+const express = require('express');
 const router = express.Router();
-// In your Node.js router file
-router.post("/chatreport", async (req, res) => {
-  console.log("Chat Report API hit");
-  console.log("Request body:", JSON.stringify(req.body));
+const axios = require('axios');
+const mongoose = require('mongoose');
+const ChatReport=require('../models/chatReport')
+
+// MongoDB Model Setup
+
+// Route for Analyzing and Storing Conversation
+router.post('/analyze', async (req, res) => {
+  const { userId, sessionId, messages } = req.body;
+
+  if (!sessionId) {
+      return res.status(400).json({ success: false, error: 'Session ID is required' });
+  }
 
   try {
-    const { messages } = req.body;
-    console.log("Messages received:", messages);
-    console.log("Type of messages:", typeof messages);
-    console.log("Length of messages:", messages ? messages.length : 0);
+      const response = await axios.post('http://127.0.0.1:5000/api/chatreport', { messages });
+      const result = response.data;
 
-    // Check if messages is defined and is a string
-    if (!messages || typeof messages !== 'string') {
-      return res.status(400).json({
-        error: "Invalid request format. Expected 'messages' as a string in request body."
-      });
-    }
+      if (result.status === 'processed') {
+          await ChatReport.deleteMany({ sessionId });
 
-    const dataToSend = { messages: messages };
-    console.log("Sending to Python backend:", JSON.stringify(dataToSend));
+          const reportData = {
+              userId,
+              sessionId,
+              timestamp: new Date(),
+              message_count: result.message_count,
+              sentiment: result.analysis.sentiment,
+              summary: result.analysis.summary,
+              positive_count: result.analysis.positive_count || 0,
+              negative_count: result.analysis.negative_count || 0,
+              neutral_count: result.analysis.neutral_count || 0
+          };
 
-    // Send request to Python backend
-    const response = await axios.post(
-      "http://localhost:5000/api/chatreport",
-      dataToSend,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+          const chatReport = new ChatReport(reportData);
+          await chatReport.save();
+
+          res.status(200).json({ success: true, chatReport });
+      } else {
+          res.status(500).json({ success: false, error: 'Error in analysis', details: result });
       }
-    );
-
-    console.log("Response from Python:", response.data);
-    res.status(200).json(response.data);
   } catch (error) {
-    console.error("Error:", error.message);
-    if (error.response) {
-      console.error("Response error data:", error.response.data);
-      console.error("Response error status:", error.response.status);
-    }
-    res.status(500).json({
-      error: "Something went wrong",
-      details: error.message
-    });
+      console.error('Error during analysis:', error);
+      res.status(500).json({ success: false, error: error.response?.data || error.message });
   }
 });
 

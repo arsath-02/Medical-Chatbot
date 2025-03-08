@@ -262,25 +262,35 @@ export default function Chatbot() {
     const formattedMessages = messages
       .map(msg => `${msg.sender}: ${msg.text}`)
       .join('\n');
-    console.log("Formatted messages:", formattedMessages);
+  
+    const userId = localStorage.getItem("Email");  // ✅ Corrected to match the rest of the code
+    const sessionId = localStorage.getItem("chatSessionId");
+  
+    if (!userId || !sessionId) {
+      console.error("User ID or Session ID not found in localStorage.");
+      return;
+    }
+  
     try {
-      const response = await fetch("http://localhost:8000/api/chatreport", {
+      const response = await fetch("http://localhost:8000/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          messages: formattedMessages // ✅ Send it as a string
+          userId,
+          sessionId,
+          messages: formattedMessages
         })
       });
-
+  
       const data = await response.json();
       console.log("Response from API:", data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
+  
 
 
   return (
@@ -310,7 +320,7 @@ export default function Chatbot() {
       <div className={`flex-1 flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
   <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
-  <TbReportAnalytics onClick={handleReport} />
+  <TbReportAnalytics onClick={handleReport} size={25}/>
 </div>
 
 
