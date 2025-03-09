@@ -10,43 +10,42 @@ import FitbitLogin from "./Components/FitbitLogin";
 import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
+import { AuthProvider } from "./UserContext";  // Correct import
+
 function App() {
-  const [user, setUser] = useState(null); // Track logged-in user
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const auth = getAuth();
-
-    // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        localStorage.setItem("userId", user.uid); // Store UID in localStorage
+        localStorage.setItem("userId", user.uid);
       } else {
         setUser(null);
-        localStorage.removeItem("userId"); // Remove UID when logged out
+        localStorage.removeItem("userId");
       }
     });
 
-    return () => unsubscribe(); // Cleanup listener on component unmount
+    return () => unsubscribe();
   }, []);
 
   return (
-    <div>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/chatbot" element={ <Chatbot />} />
-          <Route path="/voice" element={<Voice />}/>
-          <Route path="/" element={<HomePage />}/>
-          <Route path="/login" element={<Login />} />
+          <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/voice" element={<Voice />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/FitbitLogin" element={<FitbitLogin />} />
-         <Route path="/callback" element={<FitbitCallback />} />
-         <Route path="/dashboard" element={<Dashboard />} />
-         <Route path="/game-selector" element={<GameSelector />} />
+          <Route path="/callback" element={<FitbitCallback />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/game-selector" element={<GameSelector />} />
         </Routes>
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 

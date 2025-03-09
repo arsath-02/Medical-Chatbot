@@ -7,7 +7,12 @@ from deep_translator import GoogleTranslator
 from langdetect import detect
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-
+from transformers import pipeline
+import torch
+import traceback
+import nltk
+from nltk.tokenize import sent_tokenize
+import re
 app = Flask(__name__)
 CORS(app)
 
@@ -163,10 +168,9 @@ def chatbot():
     print("Headers:", request.headers)
     data = request.json
     user_message = data.get("message", "")
-    session_id = data.get("session_id", "")
 
-    if not user_message or not session_id:
-        return jsonify({"error": "Message or Session ID missing"}), 400
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
 
     try:
         # Detect language
@@ -179,17 +183,12 @@ def chatbot():
         else:
             user_message_english = user_message
 
-        # Load session-specific history
-        session_history = memory.load_session_memory(session_id=session_id)
+        # Load memory context
+        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
 
-        # Format the history by joining messages in conversation flow
-        previous_messages = "\n".join(
-            [f"{msg['sender']}: {msg['text']}" for msg in session_history.get("messages", [])]
-        )
-
-        # Format the prompt with session-specific history
+        # Format the prompt with context and message
         prompt = PROMPT_TEMPLATE.format(
-            history=previous_messages,
+            history=memory_context.get("history", ""),
             user_input=user_message_english
         )
 
@@ -204,23 +203,10 @@ def chatbot():
 
         chatbot_response_english = response.choices[0].message.content
 
-        # Save conversation in session-specific memory
-        new_message = {
-            "sender": "user",
-            "text": user_message_english,
-            "timestamp": str(datetime.now())
-        }
-
-        bot_response = {
-            "sender": "bot",
-            "text": chatbot_response_english,
-            "timestamp": str(datetime.now())
-        }
-
-        memory.save_session_context(
-            session_id=session_id,
-            inputs=new_message,
-            outputs=bot_response
+        # Save conversation to memory
+        memory.save_context(
+            inputs={"user_input": user_message_english},
+            outputs={"response": chatbot_response_english}
         )
 
         if needs_translation_back:
@@ -233,6 +219,85 @@ def chatbot():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# @app.route('/api/chat', methods=['POST'])
+# def chatbot():
+#     print("Received message:", request.json)
+#     print("Headers:", request.headers)
+#     data = request.json
+#     user_message = data.get("message", "")
+#     session_id = data.get("sessionId", "")
+
+#     if not user_message or not session_id:
+#         return jsonify({"error": "Message or Session ID missing"}), 400
+
+#     try:
+#         # Detect language
+#         detected_lang = detect(user_message)
+
+#         needs_translation_back = False
+#         if detected_lang == 'ta':  # Tamil detected
+#             user_message_english = GoogleTranslator(source='ta', target='en').translate(user_message)
+#             needs_translation_back = True
+#         else:
+#             user_message_english = user_message
+
+#         # Load session-specific history
+#         session_history = memory.get("session_history", {}).get(session_id, [])
+
+
+
+#         # Format the history by joining messages in conversation flow
+#         previous_messages = "\n".join(
+#             [f"{msg['sender']}: {msg['text']}" for msg in session_history.get("messages", [])]
+#         )
+
+#         # Format the prompt with session-specific history
+#         prompt = PROMPT_TEMPLATE.format(
+#             history=previous_messages,
+#             user_input=user_message_english
+#         )
+
+#         # Generate response
+#         response = client.chat.completions.create(
+#             model="qwen-2.5-32b",
+#             messages=[
+#                 {"role": "system", "content": prompt},
+#                 {"role": "user", "content": user_message_english}
+#             ]
+#         )
+
+#         chatbot_response_english = response.choices[0].message.content
+
+#         # Save conversation in session-specific memory
+#         new_message = {
+#             "sender": "user",
+#             "text": user_message_english,
+#             "timestamp": str(datetime.now())
+#         }
+
+#         bot_response = {
+#             "sender": "bot",
+#             "text": chatbot_response_english,
+#             "timestamp": str(datetime.now())
+#         }
+
+#         memory.save_session_context(
+#             session_id=session_id,
+#             inputs=new_message,
+#             outputs=bot_response
+#         )
+
+#         if needs_translation_back:
+#             chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
+#             tanglish_response = chatbot_response.replace(" ", " ")
+#         else:
+#             tanglish_response = chatbot_response_english
+
+#         return jsonify({"response": tanglish_response})
+
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 
 @app.route('/chat', methods=['POST'])
@@ -280,6 +345,22 @@ def chat_bot():
         return jsonify({"error": str(e)}), 500
 
 
+def split_text_by_sentences(text, max_chunk_size=3000):
+    """Splits text into chunks based on sentence boundaries for improved summarization."""
+    sentences = sent_tokenize(text)
+    chunks, chunk = [], ""
+
+    for sentence in sentences:
+        if len(chunk) + len(sentence) < max_chunk_size:
+            chunk += sentence + " "
+        else:
+            chunks.append(chunk.strip())
+            chunk = sentence + " "
+    
+    if chunk:
+        chunks.append(chunk.strip())
+
+    return chunks
 
 @app.route('/api/chatreport', methods=['POST'])
 def report():
@@ -288,72 +369,57 @@ def report():
         data = request.json
         messages = data.get("messages", [])
 
-        # Initialize variables
-        conversation_text = ""
-        message_count = 0
-        positive_count = 0
-        negative_count = 0
-        neutral_count = 0
+        # Extract valid messages
+        valid_messages = [msg['text'] for msg in messages if isinstance(msg, dict) and 'text' in msg]
 
-        # Process messages
-        if isinstance(messages, list):
-            message_count = len(messages)
-            conversation_text = "\n".join(
-                f"{msg.get('role', '')}: {msg.get('content', '')}" if isinstance(msg, dict) else str(msg)
-                for msg in messages
-            )
-        elif isinstance(messages, str):
-            conversation_text = messages.strip()
-            message_count = 1 if conversation_text else 0
+        # Conversation details
+        conversation_text = "\n".join(valid_messages)
+        message_count = len(valid_messages)
+        positive_count, negative_count, neutral_count = 0, 0, 0
 
         # Default values
         sentiment = "neutral"
         summary = "No conversation content to analyze."
 
-        # List of models available on Groq
-        available_models = ["llama-3.1-8b-instant", "llama-3.1-70b", "gemma-7b-it"]
-        model_to_use = available_models[0]
+        # Initialize NLP models
+        sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+        summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
         if conversation_text:
-            print("Analyzing conversation...")
+            # Sentiment Analysis
+            for message in valid_messages:
+                result = sentiment_analyzer(message[:512])[0]
+                detected_sentiment = result["label"].lower()
 
-            # Sentiment Analysis for Each Message
-            for message in messages:
-                message_content = message.get('content', '') if isinstance(message, dict) else str(message)
-
-                sentiment_prompt = (
-                    f"Analyze the sentiment of the following text and classify it as positive, negative, or neutral:\n\n{message_content}"
-                )
-
-                sentiment_response = client.chat.completions.create(
-                    model=model_to_use,
-                    messages=[
-                        {"role": "system", "content": "You are a sentiment analysis expert. Respond with only 'positive', 'negative', or 'neutral'."},
-                        {"role": "user", "content": sentiment_prompt}
-                    ]
-                )
-                detected_sentiment = sentiment_response.choices[0].message.content.strip().lower()
-
-                if detected_sentiment == "positive":
+                if "positive" in detected_sentiment:
                     positive_count += 1
-                elif detected_sentiment == "negative":
+                elif "negative" in detected_sentiment:
                     negative_count += 1
-                elif detected_sentiment == "neutral":
+                else:
                     neutral_count += 1
 
-            # Summarization
-            summary_prompt = (
-                f"Summarize the following conversation in 2-3 sentences. "
-                f"Include the total number of messages in the summary. Total messages: {message_count}\n\n{conversation_text}"
-            )
-            summary_response = client.chat.completions.create(
-                model=model_to_use,
-                messages=[
-                    {"role": "system", "content": "You are a text summarization expert. Provide a concise summary including the total message count."},
-                    {"role": "user", "content": summary_prompt}
-                ]
-            )
-            summary = summary_response.choices[0].message.content.strip()
+            # Determine overall sentiment
+            if positive_count > negative_count and positive_count > neutral_count:
+                sentiment = "positive"
+            elif negative_count > positive_count and negative_count > neutral_count:
+                sentiment = "negative"
+
+            # Summarization with dynamic max_length
+            try:
+                text_length = len(conversation_text.split())
+                max_len = 100 if text_length < 300 else 150
+
+                summary = summarizer(
+                    conversation_text,
+                    max_length=max_len,
+                    min_length=30,
+                    do_sample=False
+                )[0]["summary_text"]
+
+                summary = f"This conversation contains {message_count} messages. {summary}"
+            except Exception as e:
+                print(f"Error creating summary: {str(e)}")
+                summary = f"This conversation contains {message_count} messages."
 
         # Prepare and return the result
         result = {
@@ -368,11 +434,9 @@ def report():
             }
         }
 
-        print("Sending response:", result)
         return jsonify(result)
 
     except Exception as e:
-        import traceback
         error_detail = traceback.format_exc()
         print("ERROR in /api/chatreport:", error_detail)
 
@@ -381,6 +445,7 @@ def report():
             "error_type": type(e).__name__,
             "traceback": error_detail
         }), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

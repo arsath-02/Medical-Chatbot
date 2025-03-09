@@ -259,19 +259,23 @@ export default function Chatbot() {
     navigate("/chatbot");
   };
 
+  
   const handleReport = async () => {
-    const formattedMessages = messages
-      .map(msg => `${msg.sender}: ${msg.text}`)
-      .join('\n');
-
-    const userId = localStorage.getItem("Email");  // ✅ Corrected to match the rest of the code
+    const formattedMessages = messages.map(msg => ({
+      sender: msg.sender,
+      text: msg.text
+    }));
+  
+    const userId = localStorage.getItem("Email");
     const sessionId = localStorage.getItem("chatSessionId");
-
-    if (!userId || !sessionId) {
-      console.error("User ID or Session ID not found in localStorage.");
+  
+    console.log("🔍 Data to be sent:", { userId, sessionId, formattedMessages });
+  
+    if (!userId || !sessionId || !formattedMessages.length) {
+      console.error("❌ Missing required data. Please check userId, sessionId, or messages.");
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:8000/api/analyze", {
         method: "POST",
@@ -281,23 +285,29 @@ export default function Chatbot() {
         body: JSON.stringify({
           userId,
           sessionId,
-          messages: formattedMessages
+          messages: formattedMessages  // ⬅️ Now sent as an array
         })
       });
-
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
+      }
+  
       const data = await response.json();
+      if (!data?.chatReport) {
+        console.warn("⚠️ No chat report received from API.");
+        return;
+      }
+  
       setReportData(data.chatReport);
-      console.log(reportData);
-      console.log("Response from API:", data);
+      console.log("✅ Updated Report Data:", data.chatReport);
+  
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❗ Error fetching report data:", error.message || error);
     }
   };
-  useEffect(() => {
-    console.log("✅ Updated Report Data:", reportData);
-    setUserReport(true);
-
-  }, [reportData]);
+  
 
   const handleClose = () => {
     setUserReport(false);

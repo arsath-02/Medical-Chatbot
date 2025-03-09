@@ -47,7 +47,7 @@ router.post("/chatbot", async (req, res) => {
         const modelPayload = {
             message,
             user_id: userId,
-            sessionId,
+            sessionId:sessionId,
             history_summary: latestSummary ? latestSummary.summarizedHistory : ""
         };
 
