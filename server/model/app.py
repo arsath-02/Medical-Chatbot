@@ -362,6 +362,8 @@ def split_text_by_sentences(text, max_chunk_size=3000):
 
     return chunks
 
+
+
 @app.route('/api/chatreport', methods=['POST'])
 def report():
     try:
@@ -381,22 +383,51 @@ def report():
         sentiment = "neutral"
         summary = "No conversation content to analyze."
 
-        # Initialize NLP models
-        sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-        summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+        # Force CPU usage to avoid CUDA errors
+        import os
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable CUDA
+        
+        # Set to CPU explicitly when initializing the pipelines
+        try:
+            from transformers import pipeline
+            sentiment_analyzer = pipeline(
+                "sentiment-analysis", 
+                model="distilbert-base-uncased-finetuned-sst-2-english",
+                device=-1  # Force CPU usage
+            )
+            
+            summarizer = pipeline(
+                "summarization", 
+                model="sshleifer/distilbart-cnn-12-6",
+                device=-1  # Force CPU usage
+            )
+        except Exception as e:
+            print(f"Error loading NLP models: {str(e)}")
+            # Fallback to simple rule-based analysis if model loading fails
+            return simple_analysis(valid_messages, message_count)
 
         if conversation_text:
-            # Sentiment Analysis
-            for message in valid_messages:
-                result = sentiment_analyzer(message[:512])[0]
-                detected_sentiment = result["label"].lower()
+            # Sentiment Analysis with error handling
+            try:
+                for message in valid_messages:
+                    if not message or len(message.strip()) == 0:
+                        continue
+                        
+                    # Limit text length to avoid model issues
+                    truncated_message = message[:512]
+                    result = sentiment_analyzer(truncated_message)[0]
+                    detected_sentiment = result["label"].lower()
 
-                if "positive" in detected_sentiment:
-                    positive_count += 1
-                elif "negative" in detected_sentiment:
-                    negative_count += 1
-                else:
-                    neutral_count += 1
+                    if "positive" in detected_sentiment:
+                        positive_count += 1
+                    elif "negative" in detected_sentiment:
+                        negative_count += 1
+                    else:
+                        neutral_count += 1
+            except Exception as e:
+                print(f"Error in sentiment analysis: {str(e)}")
+                # Fallback to simple rule-based sentiment
+                return simple_analysis(valid_messages, message_count)
 
             # Determine overall sentiment
             if positive_count > negative_count and positive_count > neutral_count:
@@ -404,22 +435,39 @@ def report():
             elif negative_count > positive_count and negative_count > neutral_count:
                 sentiment = "negative"
 
-            # Summarization with dynamic max_length
+            # Summarization with error handling
             try:
-                text_length = len(conversation_text.split())
-                max_len = 100 if text_length < 300 else 150
+                # Handle empty or very short conversations
+                if len(conversation_text.split()) < 10:
+                    summary = f"This conversation contains {message_count} messages. It's a short exchange."
+                else:
+                    # Calculate appropriate length parameters
+                    text_length = len(conversation_text.split())
+                    max_len = min(100 if text_length < 300 else 150, text_length // 4)
+                    min_len = min(30, max_len // 2)
+                    
+                    # Truncate if too long to avoid model errors
+                    if text_length > 1024:
+                        # Take first and last parts of the conversation
+                        words = conversation_text.split()
+                        beginning = " ".join(words[:512])
+                        ending = " ".join(words[-512:])
+                        processed_text = beginning + "... " + ending
+                    else:
+                        processed_text = conversation_text
 
-                summary = summarizer(
-                    conversation_text,
-                    max_length=max_len,
-                    min_length=30,
-                    do_sample=False
-                )[0]["summary_text"]
+                    summary_result = summarizer(
+                        processed_text,
+                        max_length=max_len,
+                        min_length=min_len,
+                        do_sample=False
+                    )[0]["summary_text"]
 
-                summary = f"This conversation contains {message_count} messages. {summary}"
+                    summary = f"This conversation contains {message_count} messages. {summary_result}"
             except Exception as e:
                 print(f"Error creating summary: {str(e)}")
-                summary = f"This conversation contains {message_count} messages."
+                # Fallback to simple extractive summary
+                return simple_analysis(valid_messages, message_count)
 
         # Prepare and return the result
         result = {
@@ -437,6 +485,7 @@ def report():
         return jsonify(result)
 
     except Exception as e:
+        import traceback
         error_detail = traceback.format_exc()
         print("ERROR in /api/chatreport:", error_detail)
 
@@ -445,6 +494,64 @@ def report():
             "error_type": type(e).__name__,
             "traceback": error_detail
         }), 500
+
+# Simple fallback analysis function
+def simple_analysis(messages, message_count):
+    positive_words = ["good", "great", "excellent", "happy", "positive", "thanks", "thank you", "helpful"]
+    negative_words = ["bad", "terrible", "awful", "sad", "negative", "unhappy", "problem", "issue", "error"]
+    
+    positive_count, negative_count, neutral_count = 0, 0, 0
+    
+    # Simple rule-based sentiment analysis
+    for message in messages:
+        message_lower = message.lower()
+        
+        pos_count = sum(1 for word in positive_words if word in message_lower)
+        neg_count = sum(1 for word in negative_words if word in message_lower)
+        
+        if pos_count > neg_count:
+            positive_count += 1
+        elif neg_count > pos_count:
+            negative_count += 1
+        else:
+            neutral_count += 1
+    
+    # Determine overall sentiment
+    if positive_count > negative_count and positive_count > neutral_count:
+        sentiment = "positive"
+    elif negative_count > positive_count and negative_count > neutral_count:
+        sentiment = "negative"
+    else:
+        sentiment = "neutral"
+    
+    # Simple extractive summarization
+    if messages:
+        first_message = messages[0] if messages else ""
+        last_message = messages[-1] if messages else ""
+        
+        first_sentence = first_message.split('.')[0] if first_message else ""
+        last_sentence = last_message.split('.')[-2] if last_message and len(last_message.split('.')) > 1 else last_message
+        
+        summary = f"This conversation contains {message_count} messages. "
+        if first_sentence:
+            summary += f"It begins with '{first_sentence}'. "
+        if last_sentence and last_sentence != first_sentence:
+            summary += f"It ends with '{last_sentence}'."
+    else:
+        summary = f"This conversation contains {message_count} messages."
+    
+    # Return result
+    return jsonify({
+        "status": "processed",
+        "message_count": message_count,
+        "analysis": {
+            "sentiment": sentiment,
+            "summary": summary,
+            "positive_count": positive_count,
+            "negative_count": negative_count,
+            "neutral_count": neutral_count
+        }
+    })
 
 
 if __name__ == '__main__':

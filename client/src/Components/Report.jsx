@@ -20,7 +20,12 @@ export default function ReportCard({
     const userId = localStorage.getItem("userId") || "N/A";
     const sessionId = localStorage.getItem("sessionId") || "N/A";
     setUserData({ userId, sessionId });
+
+    console.log(userId);
+  console.log(sessionId);
   }, []);
+
+  
 
   const handleCardClick = () => setShowMessage(!showMessage);
 

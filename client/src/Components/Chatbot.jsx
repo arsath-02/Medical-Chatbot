@@ -301,6 +301,7 @@ export default function Chatbot() {
       }
   
       setReportData(data.chatReport);
+      setUserReport(true);
       console.log("✅ Updated Report Data:", data.chatReport);
   
     } catch (error) {
