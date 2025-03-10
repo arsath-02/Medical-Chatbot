@@ -20,7 +20,7 @@ app.use('/api', SaveSummary);
 app.use('/api',chatRoutes);
 
 // Initialize Firebase Admin
-const serviceAccount = require('/home/sameer/vscode/Medical-Chatbot/server/service-account.json'); // Update the path
+const serviceAccount = require('./service-account.json'); // Update the path
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });

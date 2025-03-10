@@ -42,7 +42,8 @@ export const HeartRateComponent = () => {
 
         console.log("Heart Rate Data:", heartRateResponse.data);
 
-
+        // const heartRateDict = createFitbitDataDictionary(heartRateResponse.data);
+        // console.log("Heart Rate Dictionary:", heartRateDict);
         const heartData = heartRateResponse.data["activities-heart"].map((item) => ({
           date: item.dateTime,
           outOfRange: item.value.heartRateZones[0]?.minutes || 0,
@@ -63,7 +64,8 @@ export const HeartRateComponent = () => {
 
           console.log("Intraday Heart Rate:", intradayResponse.data);
 
-
+          // const intradayDict = createFitbitDataDictionary(intradayResponse.data);
+          // console.log("Intraday Heart Rate Dictionary:", intradayDict);
           if (intradayResponse.data["activities-heart-intraday"]?.dataset) {
             const intradayData = intradayResponse.data["activities-heart-intraday"].dataset.map(item => ({
               time: item.time,
@@ -196,6 +198,8 @@ export const StepsComponent = () => {
         );
 
         console.log("Steps Data:", stepsResponse.data);
+      //   const stepsDict = createFitbitDataDictionary(stepsResponse.data);
+      // console.log("Steps Dictionary:", stepsDict);
 
         const formattedStepsData = stepsResponse.data["activities-steps"].map((item) => ({
           date: item.dateTime,
@@ -257,6 +261,13 @@ const SleepComponent = () => {
           `https://api.fitbit.com/1.2/user/-/sleep/date/${formattedSevenDaysAgo}/${today}.json`,
           { headers }
         );
+        const sleepData = sleepRangeResponse.data;
+
+        // Send data to your backend
+        await axios.post('http://localhost:5000/send-sleep-data', { sleepData });
+
+        // const sleepDict = createFitbitDataDictionary(sleepRangeResponse.data);
+        // console.log("Sleep Dictionary:", sleepDict);
 
         const formattedSleepData = sleepRangeResponse.data.sleep?.map((sleep) => ({
           date: sleep.dateOfSleep,
@@ -362,6 +373,8 @@ export const ActivityComponent = () => {
 
         console.log("Distance Data:", distanceResponse.data);
 
+        // const caloriesDict = createFitbitDataDictionary(caloriesResponse.data);
+        // console.log("Calories Dictionary:", caloriesDict);
 
         if (caloriesResponse.data["activities-tracker-calories"]) {
           const combinedData = caloriesResponse.data["activities-tracker-calories"].map((caloriesItem) => {

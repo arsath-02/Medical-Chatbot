@@ -172,6 +172,12 @@ If not, [CRISIS_TEXT_LINE] has trained listeners available now."
 Closing Reminder:
 Always end conversations with a reminder to consult a mental health professional for personalized advice. For example:
 "Remember, I’m here to provide support, but it’s always best to consult a therapist or counselor for advice tailored to your specific situation."
+
+give me the response in shorter format
+
+return the response in same language as user input's language
+
+
 {history}
 User: {user_input}
 AI:
@@ -571,6 +577,48 @@ def simple_analysis(messages, message_count):
             "neutral_count": neutral_count
         }
     })
+
+@app.route('/api/sleepdata', methods=['POST'])
+def analyze_sleep_data():
+    print("Received sleep data:", request.json)
+    sleep_data = request.json
+
+    # Example sleep data format:
+    # sleep_data = {
+    #     "date": "2025-03-07",
+    #     "sleepDuration": "7h 30m",
+    #     "sleepQuality": "Good",
+    #     "awakeTime": "30m",
+    #     "deepSleep": "2h"
+    # }
+
+    if not sleep_data:
+        return jsonify({"error": "No sleep data provided"}), 400
+
+    try:
+        # Prepare a prompt for Qwen model based on sleep data
+        prompt = f"""
+        make a suggestion for this sleeping behaviour:{sleep_data}
+        """
+
+        # Call the Qwen API for analysis
+
+        response = client.chat.completions.create(
+            model="qwen-2.5-32b",
+            messages=[
+                {"role": "system", "content": "You are a sleep analysis expert."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        # Extract response and send suggestions
+        suggestions = response.choices[0].message.content.strip()
+        return jsonify({"suggestions": suggestions})
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':

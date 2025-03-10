@@ -141,7 +141,7 @@ export default function ChatMessages({ messages, isLoading, error }) {
   }, []);
 
 
-  
+
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar italic">
        <div className="flex-1/2 p">
@@ -185,10 +185,7 @@ export default function ChatMessages({ messages, isLoading, error }) {
               className={`max-w-[80%] rounded-lg p-3 mx-2 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
             >
-              <div>
-                <TbReportAnalytics />
-
-              </div>
+              
               <p className="text-sm whitespace-pre-wrap">
                 <TypingEffect text={`Hi ${name}, I am Dr.Chat 😊`} />
               </p>
