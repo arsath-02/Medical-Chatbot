@@ -78,7 +78,6 @@ export default function ChatMessages({ messages, isLoading, error }) {
   const name = localStorage.getItem("Name") || "User";
 
   useEffect(() => {
-    // Check localStorage for name or email when component mounts
     const storedName = localStorage.getItem("Name");
     const storedEmail = localStorage.getItem("Email");
 
@@ -90,24 +89,23 @@ export default function ChatMessages({ messages, isLoading, error }) {
   }, []);
 
   useEffect(() => {
-    // Skip the effect for initial load of messages
     if (isInitialLoadRef.current) {
       isInitialLoadRef.current = false;
       prevMessagesRef.current = [...messages];
       return;
     }
 
-    // Check if a new message was added
+
     if (messages.length > prevMessagesRef.current.length) {
       const lastMessageIndex = messages.length - 1;
       const lastMessage = messages[lastMessageIndex];
 
-      // Only show typing effect for new bot messages
+
       if (lastMessage.sender === "bot") {
         setShowTypingEffect(true);
         setTypingMessageIndex(lastMessageIndex);
 
-        // Auto-disable typing effect after it would finish
+
         const timer = setTimeout(() => {
           setShowTypingEffect(false);
         }, lastMessage.text.length * 20 + 100);
@@ -116,19 +114,19 @@ export default function ChatMessages({ messages, isLoading, error }) {
       }
     }
 
-    // Update previous messages reference
+
     prevMessagesRef.current = [...messages];
   }, [messages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-// font-serif font-sans font-mono
+
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar italic">
       <div className="max-w-3xl mx-auto space-y-4 p-4">
         {messages.length > 0 ? (
-          // If there are messages, display them
+
           messages.map((message, index) => (
             <MessageBubble
               key={index}
@@ -139,7 +137,7 @@ export default function ChatMessages({ messages, isLoading, error }) {
             />
           ))
         ) : (
-          // If no messages, show welcome message with name
+          
           <div className="flex justify-start mb-4">
             <BotAvatar isDarkMode={isDarkMode} />
             <div

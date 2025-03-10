@@ -81,14 +81,14 @@ const HomePage = () => {
   const [typingIndex, setTypingIndex] = useState(0);
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return; // Prevent sending empty messages
+    if (!message.trim()) return; 
 
     setIsLoading(true);
     setError(null);
 
     const userMessage = { text: message, sender: "user" };
     setChatHistory(prevMessages => [...prevMessages, userMessage]);
-    setMessage(""); // Clear input field
+    setMessage("");
 
     try {
       const response = await fetch("http://127.0.0.1:5000/chat", {
@@ -118,7 +118,7 @@ const HomePage = () => {
     }
   };
 
-  // Typing animation effect for bot messages
+
   useEffect(() => {
     const latestBotMessage = chatHistory.findLast((msg) => msg.sender === 'bot')?.text || '';
 
@@ -141,7 +141,7 @@ const HomePage = () => {
     }
   }, [chatHistory]);
 
-  // Set initial greeting message
+
   useEffect(() => {
     const greetingMessage = {
       text: "Hi there! I'm Dr. Chat. How are you feeling today?",
@@ -151,10 +151,10 @@ const HomePage = () => {
   }, []);
 
   return (
-    
+
     <div className="flex-1 custom-scrollbar italic">
       <div className={`min-h-screen ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
-        {/* Header/Navigation */}
+
         <header className='fixed top-0 left-0 w-full z-50'>
           <nav className={`border-gray-100 px-4 lg:px-6 py-2.5 ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
             <div className='flex justify-between items-center mx-auto max-w-screen-xl'>
@@ -190,7 +190,7 @@ const HomePage = () => {
           </nav>
         </header>
 
-        {/* Hero Section with Chat */}
+
         <section id="home" className="py-20 md:py-28">
           <div className="container px-4 mx-auto">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
@@ -210,7 +210,7 @@ const HomePage = () => {
                 </div>
               </div>
 
-              {/* Chat Interface Preview */}
+
               <div className={`mx-auto lg:mx-0 rounded-lg border ${
                 isDarkMode ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'
               } p-4 shadow-lg lg:order-last`}>
@@ -282,7 +282,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Features Section */}
+
         <section id="features" className={`py-12 ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}>
           <div className='container px-4 md:px-6 mx-auto'>
             <div className='flex flex-col items-center justify-center space-y-4 text-center'>
@@ -371,7 +371,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Contact Section */}
+
         <section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center md:items-start">

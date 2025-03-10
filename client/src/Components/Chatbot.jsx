@@ -15,7 +15,6 @@ export default function Chatbot() {
   const {isDarkMode} = useContext(ThemeContext);
   const [inputValue, setInputValue] = useState("");
   const name = localStorage.getItem("Name") || "User";
-  // Start with an empty messages array
   const [messages, setMessages] = useState([]);
 
   const [showChatHistory, setShowChatHistory] = useState(false);
@@ -33,13 +32,12 @@ export default function Chatbot() {
       setMessages(storedMessages);
       setIsFirstMessageSent(true);
     } else {
-      // Start with empty messages for new users
       setMessages([]);
       localStorage.setItem("chatMessages", JSON.stringify([]));
     }
-  }, []);  // ✅ Runs only once when component mounts
+  }, []);
 
-  // Initialize session ID
+
   useEffect(() => {
     const storedSessionId = localStorage.getItem("chatSessionId");
     if (storedSessionId) {
@@ -51,12 +49,12 @@ export default function Chatbot() {
     }
   }, []);
 
-  // Fetch chat sessions when component mounts
+
   useEffect(() => {
     fetchChatSessions();
   }, []);
 
-  // Function to fetch chat sessions from backend
+
   const fetchChatSessions = async () => {
     const userId = localStorage.getItem("Email");
     if (!userId) {
@@ -71,7 +69,7 @@ export default function Chatbot() {
       }
       const sessions = await response.json();
 
-      // Format sessions for display
+
       const formattedSessions = sessions.map(session => ({
         id: session.id || session.sessionId,
         title: session.title || `Chat ${new Date(session.timestamp || session.createdAt).toLocaleDateString()}`,
@@ -96,7 +94,7 @@ export default function Chatbot() {
       return;
     }
 
-    // Add the welcome message if this is the first message in the conversation
+
     if (!isFirstMessageSent) {
       const welcomeMessage = { text: `Hi ${name}, I am Dr.Chat 😊`, sender: "bot" };
       setMessages(prevMessages => [...prevMessages, welcomeMessage]);
@@ -149,7 +147,6 @@ export default function Chatbot() {
     }
   };
 
-  // Function to start a new chat
   const handleRefreshChat = () => {
     const newSessionId = uuidv4();
     setSessionId(newSessionId);
@@ -168,7 +165,7 @@ export default function Chatbot() {
     }
   };
 
-  // Function to toggle chat history panel
+
   const handleToggleChatHistory = () => {
     setShowChatHistory(!showChatHistory);
     if (!showChatHistory) {
@@ -176,19 +173,17 @@ export default function Chatbot() {
     }
   };
 
-  // Function to share chat (placeholder)
   const handleShareChat = () => {
     if (messages.length <= 1) {
       alert("Start a conversation first before sharing!");
       return;
     }
 
-    // Create a formatted text version of the chat
     const chatText = messages.map(msg =>
       `${msg.sender === 'user' ? name : 'Dr.Chat'}: ${msg.text}`
     ).join('\n\n');
 
-    // Use the Web Share API if available
+
     if (navigator.share) {
       navigator.share({
         title: 'My MediBot Conversation',
@@ -212,7 +207,7 @@ export default function Chatbot() {
 
       const chatData = await response.json();
 
-      // Update the session ID
+
       setSessionId(selectedSessionId);
       localStorage.setItem("chatSessionId", selectedSessionId);
       const selectedChat = chatHistory.find(chat => chat.id === selectedSessionId);
@@ -220,7 +215,7 @@ export default function Chatbot() {
         setCurrentSessionTitle(selectedChat.title);
       }
 
-      // Format messages if they're not already in the right format
+
       const formattedMessages = Array.isArray(chatData.messages)
         ? chatData.messages
         : chatData.map(msg => ({
@@ -229,7 +224,7 @@ export default function Chatbot() {
           }));
 
       if (formattedMessages.length === 0) {
-        // If no messages, initialize with empty array but set isFirstMessageSent to false
+
         setMessages([]);
         setIsFirstMessageSent(false);
       } else {
@@ -237,7 +232,7 @@ export default function Chatbot() {
         setIsFirstMessageSent(true);
       }
 
-      // Close chat history panel
+
       setShowChatHistory(false);
     } catch (error) {
       console.error("Error loading chat history:", error);
@@ -259,23 +254,23 @@ export default function Chatbot() {
     navigate("/chatbot");
   };
 
-  
+
   const handleReport = async () => {
     const formattedMessages = messages.map(msg => ({
       sender: msg.sender,
       text: msg.text
     }));
-  
+
     const userId = localStorage.getItem("Email");
     const sessionId = localStorage.getItem("chatSessionId");
-  
+
     console.log("🔍 Data to be sent:", { userId, sessionId, formattedMessages });
-  
+
     if (!userId || !sessionId || !formattedMessages.length) {
       console.error("❌ Missing required data. Please check userId, sessionId, or messages.");
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/analyze", {
         method: "POST",
@@ -285,30 +280,30 @@ export default function Chatbot() {
         body: JSON.stringify({
           userId,
           sessionId,
-          messages: formattedMessages  // ⬅️ Now sent as an array
+          messages: formattedMessages
         })
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API Error: ${response.status} - ${errorText}`);
       }
-  
+
       const data = await response.json();
       if (!data?.chatReport) {
         console.warn("⚠️ No chat report received from API.");
         return;
       }
-  
+
       setReportData(data.chatReport);
       setUserReport(true);
       console.log("✅ Updated Report Data:", data.chatReport);
-  
+
     } catch (error) {
       console.error("❗ Error fetching report data:", error.message || error);
     }
   };
-  
+
 
   const handleClose = () => {
     setUserReport(false);

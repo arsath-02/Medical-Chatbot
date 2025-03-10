@@ -4,7 +4,7 @@ import { RepeatIcon as ArrowRepeat } from "lucide-react";
 import { FaPlus } from "react-icons/fa";
 export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHistory, isDarkMode, currentSessionId ,handleRefreshChat}) {
   const deleteChat = async (sessionId, e) => {
-    e.stopPropagation(); // Prevent parent div click
+    e.stopPropagation(); 
 
     if (window.confirm("Are you sure you want to delete this chat?")) {
       try {
@@ -33,7 +33,7 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
       className={`w-64 border-r flex italic flex-col h-screen absolute left-16 z-10
       ${isDarkMode ? "bg-gray-900 text-gray-200 border-gray-700" : "bg-white text-gray-900 border-gray-200"}`}
     >
-      {/* Header */}
+
       <div className={`p-3 border-b flex items-center justify-between
         ${isDarkMode ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50"}`}>
         <h2 className="font-medium">Recent Chats</h2>
@@ -55,7 +55,7 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
         </button>
       </div>
 
-      {/* Chat List */}
+
       <div className="flex-1 overflow-y-auto">
         {chatHistory.length > 0 ? (
           chatHistory.map((chat) => (

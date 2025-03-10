@@ -6,6 +6,7 @@ groq
 langdetect
 flask
 flask_cors
-torch 
+torch
 transformers
 langchain_community
+nltk

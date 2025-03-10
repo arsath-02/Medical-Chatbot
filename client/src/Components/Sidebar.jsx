@@ -22,22 +22,20 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
   const navigate=useNavigate();
   useEffect(() => {
-    // Check localStorage for email when component mounts
+   
     const storedEmail = localStorage.getItem("Email");
     if (storedEmail && storedEmail.length > 0) {
-      // Get the first character of the email
       setUserInitial(storedEmail.charAt(0).toUpperCase());
     }
   }, []);
 
   const handleLogout = () => {
-    // Clear the email from localStorage
     localStorage.removeItem("Email");
 
-    // Reset the user initial
+
     setUserInitial(null);
 
-    // Redirect to login page
+
     window.location.href = "/login";
   };
   const handlechatbot=()=>{
@@ -110,7 +108,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
         )}
       </button>
 
-      {/* Show logout door icon if user is logged in */}
+
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <IoLogoGameControllerB color="gray" size={20} onClick={handlegame}/>

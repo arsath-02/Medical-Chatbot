@@ -68,7 +68,7 @@ const GameSelector = () => {
         </div>
       </div>
 
-      {/* Spline iframe modal */}
+     
       {selectedGame && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="relative bg-white rounded-lg w-full max-w-5xl h-5/6 flex flex-col">

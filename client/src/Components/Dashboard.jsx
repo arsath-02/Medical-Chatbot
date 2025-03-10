@@ -13,13 +13,13 @@ import {
   Bar
 } from "recharts";
 import Sidebar from "./Sidebar";
-// Heart Rate Component
+
 export const HeartRateComponent = () => {
   const [heartRateData, setHeartRateData] = useState([]);
   const [heartRateZones, setHeartRateZones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const timeframe = "1d"; // You can change this to "1w" for week, "1m" for month
+  const timeframe = "1d";
 
   useEffect(() => {
     const fetchHeartRateData = async () => {
@@ -33,7 +33,7 @@ export const HeartRateComponent = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        // Fetch Heart Rate Data
+
         const heartRateResponse = await axios.get(
           `https://api.fitbit.com/1/user/-/activities/heart/date/today/${timeframe}.json`,
           { headers }
@@ -41,7 +41,7 @@ export const HeartRateComponent = () => {
 
         console.log("Heart Rate Data:", heartRateResponse.data);
 
-        // Process daily summary data for zones
+
         const heartData = heartRateResponse.data["activities-heart"].map((item) => ({
           date: item.dateTime,
           outOfRange: item.value.heartRateZones[0]?.minutes || 0,
@@ -53,7 +53,7 @@ export const HeartRateComponent = () => {
 
         setHeartRateZones(heartData);
 
-        // Try to get intraday data if available (requires special permission)
+
         try {
           const intradayResponse = await axios.get(
             `https://api.fitbit.com/1/user/-/activities/heart/date/today/1d/1min.json`,
@@ -62,7 +62,7 @@ export const HeartRateComponent = () => {
 
           console.log("Intraday Heart Rate:", intradayResponse.data);
 
-          // If intraday data is available, process it
+
           if (intradayResponse.data["activities-heart-intraday"]?.dataset) {
             const intradayData = intradayResponse.data["activities-heart-intraday"].dataset.map(item => ({
               time: item.time,
@@ -73,7 +73,7 @@ export const HeartRateComponent = () => {
           }
         } catch (intradayError) {
           console.log("Intraday data not available:", intradayError);
-          // This is expected if the app doesn't have intraday permission
+
         }
       } catch (error) {
         console.error("Error fetching Fitbit heart rate data:", error);
@@ -108,7 +108,7 @@ export const HeartRateComponent = () => {
     <div className="dashboard-container">
       <h2 className="text-white text-xl font-semibold mb-4">Heart Rate Data</h2>
 
-      {/* Heart Rate Zones Chart */}
+
       <div className="chart-container mb-8">
         <h3 className="text-white text-lg font-medium mb-2">Time in Heart Rate Zones (minutes)</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -126,7 +126,7 @@ export const HeartRateComponent = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Resting Heart Rate */}
+
       {heartRateZones.length > 0 && heartRateZones[0].restingHeartRate > 0 && (
         <div className="mb-8">
           <h3 className="text-white text-lg font-medium mb-2">Resting Heart Rate</h3>
@@ -139,7 +139,7 @@ export const HeartRateComponent = () => {
         </div>
       )}
 
-      {/* Intraday Heart Rate Chart (if available) */}
+
       {heartRateData.length > 0 && (
         <div className="chart-container">
           <h3 className="text-white text-lg font-medium mb-2">Intraday Heart Rate</h3>
@@ -174,7 +174,7 @@ export const HeartRateComponent = () => {
 };
 export const StepsComponent = () => {
   const [stepsData, setStepsData] = useState([]);
-  const timeframe = "1w"; // 1 week of data
+  const timeframe = "1w";
 
   useEffect(() => {
     const fetchStepsData = async () => {
@@ -188,7 +188,7 @@ export const StepsComponent = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        // Fetch Steps Data - this endpoint works based on your logs
+
         const stepsResponse = await axios.get(
           `https://api.fitbit.com/1/user/-/activities/steps/date/today/${timeframe}.json`,
           { headers }
@@ -228,7 +228,7 @@ export const StepsComponent = () => {
   );
 };
 
-// Sleep Component - Fixing to handle empty sleep data
+
 const SleepComponent = () => {
   const [sleepData, setSleepData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -251,7 +251,7 @@ const SleepComponent = () => {
         sevenDaysAgo.setDate(new Date().getDate() - 7);
         const formattedSevenDaysAgo = sevenDaysAgo.toISOString().split('T')[0];
 
-        // Fetch weekly data
+
         const sleepRangeResponse = await axios.get(
           `https://api.fitbit.com/1.2/user/-/sleep/date/${formattedSevenDaysAgo}/${today}.json`,
           { headers }
@@ -326,7 +326,7 @@ const SleepComponent = () => {
   );
 };
 
-// Activity Component - Using working endpoints based on your logs
+
 export const ActivityComponent = () => {
   const [caloriesData, setCaloriesData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -345,7 +345,7 @@ export const ActivityComponent = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        // From your logs, I can see this endpoint worked
+
         const caloriesResponse = await axios.get(
           `https://api.fitbit.com/1/user/-/activities/tracker/calories/date/today/${timeframe}.json`,
           { headers }
@@ -353,7 +353,7 @@ export const ActivityComponent = () => {
 
         console.log("Tracker Calories Data:", caloriesResponse.data);
 
-        // Get additional activity metrics
+
         const distanceResponse = await axios.get(
           `https://api.fitbit.com/1/user/-/activities/tracker/distance/date/today/${timeframe}.json`,
           { headers }
@@ -361,7 +361,7 @@ export const ActivityComponent = () => {
 
         console.log("Distance Data:", distanceResponse.data);
 
-        // Combine the data
+
         if (caloriesResponse.data["activities-tracker-calories"]) {
           const combinedData = caloriesResponse.data["activities-tracker-calories"].map((caloriesItem) => {
             const dateMatch = distanceResponse.data["activities-tracker-distance"]?.find(
@@ -440,34 +440,33 @@ export const ActivityComponent = () => {
     </div>
   );
 };
-// Updated Main Dashboard Component
+
 const Dashboard = () => {
   return (
     <div className="flex italic bg-gray-900 min-h-screen  overflow-y-auto custom-scrollbar">
-    {/* Sidebar */}
+
     <Sidebar />
 
-    {/* Main Content */}
+
     <div className="flex-1 pl-20 p-6 ">
       <h1 className="text-white text-2xl font-bold mb-6">Fitness Dashboard</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Heart Rate Card */}
+
         <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
           <HeartRateComponent />
         </div>
 
-        {/* Steps Card */}
         <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
           <StepsComponent />
         </div>
 
-        {/* Sleep Analysis Card */}
+
         <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
           <SleepComponent />
         </div>
 
-        {/* Activity Card */}
+        
         <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
           <ActivityComponent />
         </div>

@@ -10,7 +10,7 @@ import FitbitLogin from "./Components/FitbitLogin";
 import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
-import { AuthProvider } from "./UserContext";  // Correct import
+import { AuthProvider } from "./UserContext"; 
 
 function App() {
   const [user, setUser] = useState(null);

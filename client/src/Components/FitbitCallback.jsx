@@ -43,7 +43,7 @@ const FitbitCallback = () => {
         );
 
         localStorage.setItem("fitbit_access_token", response.data.access_token);
-        navigate("/dashboard"); // Redirect to your main app
+        navigate("/dashboard"); 
       } catch (error) {
         console.error("Error getting Fitbit access token:", error);
       }

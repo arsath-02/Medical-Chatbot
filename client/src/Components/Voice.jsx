@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { RepeatIcon as ArrowRepeat, Newspaper, Share2, Moon, Sun, X } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { IoAccessibilitySharp } from "react-icons/io5";
 import { RiMic2Line } from "react-icons/ri";
 import video from "../assets/video.mp4";
-import { SiChatbot } from "react-icons/si";
 import Sidebar from "./Sidebar";
 import { ThemeContext } from "./ThemeContext";
 
@@ -89,10 +86,10 @@ export default function Voice() {
       const data = await response.json();
       console.log(data.response);
 
-      // Set the API response to display in the cloud
+
       setApiResponse(data.response);
 
-      // Hide any previous video before speaking
+
       setShowVideo(false);
 
       const speech = new SpeechSynthesisUtterance(data.response);
@@ -100,16 +97,15 @@ export default function Voice() {
       setShowVideo(true);
       window.speechSynthesis.speak(speech);
 
-      // When speech ends, show the video
+
       speech.onend = () => {
         setShowVideo(false);
-        // If the video element exists, play it
         if (videoRef.current) {
           videoRef.current.play();
         }
       };
 
-      // Handle video ending
+
       if (videoRef.current) {
         videoRef.current.onended = () => {
           setShowVideo(false);
@@ -124,14 +120,13 @@ export default function Voice() {
 
   return (
     <div className={`min-h-screen italic ${isDarkMode ? "bg-gray-900" : "bg-white"} ${isDarkMode ? "text-white" : "text-gray-900"} flex`}>
-      {/* Left sidebar - Removed border */}
+
       <aside className="w-64 h-screen flex-shrink-0">
         <Sidebar />
       </aside>
 
-      {/* Main content - split into two sections */}
+
       <div className="flex-1 flex flex-row">
-        {/* Left section - Avatar/iframe */}
         <div className="w-1/2 flex items-center justify-center">
           <div className="w-full max-w-md flex items-center justify-center">
             <iframe
@@ -145,29 +140,28 @@ export default function Voice() {
           </div>
         </div>
 
-        {/* Right section - Response cloud and mic button */}
+
         <div className="w-1/2 flex flex-col items-center justify-center p-6">
-          {/* Improved cloud-shaped response container */}
+
           {apiResponse && (
             <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
-              {/* Multiple cloud bumps to create more natural shape */}
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 -left-2"></div>
               <div className="absolute w-24 h-24 rounded-full bg-blue-50 -top-8 left-12"></div>
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 left-32"></div>
               <div className="absolute w-16 h-16 rounded-full bg-blue-50 -top-4 right-12"></div>
               <div className="absolute w-12 h-12 rounded-full bg-blue-50 -top-2 right-2"></div>
 
-              {/* Response text */}
+
               <p className="text-gray-800 text-center font-medium z-10 relative pt-4">
                 {apiResponse}
               </p>
             </div>
           )}
 
-          {/* Placeholder when no response */}
+
           {!apiResponse && (
             <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
-              {/* Multiple cloud bumps to create more natural shape */}
+
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 -left-2"></div>
               <div className="absolute w-24 h-24 rounded-full bg-blue-50 -top-8 left-12"></div>
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 left-32"></div>
@@ -180,7 +174,7 @@ export default function Voice() {
             </div>
           )}
 
-          {/* Microphone Button */}
+        
           <div className="mt-4">
             <div
               className={`flex items-center justify-center h-16 w-16 rounded-full cursor-pointer ${

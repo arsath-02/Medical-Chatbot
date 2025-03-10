@@ -17,15 +17,15 @@ export default function ReportCard({
   const [userData, setUserData] = useState({ userId: "N/A", sessionId: "N/A" });
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId") || "N/A";
-    const sessionId = localStorage.getItem("sessionId") || "N/A";
+    const userId = localStorage.getItem("Email") || "N/A";
+    const sessionId = localStorage.getItem("chatSessionId") || "N/A";
     setUserData({ userId, sessionId });
 
     console.log(userId);
   console.log(sessionId);
   }, []);
 
-  
+
 
   const handleCardClick = () => setShowMessage(!showMessage);
 

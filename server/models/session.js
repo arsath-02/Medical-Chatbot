@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Schema for storing chat session metadata
 const SessionSchema = new mongoose.Schema({
   sessionId: {
     type: String,

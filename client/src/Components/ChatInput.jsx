@@ -8,7 +8,7 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
-  const [targetLanguage, setTargetLanguage] = useState("en"); // Default target language is English
+  const [targetLanguage, setTargetLanguage] = useState("en");
 
   const {isDarkMode} = useContext(ThemeContext);
 
@@ -44,14 +44,14 @@ export default function ChatInput({ handleSendMessage, inputValue, setInputValue
 
   const detectAndTranslateText = async (text) => {
     try {
-      // Detect the language of the text
+
       const detectResponse = await axios.post(`https://libretranslate.com/detect`, {
         q: text,
       });
       const detectedLanguage = detectResponse.data[0].language;
       console.log("Detected Language:", detectedLanguage);
 
-      // Translate the text to the target language
+      
       const translateResponse = await axios.post(`https://libretranslate.com/translate`, {
         q: text,
         source: detectedLanguage,

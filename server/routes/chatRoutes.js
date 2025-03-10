@@ -2,11 +2,10 @@ const express = require("express");
 const axios = require("axios");
 const Chat = require("../models/chat");
 const Session = require("../models/session");
-const Summary = require("../models/SummarizedHistory"); // Fixed import
+const Summary = require("../models/SummarizedHistory");
 
 const router = express.Router();
 
-// Ensure this matches your actual model file
 
 
 router.post("/chatbot", async (req, res) => {
@@ -38,7 +37,6 @@ router.post("/chatbot", async (req, res) => {
             await session.save();
         }
 
-        // Append the new message securely
         chat.messages.push({ text: message, sender: "user", timestamp: new Date() });
         await chat.save();
 
@@ -53,7 +51,7 @@ router.post("/chatbot", async (req, res) => {
 
         console.log("Sending payload to Python:", modelPayload);
 
-        // Improved error handling for Python model response
+
         let modelResponse;
         try {
             modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
@@ -73,10 +71,10 @@ router.post("/chatbot", async (req, res) => {
         chat.messages.push(botMessage);
         await chat.save();
 
-        // Return the bot's response immediately
+
         res.json({ sessionId, response: botMessage.text });
 
-        // Save summarized history asynchronously
+
         if (modelResponse.data.summarized_history) {
             saveSummarizedHistory(userId, sessionId, modelResponse.data.summarized_history, botMessage.text)
                 .catch(err => console.error("Error saving summary:", err));
@@ -88,7 +86,7 @@ router.post("/chatbot", async (req, res) => {
     }
 });
 
-// Async Summary Saving Function
+
 async function saveSummarizedHistory(userId, sessionId, summarizedHistory, botResponse) {
     const summaryDoc = new Summary({
         userId,
@@ -106,7 +104,7 @@ router.post("/chatreport", async (req, res) => {
     try {
         const { userId, sessionId, summary } = req.body;
 
-        // Sending data from Node.js (8000) to Python (5000)
+
         const response = await axios.post("http://127.0.0.1:5000/api/chatreport", {
             userId,
             sessionId,
@@ -115,7 +113,7 @@ router.post("/chatreport", async (req, res) => {
 
         console.log("Response from Python:", response.data);
 
-        // Send the Python response back to the client
+       
         res.status(200).json(response.data);
 
     } catch (error) {
