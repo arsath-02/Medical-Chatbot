@@ -12,7 +12,6 @@ import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
 import Profile from "./Components/Profile";
 
-
 import { AuthProvider } from "./UserContext";
 import Camera from "./Components/Camera";
 

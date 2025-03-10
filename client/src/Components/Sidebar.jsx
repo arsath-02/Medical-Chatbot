@@ -6,6 +6,7 @@ import { GiEntryDoor } from "react-icons/gi";
 import {useNavigate} from "react-router-dom";
 import { MdHealthAndSafety } from "react-icons/md";
 import { MdVideoCameraFront } from "react-icons/md";
+
 import { IoLogoGameControllerB } from "react-icons/io";
 
 import { useContext } from "react";
@@ -122,7 +123,6 @@ const handleCamera=()=>{
 
       {/* Show logout door icon if user is logged in */}
       <div title="Games" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-
         <div className="ml-1">
           <IoLogoGameControllerB color="gray" size={20} onClick={handlegame} />
         </div>

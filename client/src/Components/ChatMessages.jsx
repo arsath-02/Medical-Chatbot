@@ -185,7 +185,6 @@ export default function ChatMessages({ messages, isLoading, error }) {
               className={`max-w-[80%] rounded-lg p-3 mx-2 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
             >
-              
               <p className="text-sm whitespace-pre-wrap">
                 <TypingEffect text={`Hi ${name}, I am Dr.Chat 😊`} />
               </p>

@@ -15,6 +15,8 @@ from nltk.tokenize import sent_tokenize
 import re
 from pymongo import MongoClient
 from datetime import datetime
+from tensorflow.keras.models import load_model
+
 
 
 import cv2
@@ -22,8 +24,6 @@ import numpy as np
 from flask import Flask, request, jsonify, Response
 import time
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
 app = Flask(__name__)
 CORS(app)
 
