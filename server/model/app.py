@@ -177,43 +177,56 @@ give me the response in shorter format
 
 return the response in same language as user input's language
 
-
+{emotion}
 {history}
 User: {user_input}
 AI:
 """
+memory = {}
 
 @app.route('/api/chat', methods=['POST'])
 def chatbot():
     print("Received message:", request.json)
-    print("Headers:", request.headers)
     data = request.json
-    user_message = data.get("message", "")
 
+    # Get message, emotion, and user details
+    user_message = data.get("message", "")
+    emotion = data.get("emotion", "Neutral")
+    user_id = data.get("user_id", "")
+    session_id = data.get("sessionId", "")
+
+    print(f"Received emotion: {emotion}")
+
+    # Validate if message is present
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
+    # Detect language and translate if needed
     try:
-        # Detect language
         detected_lang = detect(user_message)
-
         needs_translation_back = False
-        if detected_lang == 'ta':
+
+        if detected_lang == 'ta':  # If Tamil, translate to English
             user_message_english = GoogleTranslator(source='ta', target='en').translate(user_message)
             needs_translation_back = True
         else:
             user_message_english = user_message
 
+        # ✅ Check if the session already has a chat history
+        if session_id not in memory:
+            memory[session_id] = []
 
-        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
+        # ✅ Load the previous chat history
+        history_context = "\n".join(memory[session_id])
 
-
+        # ✅ Format the prompt
         prompt = PROMPT_TEMPLATE.format(
-            history=memory_context.get("history", ""),
-            user_input=user_message_english
+            history=history_context,
+            user_input=user_message_english,
+            emotion=emotion
         )
 
-
+        # ✅ Send the prompt to GPT-4/Qwen-32b
         response = client.chat.completions.create(
             model="qwen-2.5-32b",
             messages=[
@@ -222,25 +235,29 @@ def chatbot():
             ]
         )
 
+        # ✅ Extract chatbot response
         chatbot_response_english = response.choices[0].message.content
 
+        # ✅ Save the chat history
+        memory[session_id].append(f"User: {user_message_english}")
+        memory[session_id].append(f"Bot: {chatbot_response_english}")
 
-        memory.save_context(
-            inputs={"user_input": user_message_english},
-            outputs={"response": chatbot_response_english}
-        )
-
+        # ✅ If it was Tamil, translate response back to Tamil
         if needs_translation_back:
             chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
+
+            # ✅ Convert Tamil to Tanglish (if required)
             tanglish_response = chatbot_response.replace(" ", " ")
         else:
-            tanglish_response = chatbot_response_english
+            chatbot_response = chatbot_response_english
 
-        return jsonify({"response": tanglish_response})
+        # ✅ Return the response
+        return jsonify({"response": chatbot_response})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+    
 # @app.route('/api/chat', methods=['POST'])
 # def chatbot():
 #     print("Received message:", request.json)

@@ -1,4 +1,5 @@
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response
+from flask_socketio import SocketIO, emit
 from keras.models import load_model
 from keras.preprocessing import image
 import cv2
@@ -6,6 +7,7 @@ import numpy as np
 import time
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Load the pre-trained model
 model_best = load_model('./face_model.h5')
@@ -18,26 +20,25 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 # Store the latest emotion globally
 latest_emotion = "Neutral"
+stable_emotion = "Neutral"
+emotion_counter = 0
+emotion_threshold = 5
+
 
 def generate_frames():
-    global latest_emotion
+    global latest_emotion, stable_emotion, emotion_counter
     cap = cv2.VideoCapture(0)
 
     try:
         while True:
-            # Capture frame-by-frame
             success, frame = cap.read()
             if not success:
                 break
 
-            # Convert the frame to grayscale
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            # Detect faces
             faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
 
             for (x, y, w, h) in faces:
-                # Extract the face region
                 face_roi = frame[y:y + h, x:x + w]
 
                 # Preprocess the face image
@@ -48,24 +49,32 @@ def generate_frames():
 
                 # Predict emotion
                 predictions = model_best.predict(face_image)
-                emotion_label = class_names[np.argmax(predictions)]
-                latest_emotion = emotion_label
+                detected_emotion = class_names[np.argmax(predictions)]
+
+                # Stabilize the emotion
+                if detected_emotion == latest_emotion:
+                    emotion_counter += 1
+                else:
+                    emotion_counter = 0
+
+                if emotion_counter >= emotion_threshold:
+                    stable_emotion = detected_emotion
+                    emotion_counter = 0
+                    socketio.emit('emotion_update', {'emotion': stable_emotion})
+
+                latest_emotion = detected_emotion
 
                 # Display the emotion label
-                cv2.putText(frame, f'Emotion: {emotion_label}', (x, y - 10),
+                cv2.putText(frame, f'Emotion: {stable_emotion}', (x, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-
-                # Draw rectangle around face
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-            # Encode the frame to send to React
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-            # Slow down the feed slightly
             time.sleep(0.03)
 
     except Exception as e:
@@ -76,14 +85,11 @@ def generate_frames():
 
 @app.route('/video_feed')
 def video_feed():
-    # Route for webcam feed
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
-@app.route('/emotion', methods=['GET'])
+@app.route('/emotion')
 def get_emotion():
-    # This API endpoint returns the current detected emotion as JSON
-    return jsonify({'emotion': latest_emotion})
-
+    global stable_emotion
+    return {'emotion': stable_emotion}
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=3000, debug=True)

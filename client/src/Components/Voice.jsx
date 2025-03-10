@@ -87,42 +87,26 @@ export default function Voice() {
       setApiResponse(data.response);
       setIsClicked(false);
 
-      // Perform basic sentiment analysis based on user input
-      const sentiment = analyzeSentiment(textar);
+      // Analyze sentiment from user input
+      const userSentiment = analyzeSentiment(textar);
+      console.log("Detected sentiment:", userSentiment);
 
-      // Create speech utterance
-      const speech = new SpeechSynthesisUtterance(data.response);
+      // Also analyze response sentiment for more appropriate delivery
+      const responseSentiment = analyzeSentiment(data.response);
 
-      // Get available voices
-      const voices = window.speechSynthesis.getVoices();
+      // Use the response sentiment primarily, but consider user sentiment too
+      // This creates more contextually appropriate speech
+      let finalSentiment = responseSentiment;
+
+      // In some cases, we may want to prioritize the user's emotion
+      if (userSentiment === 'sad' || userSentiment === 'anxious') {
+        // For emotional support, mirror the user's emotion with a calming effect
+        finalSentiment = 'calm';
+      }
+
+      // Configure and play speech
+      const speech = configureSpeech(data.response, finalSentiment);
       
-      const tamilVoice = voices.find(voice =>
-        voice.lang.includes('ta') || voice.name.toLowerCase().includes('tamil') && voice.name.includes('Female')
-      );
-
-      if (tamilVoice) {
-        speech.voice = tamilVoice;
-        console.log("Using Tamil Voice:", tamilVoice.name);
-      } else {
-        console.warn("Tamil voice not found, using default voice.");
-      }
-
-      // Apply different tones based on emotion
-      if (sentiment === 'happy') {
-        speech.pitch = 1.5;   // Higher pitch for happiness
-        speech.rate = 1.2;    // Slightly faster for excitement
-      } else if (sentiment === 'sad') {
-        speech.pitch = 0.8;   // Lower pitch for sadness
-        speech.rate = 0.8;    // Slow down the speech
-      } else {
-        speech.pitch = 1.0;   // Neutral pitch
-        speech.rate = 1.0;    // Normal speed
-      }
-
-      // Set language to Tamil
-      speech.lang = 'ta-IN';
-      speech.volume = 1.0;
-
       // Cancel any ongoing speech and start speaking
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(speech);
@@ -132,29 +116,107 @@ export default function Voice() {
       console.error("Chat API Error:", err);
     }
   };
-
   // ✅ Function to detect sentiment from text
   const analyzeSentiment = (text) => {
-    const happyKeywords = ["மகிழ்ச்சி", "நன்றி", "அருமை", "நல்லது", "சந்தோஷம்", "வாழ்த்துக்கள்", "கிள்ளி"];
-    const sadKeywords = ["துக்கம்", "அவலம்", "வருத்தம்", "தவிப்பு", "நஷ்டம்", "துயரம்", "மடிப"];
+    // Expanded Tamil emotion keywords
+    const emotions = {
+      happy: ["மகிழ்ச்சி", "நன்றி", "அருமை", "நல்லது", "சந்தோஷம்", "வாழ்த்துக்கள்", "கிள்ளி", "சிரிப்பு", "ஆனந்தம்", "பெருமிதம்"],
+      sad: ["துக்கம்", "அவலம்", "வருத்தம்", "தவிப்பு", "நஷ்டம்", "துயரம்", "மடிப", "கண்ணீர்", "சோகம்", "உடைந்த"],
+      angry: ["கோபம்", "எரிச்சல்", "சினம்", "வெறுப்பு", "தொந்தரவு", "பொறுமை இழப்பு", "ஆத்திரம்"],
+      anxious: ["பயம்", "கவலை", "பதற்றம்", "திகில்", "அச்சம்", "பதட்டம்", "நெருக்கடி"],
+      calm: ["அமைதி", "நிம்மதி", "நிதானம்", "சாந்தம்", "தியானம்", "ஓய்வு"],
+      excited: ["உற்சாகம்", "பரவசம்", "உந்துதல்", "விருப்பம்", "ஆர்வம்"]
+    };
 
     const textLower = text.toLowerCase();
 
-    // Check for happiness
-    if (happyKeywords.some(word => textLower.includes(word))) {
-      return 'happy';
+    // Check each emotion category
+    for (const [emotion, keywords] of Object.entries(emotions)) {
+      if (keywords.some(word => textLower.includes(word))) {
+        return emotion;
+      }
     }
 
-    // Check for sadness
-    if (sadKeywords.some(word => textLower.includes(word))) {
-      return 'sad';
+    // Check for question patterns
+    if (textLower.includes("?") ||
+        textLower.includes("என்ன") ||
+        textLower.includes("எப்படி") ||
+        textLower.includes("ஏன்") ||
+        textLower.includes("எங்கே")) {
+      return "curious";
     }
 
-    // Otherwise, return neutral
-    return 'neutral';
+    // Default to neutral if no emotion is detected
+    return "neutral";
   };
 
+  // Enhanced speech synthesis configuration with emotion-based voice parameters
+  const configureSpeech = (text, sentiment) => {
+    // Create speech utterance
+    const speech = new SpeechSynthesisUtterance(text);
 
+    // Get available voices
+    const voices = window.speechSynthesis.getVoices();
+
+    const tamilVoice = voices.find(voice =>
+      voice.lang.includes('ta') || voice.name.toLowerCase().includes('tamil') && voice.name.includes('Female')
+    );
+
+    if (tamilVoice) {
+      speech.voice = tamilVoice;
+      console.log("Using Tamil Voice:", tamilVoice.name);
+    } else {
+      console.warn("Tamil voice not found, using default voice.");
+    }
+
+    // Apply emotional voice parameters
+    switch (sentiment) {
+      case 'happy':
+        speech.pitch = 1.2;     // Higher pitch for happiness
+        speech.rate = 1.1;      // Slightly faster
+        speech.volume = 1.0;    // Full volume
+        break;
+      case 'sad':
+        speech.pitch = 0.8;     // Lower pitch for sadness
+        speech.rate = 0.8;      // Slower speed
+        speech.volume = 0.8;    // Slightly softer
+        break;
+      case 'angry':
+        speech.pitch = 1.3;     // Higher pitch
+        speech.rate = 1.3;      // Faster speech
+        speech.volume = 1.0;    // Full volume
+        break;
+      case 'anxious':
+        speech.pitch = 1.1;     // Slightly higher pitch
+        speech.rate = 1.2;      // Faster speech
+        speech.volume = 0.9;    // Slightly reduced volume
+        break;
+      case 'calm':
+        speech.pitch = 0.9;     // Slightly lower pitch
+        speech.rate = 0.9;      // Slightly slower
+        speech.volume = 0.85;   // Softer voice
+        break;
+      case 'excited':
+        speech.pitch = 1.3;     // Higher pitch
+        speech.rate = 1.2;      // Faster speech
+        speech.volume = 1.0;    // Full volume
+        break;
+      case 'curious':
+        speech.pitch = 1.1;     // Slightly higher pitch
+        speech.rate = 1.0;      // Normal speed
+        speech.volume = 0.95;   // Normal volume
+        break;
+      default: // neutral
+        speech.pitch = 1.0;     // Normal pitch
+        speech.rate = 1.0;      // Normal speed
+        speech.volume = 0.9;    // Normal volume
+    }
+
+    // Set language to Tamil
+    speech.lang = 'ta-IN';
+
+    return speech;
+  };
 
   return (
     <div className={`min-h-screen italic ${isDarkMode ? "bg-gray-900" : "bg-white"} ${isDarkMode ? "text-white" : "text-gray-900"} flex`}>

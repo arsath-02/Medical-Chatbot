@@ -10,9 +10,8 @@ const router = express.Router();
 
 router.post("/chatbot", async (req, res) => {
     try {
-        const { userId, message, sessionId, title } = req.body;
-
-        if (!userId || !message || !sessionId) {
+        const { userId, message, sessionId, title,emotion}= req.body;
+      if (!userId || !message || !sessionId) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
@@ -46,6 +45,7 @@ router.post("/chatbot", async (req, res) => {
             message,
             user_id: userId,
             sessionId:sessionId,
+            emotion:emotion,
             history_summary: latestSummary ? latestSummary.summarizedHistory : ""
         };
 

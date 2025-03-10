@@ -10,12 +10,14 @@ import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { TbReportAnalytics } from "react-icons/tb";
 import Report from './Report';
+
 export default function Chatbot() {
   const navigate = useNavigate();
   const {isDarkMode} = useContext(ThemeContext);
   const [inputValue, setInputValue] = useState("");
   const name = localStorage.getItem("Name") || "User";
   const [messages, setMessages] = useState([]);
+  const [currentEmotion, setCurrentEmotion] = useState('Neutral'); // Add emotion state
 
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
@@ -25,11 +27,19 @@ export default function Chatbot() {
   const [currentSessionTitle, setCurrentSessionTitle] = useState("New Chat");
   const [isFirstMessageSent, setIsFirstMessageSent] = useState(false);
   const [userReport, setUserReport] = useState(false);
-  const [reportData,setReportData]=useState("");
- // Added missing state variables for camera functionality
- const [cameraActive, setCameraActive] = useState(false);
- const [emotionData, setEmotionData] = useState(null);
- const [intervalId, setIntervalId] = useState(null);
+  const [reportData, setReportData] = useState("");
+  // Added missing state variables for camera functionality
+  const [cameraActive, setCameraActive] = useState(false);
+  const [emotionData, setEmotionData] = useState(null);
+  const [intervalId, setIntervalId] = useState(null);
+
+  // Handler for emotion changes from ChatMessages
+  const handleEmotionChange = (emotion) => {
+    setCurrentEmotion(emotion);
+    // Optional: You could also save the emotion to localStorage or other state management if needed
+    console.log(`Emotion changed to: ${emotion}`);
+  };
+
   useEffect(() => {
     const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
     if (storedMessages && storedMessages.length > 0) {
@@ -40,7 +50,6 @@ export default function Chatbot() {
       localStorage.setItem("chatMessages", JSON.stringify([]));
     }
   }, []);
-
 
   useEffect(() => {
     const storedSessionId = localStorage.getItem("chatSessionId");
@@ -53,11 +62,9 @@ export default function Chatbot() {
     }
   }, []);
 
-
   useEffect(() => {
     fetchChatSessions();
   }, []);
-
 
   const fetchChatSessions = async () => {
     const userId = localStorage.getItem("Email");
@@ -72,7 +79,6 @@ export default function Chatbot() {
         throw new Error("Failed to fetch sessions");
       }
       const sessions = await response.json();
-
 
       const formattedSessions = sessions.map(session => ({
         id: session.id || session.sessionId,
@@ -98,19 +104,22 @@ export default function Chatbot() {
       return;
     }
 
-
     if (!isFirstMessageSent) {
       const welcomeMessage = { text: `Hi ${name}, I am Dr.Chat 😊`, sender: "bot" };
       setMessages(prevMessages => [...prevMessages, welcomeMessage]);
       setIsFirstMessageSent(true);
     }
-
+    let messageText = inputValue;
+    if (currentEmotion === "sad") {
+        messageText = "I am feeling sad";
+    }
     const userMessage = { text: inputValue, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue("");
     setIsLoading(true);
     setError(null);
-
+    console.log(messageText);
+    console.log(currentEmotion);
     try {
       let currentTitle = currentSessionTitle;
       if (currentSessionTitle === "New Chat" && messages.length <= 1) {
@@ -124,9 +133,10 @@ export default function Chatbot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          message: inputValue,
+          message: messageText,
           sessionId,
-          title: currentTitle
+          title: currentTitle,
+          emotion: currentEmotion // Include current emotion in the API request
         }),
       });
 
@@ -170,7 +180,7 @@ export default function Chatbot() {
   };
 
   const handleCamera = () => {
-   navigate("/camera");
+    navigate("/camera");
   };
 
   const handleToggleChatHistory = () => {
@@ -189,7 +199,6 @@ export default function Chatbot() {
     const chatText = messages.map(msg =>
       `${msg.sender === 'user' ? name : 'Dr.Chat'}: ${msg.text}`
     ).join('\n\n');
-
 
     if (navigator.share) {
       navigator.share({
@@ -214,14 +223,12 @@ export default function Chatbot() {
 
       const chatData = await response.json();
 
-
       setSessionId(selectedSessionId);
       localStorage.setItem("chatSessionId", selectedSessionId);
       const selectedChat = chatHistory.find(chat => chat.id === selectedSessionId);
       if (selectedChat) {
         setCurrentSessionTitle(selectedChat.title);
       }
-
 
       const formattedMessages = Array.isArray(chatData.messages)
         ? chatData.messages
@@ -231,14 +238,12 @@ export default function Chatbot() {
           }));
 
       if (formattedMessages.length === 0) {
-
         setMessages([]);
         setIsFirstMessageSent(false);
       } else {
         setMessages(formattedMessages);
         setIsFirstMessageSent(true);
       }
-
 
       setShowChatHistory(false);
     } catch (error) {
@@ -260,7 +265,6 @@ export default function Chatbot() {
   const handleChatbot = () => {
     navigate("/chatbot");
   };
-
 
   const handleReport = async () => {
     const formattedMessages = messages.map(msg => ({
@@ -287,7 +291,8 @@ export default function Chatbot() {
         body: JSON.stringify({
           userId,
           sessionId,
-          messages: formattedMessages
+          messages: formattedMessages,
+          emotion: currentEmotion // Include the emotion in analysis requests
         })
       });
 
@@ -311,12 +316,10 @@ export default function Chatbot() {
     }
   };
 
-  console.log(localStorage.getItem("phone"))
-
-
   const handleClose = () => {
     setUserReport(false);
   };
+
   return (
     <div className={`min-h-screen italic flex ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Sidebar
@@ -343,26 +346,32 @@ export default function Chatbot() {
       )}
 
       <div className={`flex-1 flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
-  <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
-  <TbReportAnalytics onClick={handleReport} size={25}/>
-</div>{userReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-130 relative">
-            <button
-              onClick={handleClose}
-              className="absolute top-2 right-2 text-gray-600 hover:text-red-500"
-            >
-              ✖
-            </button>
-            <Report info={reportData} func={setReportData} />
-          </div>
+        <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
+          <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
+          <TbReportAnalytics onClick={handleReport} size={25}/>
         </div>
-      )}
 
+        {userReport && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-130 relative">
+              <button
+                onClick={handleClose}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-500"
+              >
+                ✖
+              </button>
+              <Report info={reportData} func={setReportData} />
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <ChatMessages messages={messages} isLoading={isLoading} error={error} />
+          <ChatMessages
+            messages={messages}
+            isLoading={isLoading}
+            error={error}
+            onEmotionChange={handleEmotionChange} // Pass the emotion handler to ChatMessages
+          />
         </div>
 
         <ChatInput
@@ -370,7 +379,7 @@ export default function Chatbot() {
           inputValue={inputValue}
           setInputValue={setInputValue}
           isLoading={isLoading}
-
+          currentEmotion={currentEmotion} // Pass the emotion to ChatInput
         />
       </div>
     </div>
