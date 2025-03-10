@@ -35,7 +35,7 @@ const verifyToken = async (req, res, next) => {
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
-        const userId = decodedToken.uid; 
+        const userId = decodedToken.uid;
 
         // Fetch user details from Firebase
         const userRecord = await admin.auth().getUser(userId);
@@ -66,11 +66,6 @@ mongoose.connect(process.env.MONGO_URI, {
     process.exit(1);
 });
 
-<<<<<<< Updated upstream
-
-=======
-// Global Error Handler
->>>>>>> Stashed changes
 app.use((err, req, res, next) => {
     console.error("❌ Error:", err.stack);
     res.status(500).json({
@@ -83,27 +78,25 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
-<<<<<<< Updated upstream
+// <<<<<<< Updated upstream
 
-process.on('SIGINT', () => {
-  mongoose.connection.close(() => {
-    console.log('MongoDB connection closed');
-    process.exit(0);
-  });
-});
-=======
-// Graceful Shutdown
-const gracefulShutdown = () => {
-    console.log("\n🔴 Shutting down server...");
-    mongoose.connection.close(() => {
-        console.log('🔗 MongoDB connection closed');
-        server.close(() => {
-            console.log("✅ Server shutdown complete");
-            process.exit(0);
-        });
-    });
-};
+// process.on('SIGINT', () => {
+//   mongoose.connection.close(() => {
+//     console.log('MongoDB connection closed');
+//     process.exit(0);
+//   });
+// });
+// const gracefulShutdown = () => {
+//     console.log("\n🔴 Shutting down server...");
+//     mongoose.connection.close(() => {
+//         console.log('🔗 MongoDB connection closed');
+//         server.close(() => {
+//             console.log("✅ Server shutdown complete");
+//             process.exit(0);
+//         });
+//     });
+// };
 
-process.on('SIGINT', gracefulShutdown);
-process.on('SIGTERM', gracefulShutdown);
->>>>>>> Stashed changes
+// process.on('SIGINT', gracefulShutdown);
+// process.on('SIGTERM', gracefulShutdown);
+// >>>>>>> Stashed changes

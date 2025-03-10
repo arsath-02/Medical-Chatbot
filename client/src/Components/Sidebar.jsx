@@ -5,7 +5,7 @@ import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
 import {useNavigate} from "react-router-dom";
 import { MdHealthAndSafety } from "react-icons/md";
-
+import { MdVideoCameraFront } from "react-icons/md";
 import { IoLogoGameControllerB } from "react-icons/io";
 
 import { useContext } from "react";
@@ -22,7 +22,7 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
 
   const navigate=useNavigate();
   useEffect(() => {
-   
+
     const storedEmail = localStorage.getItem("Email");
     if (storedEmail && storedEmail.length > 0) {
       setUserInitial(storedEmail.charAt(0).toUpperCase());
@@ -50,15 +50,24 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   const goToProfile = () => {
     navigate("/profile"); // Use this if using React Router
   };
-  
 
+
+
+
+const handleCamera=()=>{
+  navigate("/camera");
+}
 
   return (
     <div
-      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-19 space-y-7 z-20
+      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-5 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
-
+    <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+        <div className="ml-1">
+          <MdVideoCameraFront size={20} color="gray" onClick={handleCamera} />
+          </div>
+          </div>
     <div
       className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold
         ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}

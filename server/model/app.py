@@ -16,6 +16,14 @@ import re
 from pymongo import MongoClient
 from datetime import datetime
 
+
+import cv2
+import numpy as np
+from flask import Flask, request, jsonify, Response
+import time
+
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
 app = Flask(__name__)
 CORS(app)
 
@@ -307,6 +315,15 @@ def chatbot():
 #         return jsonify({"error": str(e)}), 500
 
 
+model_best = load_model('./face_model.h5')  # Set your machine model file path here
+
+# Classes for 7 emotional states
+class_names = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
+
+# Load the pre-trained face cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+
 @app.route('/chat', methods=['POST'])
 def chat_bot():
     print("Received message:", request.json)
@@ -542,7 +559,7 @@ def simple_analysis(messages, message_count):
     else:
         summary = f"This conversation contains {message_count} messages."
 
-  
+
     return jsonify({
         "status": "processed",
         "message_count": message_count,

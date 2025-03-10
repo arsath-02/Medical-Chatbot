@@ -79,23 +79,7 @@ const Profile = () => {
   }, []);
 
 
-  const handleRefreshChat = () => {
-    const newSessionId = uuidv4();
-    setSessionId(newSessionId);
-    localStorage.setItem("chatSessionId", newSessionId);
 
-    setMessages([]);
-    localStorage.setItem("chatMessages", JSON.stringify([]));
-
-    setCurrentSessionTitle("New Chat");
-    localStorage.setItem("chatSessionTitle", "New Chat");
-
-    setIsFirstMessageSent(false);
-
-    if (showChatHistory) {
-      setShowChatHistory(false);
-    }
-  };
 
   const fetchActiveDays = async (currentUser) => {
     try {
@@ -134,12 +118,7 @@ const Profile = () => {
   }, []);
 
 
-  const handleToggleChatHistory = () => {
-    setShowChatHistory(!showChatHistory);
-    if (!showChatHistory) {
-      fetchChatSessions();
-    }
-  };
+ 
 
   const loadChat = async (selectedSessionId) => {
     try {
@@ -350,7 +329,7 @@ const Profile = () => {
 
           {/* Mood & Wellbeing */}
           <div
-            className={`p-6 rounded-xl shadow-lg transition-all duration-300 border 
+            className={`p-6 rounded-xl shadow-lg transition-all duration-300 border
             ${isDarkMode ? "bg-gradient-to-br from-gray-800 to-gray-900 text-white border-gray-700"
                 : "bg-gradient-to-br from-white to-gray-100 text-gray-900 border-gray-300"}`}
           >

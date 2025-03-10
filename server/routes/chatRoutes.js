@@ -2,11 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const Chat = require("../models/chat");
 const Session = require("../models/session");
-<<<<<<< Updated upstream
 const Summary = require("../models/SummarizedHistory");
-=======
-const Summary = require("../models/SummarizedHistory"); 
->>>>>>> Stashed changes
 
 const router = express.Router();
 
@@ -117,7 +113,7 @@ router.post("/chatreport", async (req, res) => {
 
         console.log("Response from Python:", response.data);
 
-       
+
         res.status(200).json(response.data);
 
     } catch (error) {
@@ -205,32 +201,31 @@ router.post("/saveSummary", async (req, res) => {
 router.get("/active-days", async (req, res) => {
     try {
       const userEmail = req.query.userId; // Extract user email
-  
+
       console.log("🔍 Received userId:", userEmail); // Debugging
-  
+
       if (!userEmail) {
         return res.status(400).json({ error: "User email is required" });
       }
-  
+
       // Find sessions based on email
       const sessions = await Session.find({ userId: userEmail }).select("createdAt");
-  
+
       if (!sessions.length) {
         return res.json({ activeDays: [], totalDays: 0 });
       }
-  
+
       // Extract unique days
       const activeDaysSet = new Set(
         sessions.map((session) => session.createdAt.toISOString().split("T")[0])
       );
-  
+
       return res.json({ activeDays: Array.from(activeDaysSet), totalDays: activeDaysSet.size });
     } catch (error) {
       console.error("❌ Error fetching active days:", error);
       res.status(500).json({ error: "Server error" });
     }
   });
-  
+
 
 module.exports = router;
-

@@ -49,13 +49,12 @@ const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage, s
       {message.sender === "bot" && <BotAvatar isDarkMode={isDarkMode} />}
 
       <div
-        className={`max-w-[80%] rounded-lg p-3 mx-2 ${
-          message.sender === "user"
+        className={`max-w-[80%] rounded-lg p-3 mx-2 ${message.sender === "user"
             ? "bg-gray-600 text-white"
             : isDarkMode
-            ? "bg-gray-900 text-white"
-            : "bg-white text-gray-900"
-        }`}
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-900"
+          }`}
       >
         <p className="text-sm whitespace-pre-wrap">
           {message.sender === "bot" && shouldShowTypingEffect ? (
@@ -125,9 +124,47 @@ export default function ChatMessages({ messages, isLoading, error }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  const [emotion, setEmotion] = useState('Neutral');
 
+  useEffect(() => {
+    // Fetch emotion data every second
+    const interval = setInterval(() => {
+      fetch('http://localhost:3000/emotion')
+        .then(response => response.json())
+        .then(data => {
+          setEmotion(data.emotion);
+        })
+        .catch(err => console.error(err));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar italic">
+       <div className="flex-1/2 p">
+    {/* Fixed Video Feed at Top-Right */}
+    <div style={{
+      position: 'fixed',
+      top: '55px',
+      right: '10px',
+      width: '300px',
+      height: '200px',
+      zIndex: '1000',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      borderRadius: '8px',
+      padding: '10px'
+    }}>
+      <img
+        src="http://localhost:3000/video_feed"
+        alt="Video Feed"
+        style={{ width: '100%', height: '100%', borderRadius: '8px' }}
+      />
+
+    </div>
+  </div>
       <div className="max-w-3xl mx-auto space-y-4 p-4">
         {messages.length > 0 ? (
 
@@ -141,18 +178,17 @@ export default function ChatMessages({ messages, isLoading, error }) {
             />
           ))
         ) : (
-          
+
           <div className="flex justify-start mb-4">
             <BotAvatar isDarkMode={isDarkMode} />
             <div
-              className={`max-w-[80%] rounded-lg p-3 mx-2 ${
-                isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-              }`}
+              className={`max-w-[80%] rounded-lg p-3 mx-2 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+                }`}
             >
               <div>
-              <TbReportAnalytics />
+                <TbReportAnalytics />
 
-                </div>
+              </div>
               <p className="text-sm whitespace-pre-wrap">
                 <TypingEffect text={`Hi ${name}, I am Dr.Chat 😊`} />
               </p>
@@ -163,9 +199,8 @@ export default function ChatMessages({ messages, isLoading, error }) {
         {isLoading && (
           <div className="flex justify-start">
             <BotAvatar isDarkMode={isDarkMode} />
-            <div className={`rounded-lg p-3 shadow-md ml-2 ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
-            }`}>
+            <div className={`rounded-lg p-3 shadow-md ml-2 ${isDarkMode ? "bg-gray-800" : "bg-white"
+              }`}>
               <div className="flex space-x-2">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-100"></div>

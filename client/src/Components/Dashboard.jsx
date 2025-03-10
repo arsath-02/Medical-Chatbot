@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   LineChart,
+  AreaChart,Area,
   Line,
   XAxis,
   YAxis,
@@ -466,7 +467,7 @@ const Dashboard = () => {
           <SleepComponent />
         </div>
 
-        
+
         <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
           <ActivityComponent />
         </div>

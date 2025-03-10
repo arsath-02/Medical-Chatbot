@@ -26,6 +26,10 @@ export default function Chatbot() {
   const [isFirstMessageSent, setIsFirstMessageSent] = useState(false);
   const [userReport, setUserReport] = useState(false);
   const [reportData,setReportData]=useState("");
+ // Added missing state variables for camera functionality
+ const [cameraActive, setCameraActive] = useState(false);
+ const [emotionData, setEmotionData] = useState(null);
+ const [intervalId, setIntervalId] = useState(null);
   useEffect(() => {
     const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
     if (storedMessages && storedMessages.length > 0) {
@@ -165,6 +169,9 @@ export default function Chatbot() {
     }
   };
 
+  const handleCamera = () => {
+   navigate("/camera");
+  };
 
   const handleToggleChatHistory = () => {
     setShowChatHistory(!showChatHistory);
@@ -321,6 +328,7 @@ export default function Chatbot() {
         showChatHistory={showChatHistory}
         handleVoice={handleVoice}
         handleChatbot={handleChatbot}
+        handleCamera={handleCamera}
       />
 
       {showChatHistory && (

@@ -10,8 +10,11 @@ import FitbitLogin from "./Components/FitbitLogin";
 import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
-import { AuthProvider } from "./UserContext";  
 import Profile from "./Components/Profile";
+
+
+import { AuthProvider } from "./UserContext";
+import Camera from "./Components/Camera";
 
 
 function App() {
@@ -32,9 +35,9 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  
+
   return (
-    <AuthProvider>
+     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/signup" element={<Signup />} />
@@ -49,6 +52,8 @@ function App() {
           <Route path="/game-selector" element={<GameSelector />} />
          <Route path="/callback" element={<FitbitCallback />} />
          <Route path="/game-selector" element={<GameSelector />} />
+          <Route path="/camera" element={<Camera />} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
