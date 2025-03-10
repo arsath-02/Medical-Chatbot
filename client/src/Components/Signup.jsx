@@ -84,7 +84,7 @@ const Signup = () => {
                     placeholder="Enter your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
+                    className="w-full pl-10 pr-4 py-2 border text-black border-gray-300 rounded-md "
                     required
                   />
                 </div>
@@ -100,7 +100,7 @@ const Signup = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
+                    className="w-full pl-10 pr-4 py-2 text-black border border-gray-300 rounded-md "
                     required
                   />
                 </div>
@@ -116,7 +116,7 @@ const Signup = () => {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full pl-10 pr-4 py-2 text-black border border-gray-300 rounded-md"
                     required
                   />
                 </div>
@@ -132,7 +132,7 @@ const Signup = () => {
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md "
+                    className="w-full pl-10 pr-4 py-2 text-black border border-gray-300 rounded-md "
                     required
                   />
                 </div>

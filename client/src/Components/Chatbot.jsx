@@ -304,6 +304,8 @@ export default function Chatbot() {
     }
   };
 
+  console.log(localStorage.getItem("phone"))
+
 
   const handleClose = () => {
     setUserReport(false);

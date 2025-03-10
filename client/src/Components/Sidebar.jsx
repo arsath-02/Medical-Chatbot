@@ -47,8 +47,10 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   const handlegame=()=>{
     navigate("/game-selector");
   }
-
-
+  const goToProfile = () => {
+    navigate("/profile"); // Use this if using React Router
+  };
+  
 
 
   return (
@@ -70,34 +72,35 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
           <ArrowRepeat size={20} color="gray" onClick={handleRefreshChat}/>
           </div>
           </div> */}
-        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
-        <div className="ml-1">
-          <Newspaper size={20} color="gray" onClick={handleToggleChatHistory} />
+        <div title="Chat History" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+          <div className="ml-1">
+            <Newspaper size={20} color="gray" onClick={handleToggleChatHistory} />
           </div>
-          </div>
-        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+        </div>
+        <div title="Share" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <Share2 color="gray" size={20} onClick={handleShareChat} />
           </div>
           </div>
 
-      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+      <div title="Voice Assistant" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <IoAccessibilitySharp color="gray" size={20} onClick={handleVoice} />
         </div>
       </div>
-      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+      <div title="chat" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <SiChatbot color="gray" size={20} onClick={handlechatbot} />
         </div>
       </div>
-      <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+      <div title="Health Track" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
           <MdHealthAndSafety color="gray" size={20} onClick={handlehealth} />
         </div>
       </div>
 
       <button
+        title="Theme"
         onClick={ToogleTheme}
         className="p-2 hover-bg rounded-lg transition-colors"
       >
@@ -108,38 +111,44 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
         )}
       </button>
 
+<<<<<<< Updated upstream
 
       <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+=======
+      {/* Show logout door icon if user is logged in */}
+      <div title="Games" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+>>>>>>> Stashed changes
         <div className="ml-1">
-          <IoLogoGameControllerB color="gray" size={20} onClick={handlegame}/>
+          <IoLogoGameControllerB color="gray" size={20} onClick={handlegame} />
         </div>
       </div>
 
       {userInitial ? (
-  <div
-    className={`mt-auto w-10 h-10 rounded-full flex items-center justify-center font-bold
-      ${isDarkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"}`}
-  >
-    {userInitial}
-  </div>
-) : (
-  <button
-    className={`mt-auto p-2 rounded-lg text-sm transition-all
-      ${isDarkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-    onClick={handleLogin}
-  >
-    Login
-  </button>
-)}
+        <button
+          onClick={goToProfile} // Function to navigate to the profile page
+          title="Profile"
+          className={`mt-auto w-10 h-10 rounded-full flex items-center justify-center font-bold
+            ${isDarkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"} transition-all hover:opacity-80`}
+        >
+          {userInitial}
+        </button>
+      ) : (
+        <button
+          className={`mt-auto p-2 rounded-lg text-sm transition-all
+            ${isDarkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+      )}
 
-
-{userInitial && (
-<div className="p-2 mt-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
-<div className="ml-2 flex items-center">
-<GiEntryDoor color="gray" size={25} />
-</div>
-</div>
-)}
+      {userInitial && (
+        <div title="Logout" className="p-2 mt-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onClick={handleLogout}>
+          <div className="ml-2 flex items-center">
+            <GiEntryDoor color="gray" size={25} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

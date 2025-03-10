@@ -10,7 +10,9 @@ import FitbitLogin from "./Components/FitbitLogin";
 import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
-import { AuthProvider } from "./UserContext"; 
+import { AuthProvider } from "./UserContext";  
+import Profile from "./Components/Profile";
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,6 +32,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -37,12 +40,15 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/voice" element={<Voice />} />
           <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/voice" element={<Voice />} />
           <Route path="/FitbitLogin" element={<FitbitLogin />} />
           <Route path="/callback" element={<FitbitCallback />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/game-selector" element={<GameSelector />} />
+         <Route path="/callback" element={<FitbitCallback />} />
+         <Route path="/game-selector" element={<GameSelector />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

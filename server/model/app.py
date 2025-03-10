@@ -13,6 +13,9 @@ import traceback
 import nltk
 from nltk.tokenize import sent_tokenize
 import re
+from pymongo import MongoClient
+from datetime import datetime
+
 app = Flask(__name__)
 CORS(app)
 
@@ -22,6 +25,10 @@ translate = GoogleTranslator()
 
 client = Groq(api_key=os.getenv('GROQ_API_KEY'))
 memory = ConversationBufferMemory(memory_key="history")
+
+mongoClient = MongoClient("mongodb://localhost:27017/")
+db = mongoClient["test"]  # Replace with your actual database name
+sessions_collection = db["sessions"]
 
 PROMPT_TEMPLATE = """
 Your name is Dr.chat

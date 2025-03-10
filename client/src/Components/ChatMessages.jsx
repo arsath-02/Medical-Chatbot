@@ -37,7 +37,11 @@ const BotAvatar = ({ isDarkMode }) => (
   </div>
 );
 
-const MessageBubble = ({ message, userInitial, isDarkMode, shouldShowTypingEffect }) => {
+
+
+const MessageBubble = ({ message, userInitial, isDarkMode, isLatestBotMessage, shouldShowTypingEffect }) => {
+  const [showTypingEffect, setShowTypingEffect] = useState(isLatestBotMessage && message.sender === "bot");
+
   if (!message || !message.sender || !message.text) return null;
 
   return (

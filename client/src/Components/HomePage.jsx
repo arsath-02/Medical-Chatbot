@@ -371,6 +371,7 @@ const HomePage = () => {
           </div>
         </section>
 
+<<<<<<< Updated upstream
 
         <section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
           <div className="container mx-auto px-4">
@@ -388,15 +389,69 @@ const HomePage = () => {
                     drchat@gmail.com
                   </a>
                 </p>
+=======
+      <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+        <div className="container mx-auto">
+          <div className="flex flex-col items-center justify-center space-y-2 text-center">
+            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
+              Developers
+            </h2>
+            <p className={`max-w-[700px] text-sm sm:text-base md:text-lg ${isDarkMode ? "text-gray-400" : "text-gray-700"}`}>
+              Meet the team behind the innovation, dedicated to building seamless experiences.
+            </p>
+          </div>
+          
+          {/* Adjusted spacing here */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-1 mt-4 sm:gap-2 place-items-center -mt-2">
+            {developers.map((testimonial, index) => (
+              <div
+                key={index}
+                className={`w-full max-w-[400px] flex flex-col items-center text-center p-3 sm:p-4 rounded-lg border ${
+                  isDarkMode ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"
+                } shadow-sm transition-all hover:shadow-md`}
+              >
+                <h3 className={`text-lg sm:text-xl font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
+                  {testimonial.name}
+                </h3>
+                <h4 className={`text-sm sm:text-md font-medium mb-1 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                  {testimonial.position}
+                </h4>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
+>>>>>>> Stashed changes
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center md:items-start">
+          {/* Left Side - Branding */}
+          <div className="text-center md:text-left mb-6 md:mb-0 px-8">
+            <h2 className="text-2xl font-bold">🅓r. 𝙲𝚑𝚊𝚝</h2>
+            <p className="text-gray-400">Your companion for emotional support and mental wellbeing.</p>
+            <p className="text-gray-400">
+              Mail us at <a href="mailto:drchat@gmail.com" className={` ${isDarkMode ? "text-gray-200" : "text-gray-600"} hover:underline`}>drchat@gmail.com</a>
+            </p>
+          </div>
+          {/* Right Side - Links */}
+          <div className="flex flex-row space-x-12">
+            <div>
+              <h3 className="text-lg font-semibold">Links</h3>
+              <ul className="text-gray-400 space-y-1">
+                <li><a href="">LinkedIn</a></li>
+                <li><a href="">Github</a></li>
+              </ul>
             </div>
 
-            <div className="text-center text-gray-500 mt-8 text-sm">
-              © 2025 Dr. Chat. All rights reserved.
-            </div>
           </div>
-        </section>
-      </div>
+        </div>
+        {/* Footer */}
+        <div className="text-center text-gray-500 mt-8 text-sm">
+          © 2025 Dr. Chat. All rights reserved.
+        </div>
+      </section>
+    </div>
     </div>
   );
 };
