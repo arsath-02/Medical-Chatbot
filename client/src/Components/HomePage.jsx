@@ -371,25 +371,7 @@ const HomePage = () => {
           </div>
         </section>
 
-<<<<<<< Updated upstream
 
-        <section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
-              <div className="text-center md:text-left mb-6 md:mb-0">
-                <h2 className="text-2xl font-bold">🅓r. 𝙲𝚑𝚊𝚝</h2>
-                <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>
-                  Your companion for emotional support and mental wellbeing.
-                </p>
-                <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>
-                  Mail us at <a
-                    href="mailto:drchat@gmail.com"
-                    className={`${isDarkMode ? "text-gray-200" : "text-gray-600"} hover:underline`}
-                  >
-                    drchat@gmail.com
-                  </a>
-                </p>
-=======
       <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
         <div className="container mx-auto">
           <div className="flex flex-col items-center justify-center space-y-2 text-center">
@@ -417,7 +399,6 @@ const HomePage = () => {
                   {testimonial.position}
                 </h4>
                 <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{testimonial.feedback}</p>
->>>>>>> Stashed changes
               </div>
             ))}
           </div>

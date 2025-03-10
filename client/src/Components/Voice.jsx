@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { RiMic2Line } from "react-icons/ri";
-import video from "../assets/video.mp4";
 import Sidebar from "./Sidebar";
 import { ThemeContext } from "./ThemeContext";
 
@@ -13,13 +12,11 @@ export default function Voice() {
   const [isClicked, setIsClicked] = useState(false);
   const [text, setText] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-  const videoRef = useRef(null);
   const [apiResponse, setApiResponse] = useState("");
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-  console.log("Recognition:", recognition);
+  
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -86,31 +83,43 @@ export default function Voice() {
       const data = await response.json();
       console.log(data.response);
 
-
       setApiResponse(data.response);
-
-
-      setShowVideo(false);
-
-      const speech = new SpeechSynthesisUtterance(data.response);
       setIsClicked(false);
-      setShowVideo(true);
-      window.speechSynthesis.speak(speech);
-
-
-      speech.onend = () => {
-        setShowVideo(false);
-        if (videoRef.current) {
-          videoRef.current.play();
-        }
+      
+      // Create speech utterance with proper event handlers
+      const speech = new SpeechSynthesisUtterance(data.response);
+      
+      speech.onstart = () => {
+        console.log("Speech started");
       };
-
-
-      if (videoRef.current) {
-        videoRef.current.onended = () => {
-          setShowVideo(false);
-        };
+      
+      speech.onend = () => {
+        console.log("Speech ended");
+      };
+      
+      speech.onerror = (e) => {
+        console.error("Speech synthesis error:", e);
+      };
+      
+      // Use a voice if available (optional)
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // Try to find a good voice - prefer female English voices if available
+        const preferredVoice = voices.find(voice => 
+          voice.lang.includes('en') && voice.name.includes('Female')
+        ) || voices[0]; // Fallback to first available voice
+        
+        speech.voice = preferredVoice;
       }
+      
+      // Adjust speech parameters for better clarity
+      speech.rate = 1.0;  // Normal speed
+      speech.pitch = 1.0; // Normal pitch
+      speech.volume = 1.0; // Full volume
+      
+      // Start speaking
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech
+      window.speechSynthesis.speak(speech);
 
     } catch (err) {
       setError("Failed to get response. Please try again.");
@@ -124,7 +133,6 @@ export default function Voice() {
       <aside className="w-64 h-screen flex-shrink-0">
         <Sidebar />
       </aside>
-
 
       <div className="flex-1 flex flex-row">
         <div className="w-1/2 flex items-center justify-center">
@@ -140,8 +148,12 @@ export default function Voice() {
           </div>
         </div>
 
-
         <div className="w-1/2 flex flex-col items-center justify-center p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
 
           {apiResponse && (
             <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
@@ -151,17 +163,14 @@ export default function Voice() {
               <div className="absolute w-16 h-16 rounded-full bg-blue-50 -top-4 right-12"></div>
               <div className="absolute w-12 h-12 rounded-full bg-blue-50 -top-2 right-2"></div>
 
-
               <p className="text-gray-800 text-center font-medium z-10 relative pt-4">
                 {apiResponse}
               </p>
             </div>
           )}
 
-
           {!apiResponse && (
             <div className="mb-8 bg-blue-50 rounded-2xl p-6 w-full max-w-md relative mx-auto shadow-lg">
-
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 -left-2"></div>
               <div className="absolute w-24 h-24 rounded-full bg-blue-50 -top-8 left-12"></div>
               <div className="absolute w-20 h-20 rounded-full bg-blue-50 -top-6 left-32"></div>
@@ -174,7 +183,6 @@ export default function Voice() {
             </div>
           )}
 
-        
           <div className="mt-4">
             <div
               className={`flex items-center justify-center h-16 w-16 rounded-full cursor-pointer ${
