@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import {
   LineChart,
@@ -14,12 +14,14 @@ import {
   Bar
 } from "recharts";
 import Sidebar from "./Sidebar";
+import { ThemeContext } from "./ThemeContext";
 
 export const HeartRateComponent = () => {
   const [heartRateData, setHeartRateData] = useState([]);
   const [heartRateZones, setHeartRateZones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {isDarkMode} = useContext(ThemeContext);
   const timeframe = "1d";
 
   useEffect(() => {
@@ -91,29 +93,29 @@ export const HeartRateComponent = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container">
-        <h2 className="text-white text-xl font-semibold mb-4">Heart Rate Data</h2>
-        <div className="text-white">Loading heart rate data...</div>
+      <div className={`dashboard-container ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h2 className={` ${isDarkMode ? "text-white": "text-gray-900"} text-white text-xl font-semibold mb-4`}>Heart Rate Data</h2>
+        <div className={`${isDarkMode ? "text-white" : "text-gray-900"}`}>Loading heart rate data...</div>
       </div>
     );
   }
 
   if (error && heartRateZones.length === 0) {
     return (
-      <div className="dashboard-container">
-        <h2 className="text-white text-xl font-semibold mb-4">Heart Rate Data</h2>
-        <div className="text-white">{error}</div>
+      <div className={`dashboard-container ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Heart Rate Data</h2>
+        <div className={`${isDarkMode ? "text-white" : "text-gray-900"}`}>{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container">
-      <h2 className="text-white text-xl font-semibold mb-4">Heart Rate Data</h2>
+    <div className={`dashboard-container ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+      <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Heart Rate Data</h2>
 
 
-      <div className="chart-container mb-8">
-        <h3 className="text-white text-lg font-medium mb-2">Time in Heart Rate Zones (minutes)</h3>
+      <div className={`dashboard-container mb-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h3 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-lg font-medium mb-2`}>Time in Heart Rate Zones (minutes)</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={heartRateZones}>
             <XAxis dataKey="date" tick={{ fill: "#fff" }} />
@@ -131,13 +133,13 @@ export const HeartRateComponent = () => {
 
 
       {heartRateZones.length > 0 && heartRateZones[0].restingHeartRate > 0 && (
-        <div className="mb-8">
-          <h3 className="text-white text-lg font-medium mb-2">Resting Heart Rate</h3>
-          <div className="bg-gray-800 rounded-lg p-4 text-center">
+        <div className={`mb-8 ${isDarkMode ? "bg-gray-900" : "bg-gray-100 "}`}>
+          <h3 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-lg font-medium mb-2`}>Resting Heart Rate</h3>
+          <div className={` ${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 text-center`}>
             <div className="text-5xl font-bold text-red-400">
               {heartRateZones[0].restingHeartRate}
             </div>
-            <div className="text-white mt-2">BPM</div>
+            <div className={` ${isDarkMode ? "text-white" : "text-gray-900"} mt-2`}>BPM</div>
           </div>
         </div>
       )}
@@ -145,7 +147,7 @@ export const HeartRateComponent = () => {
 
       {heartRateData.length > 0 && (
         <div className="chart-container">
-          <h3 className="text-white text-lg font-medium mb-2">Intraday Heart Rate</h3>
+          <h3 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-lg font-medium mb-2`}>Intraday Heart Rate</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={heartRateData}>
               <XAxis
@@ -178,6 +180,7 @@ export const HeartRateComponent = () => {
 export const StepsComponent = () => {
   const [stepsData, setStepsData] = useState([]);
   const timeframe = "1w";
+  const {isDarkMode} = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchStepsData = async () => {
@@ -216,8 +219,8 @@ export const StepsComponent = () => {
   }, [timeframe]);
 
   return (
-    <div className="dashboard-container">
-      <h2 className="text-white text-xl font-semibold mb-4">Daily Steps</h2>
+    <div className={`dashboard-container ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+      <h2 className={`text-xl font-semibold mb-4 `}>Daily Steps</h2>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={stepsData}>
@@ -238,6 +241,7 @@ const SleepComponent = () => {
   const [sleepData, setSleepData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {isDarkMode} = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchSleepData = async () => {
@@ -295,25 +299,25 @@ const SleepComponent = () => {
   }, []);
   if (loading) {
     return (
-      <div className="dashboard-container mt-8">
-        <h2 className="text-white text-xl font-semibold mb-4">Sleep Analysis</h2>
-        <div className="text-white">Loading sleep data...</div>
+      <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Sleep Analysis</h2>
+        <div className={` ${isDarkMode ? "text-white" : "text-gray-900"}`}>Loading sleep data...</div>
       </div>
     );
   }
 
   if (error && sleepData.length === 0) {
     return (
-      <div className="dashboard-container mt-8">
-        <h2 className="text-white text-xl font-semibold mb-4">Sleep Analysis</h2>
-        <div className="text-white">{error}</div>
+      <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+        <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Sleep Analysis</h2>
+        <div className={` ${isDarkMode ? "text-white" : "text-gray-900"}`}>{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container mt-8">
-      <h2 className="text-white text-xl font-semibold mb-4">Sleep Analysis</h2>
+    <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+      <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Sleep Analysis</h2>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={sleepData}>
@@ -344,6 +348,7 @@ export const ActivityComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const timeframe = "1w";
+  const {isDarkMode} = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchActivityData = async () => {
@@ -404,25 +409,25 @@ export const ActivityComponent = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container mt-8">
-        <h2 className="text-white text-xl font-semibold mb-4">Activity & Calories</h2>
-        <div className="text-white">Loading activity data...</div>
+      <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Activity & Calories</h2>
+        <div className={`${isDarkMode ? "text-white" : "text-gray-900"}`}>Loading activity data...</div>
       </div>
     );
   }
 
   if (error && caloriesData.length === 0) {
     return (
-      <div className="dashboard-container mt-8">
-        <h2 className="text-white text-xl font-semibold mb-4">Activity & Calories</h2>
-        <div className="text-white">{error}</div>
+      <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+        <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Activity & Calories</h2>
+        <div className={` ${isDarkMode ? "text-white" : "text-gray-900"}`}>{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container mt-8">
-      <h2 className="text-white text-xl font-semibold mb-4">Activity & Calories</h2>
+    <div className={`dashboard-container mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+      <h2 className={` ${isDarkMode ? "text-white" : "text-gray-900"} text-xl font-semibold mb-4`}>Activity & Calories</h2>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={caloriesData}>
@@ -456,32 +461,33 @@ export const ActivityComponent = () => {
 };
 
 const Dashboard = () => {
+  const {isDarkMode} = useContext(ThemeContext);
   return (
-    <div className="flex italic bg-gray-900 min-h-screen  overflow-y-auto custom-scrollbar">
+    <div className={`flex italic ${isDarkMode ? "text-white" : "text-gray-900"} min-h-screen  overflow-y-auto custom-scrollbar`}>
 
     <Sidebar />
 
 
     <div className="flex-1 pl-20 p-6 ">
-      <h1 className="text-white text-2xl font-bold mb-6">Fitness Dashboard</h1>
+      <h1 className={` text-2xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Fitness Dashboard</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+        <div className={` ${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
           <HeartRateComponent />
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+        <div className={`${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
           <StepsComponent />
         </div>
 
 
-        <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+        <div className={`${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
           <SleepComponent />
         </div>
 
-
-        <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+        
+        <div className={`${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
           <ActivityComponent />
         </div>
       </div>
