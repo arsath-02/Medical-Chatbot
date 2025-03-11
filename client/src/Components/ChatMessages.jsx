@@ -144,7 +144,7 @@ export default function ChatMessages({ messages, isLoading, error, onEmotionChan
   useEffect(() => {
     // Set up emotion fetching
     emotionIntervalRef.current = setInterval(() => {
-      fetch('http://localhost:4000/emotion')
+      fetch('http://localhost:3000/emotion')
         .then(response => response.json())
         .then(data => {
           setEmotion(data.emotion);

@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import Sidebar from "./Sidebar";
 import { ThemeContext } from "./ThemeContext";
+import StressGraph from "./StressGraph";
 
 export const HeartRateComponent = () => {
   const [heartRateData, setHeartRateData] = useState([]);
@@ -238,10 +239,69 @@ export const StepsComponent = () => {
 
 
 const SleepComponent = () => {
-  const [sleepData, setSleepData] = useState([]);
+  //const [sleepData, setSleepData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const {isDarkMode} = useContext(ThemeContext);
+  const sleepData = [
+    {
+      date: "2025-03-04",
+      deep: 1.5,  // hours
+      light: 4,   // hours
+      rem: 2,     // hours
+      wake: 0.5,  // hours
+      totalHours: 8,
+    },
+    {
+      date: "2025-03-05",
+      deep: 1.2,
+      light: 3.5,
+      rem: 1.8,
+      wake: 0.4,
+      totalHours: 7.5,
+    },
+    {
+      date: "2025-03-06",
+      deep: 1.8,
+      light: 4.2,
+      rem: 2.1,
+      wake: 0.3,
+      totalHours: 8.4,
+    },
+    {
+      date: "2025-03-07",
+      deep: 1.4,
+      light: 3.8,
+      rem: 1.9,
+      wake: 0.5,
+      totalHours: 7.6,
+    },
+    {
+      date: "2025-03-08",
+      deep: 1.7,
+      light: 4.1,
+      rem: 2,
+      wake: 0.6,
+      totalHours: 8.4,
+    },
+    {
+      date: "2025-03-09",
+      deep: 1.6,
+      light: 4,
+      rem: 1.9,
+      wake: 0.5,
+      totalHours: 8,
+    },
+    {
+      date: "2025-03-10",
+      deep: 1.3,
+      light: 3.7,
+      rem: 1.6,
+      wake: 0.4,
+      totalHours: 7,
+    }
+  ];
+
 
   useEffect(() => {
     const fetchSleepData = async () => {
@@ -486,9 +546,12 @@ const Dashboard = () => {
           <SleepComponent />
         </div>
 
-        
+
         <div className={`${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
           <ActivityComponent />
+        </div>
+        <div className={`${isDarkMode ? "bg-gray-900" : "bg-gray-100"} rounded-lg p-4 shadow-lg`}>
+      <  StressGraph />
         </div>
       </div>
     </div>

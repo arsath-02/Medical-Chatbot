@@ -63,7 +63,7 @@ const handleCamera=()=>{
 
   return (
     <div
-      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-10 space-y-7 z-20
+      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-6 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
     <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">

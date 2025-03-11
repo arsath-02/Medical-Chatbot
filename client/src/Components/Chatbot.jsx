@@ -10,7 +10,7 @@ import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { TbReportAnalytics } from "react-icons/tb";
 import Report from './Report';
-
+import { GoGraph } from "react-icons/go";
 export default function Chatbot() {
   const navigate = useNavigate();
   const {isDarkMode} = useContext(ThemeContext);
@@ -44,6 +44,7 @@ export default function Chatbot() {
     const storedMessages = JSON.parse(localStorage.getItem("chatMessages"));
     if (storedMessages && storedMessages.length > 0) {
       setMessages(storedMessages);
+      
       setIsFirstMessageSent(true);
     } else {
       setMessages([]);
@@ -165,7 +166,7 @@ export default function Chatbot() {
     const newSessionId = uuidv4();
     setSessionId(newSessionId);
     localStorage.setItem("chatSessionId", newSessionId);
-
+    console.log(localStorage.getItem("chatSessionId"));
     setMessages([]);
     localStorage.setItem("chatMessages", JSON.stringify([]));
 
@@ -265,6 +266,9 @@ export default function Chatbot() {
   const handleChatbot = () => {
     navigate("/chatbot");
   };
+  const handleGoGraph=()=>{
+    navigate("/graph");
+  }
 
   const handleReport = async () => {
     const formattedMessages = messages.map(msg => ({
@@ -349,6 +353,7 @@ export default function Chatbot() {
         <div className={`border-b p-3 flex justify-between items-center ${isDarkMode ? "border-gray-700 bg-gray-800 text-gray-200" : "border-gray-200 bg-gray-50 text-gray-800"}`}>
           <h2 className="font-medium w-4/5 text-center">{currentSessionTitle || "New Chat"}</h2>
           <TbReportAnalytics onClick={handleReport} size={25}/>
+          <GoGraph  onClick={handleGoGraph}/>
         </div>
 
         {userReport && (
@@ -360,7 +365,8 @@ export default function Chatbot() {
               >
                 ✖
               </button>
-              <Report info={reportData} func={setReportData} />
+              <GoGraph />
+              <Report info={reportData} func={setReportData}  messages={messages}/>
             </div>
           </div>
         )}

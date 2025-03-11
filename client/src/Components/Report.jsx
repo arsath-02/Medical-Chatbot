@@ -10,22 +10,22 @@ export default function ReportCard({
     sentiment: "Unknown",
     summary: "No summary available",
     updatedAt: "",
-    message: "No additional information available."
+    message: "No additional information available.",
   },
+  messages = [], // New prop to handle multiple messages
 }) {
   const [showMessage, setShowMessage] = useState(false);
   const [userData, setUserData] = useState({ userId: "N/A", sessionId: "N/A" });
+  console.log("Messages received:", messages);
 
   useEffect(() => {
     const userId = localStorage.getItem("Email") || "N/A";
     const sessionId = localStorage.getItem("chatSessionId") || "N/A";
     setUserData({ userId, sessionId });
 
-    console.log(userId);
-  console.log(sessionId);
+    console.log("User ID:", userId);
+    console.log("Session ID:", sessionId);
   }, []);
-
-
 
   const handleCardClick = () => setShowMessage(!showMessage);
 
@@ -94,7 +94,16 @@ export default function ReportCard({
 
         {showMessage && (
           <div className="mt-4 p-4 bg-green-100 text-green-700 rounded-lg border border-green-400">
-            {info?.message || "No additional information available."}
+            <p className="font-semibold">User Messages:</p>
+            {messages.length > 0 ? (
+              <ul className="list-disc pl-4">
+                {messages.map((msg, index) => (
+                  <li key={index} className="text-sm">{msg}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm">No additional messages available.</p>
+            )}
           </div>
         )}
       </div>

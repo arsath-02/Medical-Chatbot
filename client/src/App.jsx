@@ -12,9 +12,10 @@ import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
 import Profile from "./Components/Profile";
 import Music from "./Music";
+import Game from "./Components/Game";
 import { AuthProvider } from "./UserContext";
 import Camera from "./Components/Camera";
-
+import Graph from "./Components/Graph";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -58,7 +59,9 @@ function App() {
          <Route path="/game-selector" element={<GameSelector />} />
           <Route path="/camera" element={<Camera />} />
           <Route path="/music" element={<Music showIframe={showIframe} />} />
+          <Route path="/graph" element={<Graph />} />
 
+         <Route path="/game" element={<Game />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
