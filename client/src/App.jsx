@@ -11,13 +11,18 @@ import FitbitCallback from "./Components/FitbitCallback";
 import Dashboard from "./Components/Dashboard";
 import GameSelector from "./Components/GameSelector";
 import Profile from "./Components/Profile";
-
+import Music from "./Music";
 import { AuthProvider } from "./UserContext";
 import Camera from "./Components/Camera";
 
 
 function App() {
   const [user, setUser] = useState(null);
+  const [showIframe, setShowIframe] = useState(false);
+
+  const handleMusic = () => {
+    setShowIframe(true);
+  };
 
   useEffect(() => {
     const auth = getAuth();
@@ -52,6 +57,7 @@ function App() {
          <Route path="/callback" element={<FitbitCallback />} />
          <Route path="/game-selector" element={<GameSelector />} />
           <Route path="/camera" element={<Camera />} />
+          <Route path="/music" element={<Music showIframe={showIframe} />} />
 
         </Routes>
       </BrowserRouter>

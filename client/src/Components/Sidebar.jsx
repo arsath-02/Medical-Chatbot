@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { RepeatIcon as ArrowRepeat, Newspaper, Share2, Moon, Sun } from "lucide-react";
+import { RepeatIcon as ArrowRepeat, Newspaper, Music, Moon, Sun } from "lucide-react";
 import { IoAccessibilitySharp } from "react-icons/io5";
 import { SiChatbot } from "react-icons/si";
 import { GiEntryDoor } from "react-icons/gi";
@@ -16,6 +16,7 @@ import { ThemeContext } from "./ThemeContext";
 export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, handleShareChat, handleLogin, showChatHistory, handleVoice }) {
   const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const [userInitial, setUserInitial] = useState(null);
+  const [showIframe, setShowIframe] = useState(false);
 
   const ToogleTheme = () => {
     setIsDarkMode((prev) => !prev);
@@ -53,15 +54,16 @@ export default function Sidebar({ handleRefreshChat, handleToggleChatHistory, ha
   };
 
 
-
-
+  const handleMusic = () => {
+    setShowIframe(true);  // This sets the state to show the iframe
+  };
 const handleCamera=()=>{
   navigate("/camera");
 }
 
   return (
     <div
-      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-5 space-y-7 z-20
+      className={`fixed italic w-16 backdrop-blur-sm border-r flex flex-col items-center py-10 space-y-7 z-20
         ${isDarkMode ? "bg-gray-900 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100"}`}
     >
     <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
@@ -87,11 +89,16 @@ const handleCamera=()=>{
             <Newspaper size={20} color="gray" onClick={handleToggleChatHistory} />
           </div>
         </div>
-        <div title="Share" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <div title="Music" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
-          <Share2 color="gray" size={20} onClick={handleShareChat} />
+          <Music color="gray" size={20} onClick={handleMusic}/>
+
           </div>
           </div>
+          {/* Display the iframe if showIframe is true */}
+      {showIframe && (
+        navigate("/music")
+      )}
 
       <div title="Voice Assistant" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
         <div className="ml-1">
