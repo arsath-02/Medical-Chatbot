@@ -45,8 +45,19 @@ npm run dev
 ```
 
 ## 📷 Screenshots
-![Chatbot Interface](./screenshots/chatbot.png)
-![Voice Assistant](./screenshots/voice.png)
+![ChatBot Home Page](https://github.com/user-attachments/assets/7b0dd95c-31d5-4278-92de-6976b42f3897)
+
+![Chatbot Interface](https://github.com/user-attachments/assets/09e7ed5d-1cf1-4851-9d17-60fd688d6156) 
+
+![Chat History](https://github.com/user-attachments/assets/1970be1a-7054-4e7a-bf7b-8898e41e41f8)
+
+![Voice Assistant](https://github.com/user-attachments/assets/3c938971-9350-4630-855d-4ecdccf6daee)
+
+![Games](https://github.com/user-attachments/assets/1bd0faef-6ee3-4b84-91a5-a8e012b092de)
+
+![Music](https://github.com/user-attachments/assets/f1206141-7ff9-41fa-8477-649c9faceba6)
+
+
 
 ## ✨ Future Enhancements
 - 🔄 **Multi-Language Support**
