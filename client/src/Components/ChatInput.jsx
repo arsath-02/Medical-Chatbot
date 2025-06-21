@@ -20,7 +20,7 @@ export default function ChatInput({
   const [message, setMessage] = useState("");
 
   const {isDarkMode} = useContext(ThemeContext);
-  const socket = io('http://localhost:5000');
+  const socket = io('https://apparent-wolf-obviously.ngrok-free.app');
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;

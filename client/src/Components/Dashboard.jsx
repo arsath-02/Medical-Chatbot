@@ -328,7 +328,7 @@ const SleepComponent = () => {
         const sleepData = sleepRangeResponse.data;
 
         // Send data to your backend
-        await axios.post('http://localhost:5000/send-sleep-data', { sleepData });
+        await axios.post('http://localhost:/send-sleep-data', { sleepData });
 
         // const sleepDict = createFitbitDataDictionary(sleepRangeResponse.data);
         // console.log("Sleep Dictionary:", sleepDict);

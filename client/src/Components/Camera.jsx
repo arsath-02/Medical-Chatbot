@@ -7,7 +7,7 @@ const VideoFeed = () => {
     // Fetch emotion data every second
     const interval = setInterval(async () => {
       try {
-        const response = await fetch('http://localhost:5000/emotion');
+        const response = await fetch('https://apparent-wolf-obviously.ngrok-free.app/emotion');
         const data = await response.json();
         setEmotion(data.emotion);
       } catch (err) {
