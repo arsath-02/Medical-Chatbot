@@ -12,6 +12,7 @@ CORS(app)  # 🔹 Enable CORS for all routes
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Load the pre-trained model
+
 model_best = load_model('./face_model.h5')
 
 # Classes for 7 emotional states

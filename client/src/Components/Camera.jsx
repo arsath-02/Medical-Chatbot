@@ -7,7 +7,7 @@ const VideoFeed = () => {
     // Fetch emotion data every second
     const interval = setInterval(async () => {
       try {
-        const response = await fetch('http://localhost:3000/emotion');
+        const response = await fetch('http://localhost:5000/emotion');
         const data = await response.json();
         setEmotion(data.emotion);
       } catch (err) {
@@ -22,7 +22,7 @@ const VideoFeed = () => {
     <div style={{ textAlign: 'center' }}>
       <h2>Live Video Feed</h2>
       <img
-        src="http://localhost:3000/video_feed"
+        src="http://localhost:5000/video_feed"
         alt="Video Feed"
         style={{ border: '2px solid black', width: '500px', height: '400px' }}
       />

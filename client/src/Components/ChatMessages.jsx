@@ -144,7 +144,7 @@ export default function ChatMessages({ messages, isLoading, error, onEmotionChan
   useEffect(() => {
     // Set up emotion fetching
     emotionIntervalRef.current = setInterval(() => {
-      fetch('http://localhost:3000/emotion')
+      fetch('http://localhost:5000/emotion')
         .then(response => response.json())
         .then(data => {
           setEmotion(data.emotion);
@@ -208,7 +208,7 @@ export default function ChatMessages({ messages, isLoading, error, onEmotionChan
           padding: '10px'
         }}>
           <img
-            src="http://localhost:3000/video_feed"
+            src="http://localhost:5000/video_feed"
             alt="Video Feed"
             style={{ width: '100%', height: '100%', borderRadius: '8px' }}
           />

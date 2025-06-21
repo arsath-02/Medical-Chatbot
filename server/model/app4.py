@@ -18,10 +18,10 @@ load_dotenv()
 client = Groq(api_key=os.getenv('GROQ_API_KEY'))
 
 # MongoDB connection
-mongo_uri = "mongodb+srv://arsath02062004:aZPqFHUicKapmf20@chat.1wxmg.mongodb.net/?retryWrites=true&w=majority&appName=Chat"
-mongo_client = MongoClient(mongo_uri)
-db = mongo_client['sentiment_analysis']
-collection = db['sentiments']
+mongo_uri1 = "mongodb+srv://arsath02062004:aZPqFHUicKapmf20@chat.1wxmg.mongodb.net/?retryWrites=true&w=majority&appName=Chat"
+mongo_client1 = MongoClient(mongo_uri1)
+db1 = mongo_client1['sentiment_analysis']
+collection1 = db1['sentiments']
 
 # Function to analyze sentiment using Groq API
 def analyze_prompt_sentiment(prompt):
@@ -99,7 +99,7 @@ def analyze_sentiment():
         }
 
         # Save to MongoDB
-        collection.insert_one(response)
+        collection1.insert_one(response)
 
         # Return a copy of the response without the MongoDB _id
         response_copy = response.copy()
@@ -191,7 +191,7 @@ def analyze_conversation_sentiment():
         }
 
         # Save to MongoDB
-        collection.insert_one(report)
+        collection1.insert_one(report)
 
         # Return a copy of the report without the MongoDB _id
         report_copy = report.copy()
@@ -265,7 +265,7 @@ def generate_sentiment_report():
         }
 
         # Save to MongoDB
-        collection.insert_one(report)
+        collection1.insert_one(report)
 
         # Return a copy of the report without the MongoDB _id
         report_copy = report.copy()
@@ -281,7 +281,7 @@ def generate_sentiment_report():
 def get_session_sentiments(session_id):
     try:
         # Fetch all reports with the given session ID
-        reports = list(collection.find({"sessionId": session_id}))
+        reports = list(collection1.find({"sessionId": session_id}))
 
         if not reports:
             return jsonify({"message": "No sentiment reports found for this session"}), 404
@@ -313,7 +313,7 @@ def get_sentiment_history():
             query["type"] = type_filter
 
         # Fetch data from MongoDB (with pagination)
-        cursor = collection.find(query).sort('timestamp', -1).skip(skip).limit(limit)
+        cursor = collection1.find(query).sort('timestamp', -1).skip(skip).limit(limit)
 
         # Convert to list and serialize datetime objects
         results = []

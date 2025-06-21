@@ -8,13 +8,14 @@ const SessionSentimentsGraph = () => {
 
     useEffect(() => {
         const sessionId = localStorage.getItem('chatSessionId');
+        console.log(sessionId+"rog");
         if (!sessionId) {
             setError('No session ID found in local storage');
             setLoading(false);
             return;
         }
 
-        fetch(`http://127.0.0.1:5001/api/get-session-sentiments/${sessionId}`)
+        fetch(`http://127.0.0.1:5000/api/get-session-sentiments/${sessionId}`)
             .then(response => response.json())
             .then(responseData => {
                 const chartData = responseData.map(item => ({
@@ -25,7 +26,7 @@ const SessionSentimentsGraph = () => {
                 setLoading(false);
             })
             .catch(err => {
-                setError('Failed to fetch data');
+                setError('Failed to fetch data',err);
                 setLoading(false);
             });
     }, []);
@@ -45,6 +46,7 @@ const SessionSentimentsGraph = () => {
             <div style={{ marginBottom: '20px' }}>
                 <h3>{getEmotion(data.length > 0 ? data[data.length - 1].stressPercentage : 0)}</h3>
             </div>
+            {/* <h1>{data}</h1> */}
             <LineChart
                 width={600}
                 height={300}
