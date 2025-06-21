@@ -15,7 +15,7 @@ const SessionSentimentsGraph = () => {
             return;
         }
 
-        fetch(`http://127.0.0.1:5000/api/get-session-sentiments/${sessionId}`)
+        fetch(`https://apparent-wolf-obviously.ngrok-free.app/api/get-session-sentiments/${sessionId}`)
             .then(response => response.json())
             .then(responseData => {
                 const chartData = responseData.map(item => ({

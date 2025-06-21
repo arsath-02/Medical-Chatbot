@@ -9,7 +9,7 @@ export default function ChatHistory({ chatHistory, loadChat, handleToggleChatHis
     if (window.confirm("Are you sure you want to delete this chat?")) {
       try {
         const userId = localStorage.getItem("Email");
-        const response = await fetch(`http://127.0.0.1:8000/api/chat/${sessionId}`, {
+        const response = await fetch(`https://medical-chatbot-02.onrender.com/api/chat/${sessionId}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),

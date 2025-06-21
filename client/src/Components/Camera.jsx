@@ -22,7 +22,7 @@ const VideoFeed = () => {
     <div style={{ textAlign: 'center' }}>
       <h2>Live Video Feed</h2>
       <img
-        src="http://localhost:5000/video_feed"
+        src="https://apparent-wolf-obviously.ngrok-free.app/video_feed"
         alt="Video Feed"
         style={{ border: '2px solid black', width: '500px', height: '400px' }}
       />
