@@ -15,7 +15,7 @@ router.post('/analyze', async (req, res) => {
     }
 
     try {
-        const response = await axios.post('http://127.0.0.1:5000/api/chatreport', { messages });
+        const response = await axios.post('https://apparent-wolf-obviously.ngrok-free.app/api/chatreport', { messages });
      
         const result = response.data;
 
