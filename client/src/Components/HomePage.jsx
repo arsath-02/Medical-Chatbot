@@ -81,7 +81,7 @@ const HomePage = () => {
   const [typingIndex, setTypingIndex] = useState(0);
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return; 
+    if (!message.trim()) return;
 
     setIsLoading(true);
     setError(null);
@@ -96,7 +96,7 @@ const HomePage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.text }),
       });
-
+      console.log(String(response)+" rog");
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -372,7 +372,7 @@ const HomePage = () => {
         </section>
 
 
-      <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+     {/* <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
         <div className="container mx-auto">
           <div className="flex flex-col items-center justify-center space-y-2 text-center">
             <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
@@ -382,8 +382,8 @@ const HomePage = () => {
               Meet the team behind the innovation, dedicated to building seamless experiences.
             </p>
           </div>
-          
-          {/* Adjusted spacing here */}
+
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-1 mt-4 sm:gap-2 place-items-center -mt-2">
             {developers.map((testimonial, index) => (
               <div
@@ -403,7 +403,7 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section id="contact" className={`py-10 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center md:items-start">
