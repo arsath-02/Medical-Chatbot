@@ -66,8 +66,8 @@ npm run dev
 
 ## 📬 Contact
 For any queries or collaboration, feel free to reach out:
-📧 Email: your-email@example.com
-🔗 LinkedIn: [Your Profile](https://linkedin.com/in/your-profile)
+📧 Email: arsath02062004@gmail.com
+🔗 LinkedIn: [Profile](https://linkedin.com/in/arsath02)
 
 ---
 🌟 **Star this repository** if you find it useful!
