@@ -75,7 +75,7 @@ export default function Chatbot() {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/sessions?userId=${encodeURIComponent(userId)}`);
+      const response = await fetch(`https://medical-chatbot-02.onrender.com/api/sessions?userId=${encodeURIComponent(userId)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch sessions");
       }
@@ -129,7 +129,7 @@ export default function Chatbot() {
         localStorage.setItem("chatSessionTitle", currentTitle);
       }
 
-      const response = await fetch("http://127.0.0.1:8000/api/chatbot", {
+      const response = await fetch("https://medical-chatbot-02.onrender.com/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -219,7 +219,7 @@ export default function Chatbot() {
       setIsLoading(true);
       const userId = localStorage.getItem("Email");
 
-      const response = await fetch(`http://127.0.0.1:8000/api/chat/${selectedSessionId}?userId=${encodeURIComponent(userId)}`);
+      const response = await fetch(`https://medical-chatbot-02.onrender.com/api/chat/${selectedSessionId}?userId=${encodeURIComponent(userId)}`);
       if (!response.ok) throw new Error("Failed to fetch chat history");
 
       const chatData = await response.json();
@@ -287,7 +287,7 @@ export default function Chatbot() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/analyze", {
+      const response = await fetch("https://medical-chatbot-02.onrender.com/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
