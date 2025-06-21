@@ -5,13 +5,14 @@ const VideoFeed = () => {
 
   useEffect(() => {
     // Fetch emotion data every second
-    const interval = setInterval(() => {
-      fetch('http://localhost:3000/emotion')
-        .then(response => response.json())
-        .then(data => {
-          setEmotion(data.emotion);
-        })
-        .catch(err => console.error(err));
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch('http://localhost:3000/emotion');
+        const data = await response.json();
+        setEmotion(data.emotion);
+      } catch (err) {
+        console.error('Failed to fetch emotion:', err);
+      }
     }, 1000);
 
     return () => clearInterval(interval);

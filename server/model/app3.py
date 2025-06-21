@@ -1,5 +1,6 @@
-from flask import Flask, render_template, Response
+from flask import Flask, Response
 from flask_socketio import SocketIO, emit
+from flask_cors import CORS  # 🔹 Import CORS
 from keras.models import load_model
 from keras.preprocessing import image
 import cv2
@@ -7,6 +8,7 @@ import numpy as np
 import time
 
 app = Flask(__name__)
+CORS(app)  # 🔹 Enable CORS for all routes
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Load the pre-trained model
@@ -18,7 +20,7 @@ class_names = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutra
 # Load the pre-trained face cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Store the latest emotion globally
+# Emotion tracking variables
 latest_emotion = "Neutral"
 stable_emotion = "Neutral"
 emotion_counter = 0
@@ -64,7 +66,7 @@ def generate_frames():
 
                 latest_emotion = detected_emotion
 
-                # Display the emotion label
+                # Draw the label and box
                 cv2.putText(frame, f'Emotion: {stable_emotion}', (x, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -87,9 +89,12 @@ def generate_frames():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/emotion')
 def get_emotion():
     global stable_emotion
     return {'emotion': stable_emotion}
+
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=3000, debug=True)

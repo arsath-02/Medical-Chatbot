@@ -3,6 +3,11 @@ const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
+
+// OR to allow all origins during development (not recommended for prod)
 app.use(cors());
 
 // Current emotion state
