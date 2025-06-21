@@ -12,12 +12,13 @@ from transformers import pipeline
 import torch
 import traceback
 import nltk
+import uvicorn
 from nltk.tokenize import sent_tokenize
 import re
 from pymongo import MongoClient
 from datetime import datetime
 from tensorflow.keras.models import load_model
-
+import ngrok
 from keras.models import load_model
 from keras.preprocessing import image
 
@@ -339,6 +340,8 @@ def chatbot():
         return jsonify({"error": str(e)}), 500
 """
 
+ngrok.set_auth_token("2a1iGE4Q5SDAF4mhdAVXeNptwJd_2GBcW2ACMaj2JoAJy8Gtt")
+listener = ngrok.forward("127.0.0.1:5000", authtoken_from_env=True, domain="apparent-wolf-obviously.ngrok-free.app")
 
 @app.route('/chat', methods=['POST'])
 def chat_bot():
@@ -1009,6 +1012,7 @@ def get_sentiment_history():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
+if __name__ == "__main__":
+    public_url = ngrok.connect(5000)
+    print(f"Public URL: {public_url}")
+    app.run(host="0.0.0.0", port=5000)
