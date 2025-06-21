@@ -2,7 +2,7 @@ import React from 'react';
 
 function Game (){
   const runGame = (game) => {
-    fetch(`http://localhost:5000/run-game/${game}`)
+    fetch(`https://apparent-wolf-obviously.ngrok-free.app/run-game/${game}`)
       .then(response => response.json())
       .then(data => {
         alert(data.message);

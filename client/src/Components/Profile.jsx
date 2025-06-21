@@ -60,7 +60,7 @@ const Profile = () => {
     const fetchChatHistory = async (sessionId) => {
       try {
         const userId = localStorage.getItem("Email"); // Get user email
-        const response = await fetch(`http://127.0.0.1:8000/api/sessions?userId=${encodeURIComponent(userId)}`);
+        const response = await fetch(`https://medical-chatbot-02.onrender.com/api/sessions?userId=${encodeURIComponent(userId)}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch chat history");
@@ -86,7 +86,7 @@ const Profile = () => {
       const token = await getIdToken(currentUser);
       const userEmail = encodeURIComponent(currentUser.email);
 
-      const response = await axios.get(`http://localhost:8000/chat/active-days?userId=${userEmail}`, {
+      const response = await axios.get(`https://medical-chatbot-02.onrender.com/chat/active-days?userId=${userEmail}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -125,7 +125,7 @@ const Profile = () => {
       setIsLoading(true);
       const userId = localStorage.getItem("Email");
 
-      const response = await fetch(`http://127.0.0.1:8000/api/chat/${selectedSessionId}?userId=${encodeURIComponent(userId)}`);
+      const response = await fetch(`https://medical-chatbot-02.onrender.com/api/chat/${selectedSessionId}?userId=${encodeURIComponent(userId)}`);
       if (!response.ok) throw new Error("Failed to fetch chat history");
 
       const chatData = await response.json();
@@ -176,7 +176,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/analyze", {
+      const response = await fetch("https://medical-chatbot-02.onrender.com/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
