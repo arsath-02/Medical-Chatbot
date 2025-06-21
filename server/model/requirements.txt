@@ -10,3 +10,4 @@ torch
 transformers
 langchain_community
 nltk
+flask_socketio

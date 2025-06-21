@@ -372,6 +372,7 @@ const HomePage = () => {
         </section>
 
 
+      
      {/* <section id="developers" className={`py-12 px-4 sm:px-6 lg:px-12 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
         <div className="container mx-auto">
           <div className="flex flex-col items-center justify-center space-y-2 text-center">

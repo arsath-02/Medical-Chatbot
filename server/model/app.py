@@ -32,7 +32,11 @@ load_dotenv()
 translate = GoogleTranslator()
 
 client = Groq(api_key=os.getenv('GROQ_API_KEY'))
-memory = ConversationBufferMemory(memory_key="history")
+memory = ConversationBufferMemory(memory_key="history", return_messages=True)
+memory_context = memory.load_memory_variables({})
+conversation_history = memory_context.get("history", "")
+
+
 
 mongoClient = MongoClient("mongodb://localhost:27017/")
 db = mongoClient["test"]  # Replace with your actual database name
@@ -177,166 +181,157 @@ give me the response in shorter format
 
 return the response in same language as user input's language
 
+
 {emotion}
 {history}
 User: {user_input}
 AI:
 """
-memory = {}
+memory_store = {}
 
 @app.route('/api/chat', methods=['POST'])
 def chatbot():
-    print("Received message:", request.json)
-    data = request.json
-
-    # Get message, emotion, and user details
-    user_message = data.get("message", "")
-    emotion = data.get("emotion", "Neutral")
-    user_id = data.get("user_id", "")
-    session_id = data.get("sessionId", "")
-
-    print(f"Received emotion: {emotion}")
-
-    # Validate if message is present
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
-
-    # Detect language and translate if needed
     try:
+        data = request.json
+        user_message = data.get("message", "")
+        emotion = data.get("emotion", "Neutral")
+        session_id = data.get("sessionId", "")
+
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
+        # Detect and translate language if needed
         detected_lang = detect(user_message)
         needs_translation_back = False
 
-        if detected_lang == 'ta':  # If Tamil, translate to English
+        if detected_lang == 'ta':
             user_message_english = GoogleTranslator(source='ta', target='en').translate(user_message)
             needs_translation_back = True
         else:
             user_message_english = user_message
 
-        # ✅ Check if the session already has a chat history
-        if session_id not in memory:
-            memory[session_id] = []
+        # Initialize memory for session
+        if session_id not in memory_store:
+            memory_store[session_id] = ConversationBufferMemory(return_messages=True)
 
-        # ✅ Load the previous chat history
-        history_context = "\n".join(memory[session_id])
+        memory = memory_store[session_id]
 
-        # ✅ Format the prompt
+        # Load memory context
+        history_context = memory.load_memory_variables({}).get("history", "")
+
+        # Prepare prompt
         prompt = PROMPT_TEMPLATE.format(
             history=history_context,
             user_input=user_message_english,
             emotion=emotion
         )
 
-        # ✅ Send the prompt to GPT-4/Qwen-32b
+        # Call your LLM (replace with actual client call)
         response = client.chat.completions.create(
-            model="qwen-2.5-32b",
+            model="llama3-8b-8192",  # ✅ Replace with your active model
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": user_message_english}
             ]
         )
 
-        # ✅ Extract chatbot response
-        chatbot_response_english = response.choices[0].message.content
+        chatbot_response_english = response.choices[0].message.content.strip()
 
-        # ✅ Save the chat history
-        memory[session_id].append(f"User: {user_message_english}")
-        memory[session_id].append(f"Bot: {chatbot_response_english}")
+        # Save the conversation to memory
+        memory.save_context({"input": user_message_english}, {"output": chatbot_response_english})
 
-        # ✅ If it was Tamil, translate response back to Tamil
+        # Translate back to Tamil if needed
         if needs_translation_back:
             chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
-
-            # ✅ Convert Tamil to Tanglish (if required)
-            tanglish_response = chatbot_response.replace(" ", " ")
         else:
             chatbot_response = chatbot_response_english
 
-        # ✅ Return the response
         return jsonify({"response": chatbot_response})
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
+"""
+@app.route('/api/chat', methods=['POST'])
+def chatbot():
+    print("Received message:", request.json)
+    print("Headers:", request.headers)
+    data = request.json
+    user_message = data.get("message", "")
+    session_id = data.get("sessionId", "")
 
-# @app.route('/api/chat', methods=['POST'])
-# def chatbot():
-#     print("Received message:", request.json)
-#     print("Headers:", request.headers)
-#     data = request.json
-#     user_message = data.get("message", "")
-#     session_id = data.get("sessionId", "")
+    if not user_message or not session_id:
+        return jsonify({"error": "Message or Session ID missing"}), 400
 
-#     if not user_message or not session_id:
-#         return jsonify({"error": "Message or Session ID missing"}), 400
+    try:
+        # Detect language
+        detected_lang = detect(user_message)
 
-#     try:
-#         # Detect language
-#         detected_lang = detect(user_message)
+        needs_translation_back = False
+        if detected_lang == 'ta':  # Tamil detected
+            user_message_english = GoogleTranslator(source='ta', target='en').translate(user_message)
+            needs_translation_back = True
+        else:
+            user_message_english = user_message
 
-#         needs_translation_back = False
-#         if detected_lang == 'ta':  # Tamil detected
-#             user_message_english = GoogleTranslator(source='ta', target='en').translate(user_message)
-#             needs_translation_back = True
-#         else:
-#             user_message_english = user_message
-
-#         # Load session-specific history
-#         session_history = memory.get("session_history", {}).get(session_id, [])
+        # Load session-specific history
+        session_history = memory.get("session_history", {}).get(session_id, [])
 
 
 
-#         # Format the history by joining messages in conversation flow
-#         previous_messages = "\n".join(
-#             [f"{msg['sender']}: {msg['text']}" for msg in session_history.get("messages", [])]
-#         )
+        # Format the history by joining messages in conversation flow
+        previous_messages = "\n".join(
+            [f"{msg['sender']}: {msg['text']}" for msg in session_history.get("messages", [])]
+        )
 
-#         # Format the prompt with session-specific history
-#         prompt = PROMPT_TEMPLATE.format(
-#             history=previous_messages,
-#             user_input=user_message_english
-#         )
+        # Format the prompt with session-specific history
+        prompt = PROMPT_TEMPLATE.format(
+            history=previous_messages,
+            user_input=user_message_english
+        )
 
-#         # Generate response
-#         response = client.chat.completions.create(
-#             model="qwen-2.5-32b",
-#             messages=[
-#                 {"role": "system", "content": prompt},
-#                 {"role": "user", "content": user_message_english}
-#             ]
-#         )
+        # Generate response
+        response = client.chat.completions.create(
+            model="deepseek-r1-distill-llama-70b",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": user_message_english}
+            ]
+        )
 
-#         chatbot_response_english = response.choices[0].message.content
+        chatbot_response_english = response.choices[0].message.content
 
-#         # Save conversation in session-specific memory
-#         new_message = {
-#             "sender": "user",
-#             "text": user_message_english,
-#             "timestamp": str(datetime.now())
-#         }
+        # Save conversation in session-specific memory
+        new_message = {
+            "sender": "user",
+            "text": user_message_english,
+            "timestamp": str(datetime.now())
+        }
 
-#         bot_response = {
-#             "sender": "bot",
-#             "text": chatbot_response_english,
-#             "timestamp": str(datetime.now())
-#         }
+        bot_response = {
+            "sender": "bot",
+            "text": chatbot_response_english,
+            "timestamp": str(datetime.now())
+        }
 
-#         memory.save_session_context(
-#             session_id=session_id,
-#             inputs=new_message,
-#             outputs=bot_response
-#         )
+        memory.save_session_context(
+            session_id=session_id,
+            inputs=new_message,
+            outputs=bot_response
+        )
 
-#         if needs_translation_back:
-#             chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
-#             tanglish_response = chatbot_response.replace(" ", " ")
-#         else:
-#             tanglish_response = chatbot_response_english
+        if needs_translation_back:
+            chatbot_response = GoogleTranslator(source='en', target='ta').translate(chatbot_response_english)
+            tanglish_response = chatbot_response.replace(" ", " ")
+        else:
+            tanglish_response = chatbot_response_english
 
-#         return jsonify({"response": tanglish_response})
+        return jsonify({"response": tanglish_response})
 
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+"""
 
 model_best = load_model('./face_model.h5')  # Set your machine model file path here
 
@@ -349,38 +344,45 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 @app.route('/chat', methods=['POST'])
 def chat_bot():
-    print("Received message:", request.json)
-    print("Headers:", request.headers)
-    data = request.json
-    user_message = data.get("message", "")
-
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
-
     try:
+        print("Received message:", request.json)
+        print("Headers:", request.headers)
+
+        data = request.json
+        user_message = data.get("message", "")
+
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
         user_message_english = user_message
 
-        memory_context = memory.load_memory_variables(inputs={"user_input": user_message_english})
+        # LOAD memory context
+        memory_context = memory.load_memory_variables({})
+        conversation_history = memory_context.get("history", "")
 
-        conversation_history = memory_context.get("buffer", "")
-
+        # BUILD prompt
         prompt = PROMPT_TEMPLATE.format(
+            emotion="neutral",
             history=conversation_history,
             user_input=user_message_english
         )
+        print("Prompt:", prompt)
 
-
+        # CALL model
         response = client.chat.completions.create(
-            model="qwen-2.5-32b",
+            model="deepseek-r1-distill-llama-70b",
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": user_message_english}
             ]
         )
 
+        print("Raw Response:", response)
+
         chatbot_response_english = response.choices[0].message.content.strip().split('\n')[:2]
         concise_response = ' '.join(chatbot_response_english)
 
+        # SAVE memory context
         memory.save_context(
             inputs={"user_input": user_message_english},
             outputs={"response": concise_response}
@@ -389,24 +391,9 @@ def chat_bot():
         return jsonify({"response": concise_response})
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-
-def split_text_by_sentences(text, max_chunk_size=3000):
-    sentences = sent_tokenize(text)
-    chunks, chunk = [], ""
-
-    for sentence in sentences:
-        if len(chunk) + len(sentence) < max_chunk_size:
-            chunk += sentence + " "
-        else:
-            chunks.append(chunk.strip())
-            chunk = sentence + " "
-
-    if chunk:
-        chunks.append(chunk.strip())
-
-    return chunks
 
 
 
