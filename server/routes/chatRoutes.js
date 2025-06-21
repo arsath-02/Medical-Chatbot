@@ -54,7 +54,7 @@ router.post("/chatbot", async (req, res) => {
 
         let modelResponse;
         try {
-            modelResponse = await axios.post("http://127.0.0.1:5000/api/chat", modelPayload);
+            modelResponse = await axios.post("https://apparent-wolf-obviously.ngrok-free.app/api/chat", modelPayload);
         } catch (modelError) {
             console.error("Model API Error:", modelError.response?.data || modelError.message);
             return res.status(500).json({ error: "Failed to process chatbot response" });
@@ -105,7 +105,7 @@ router.post("/chatreport", async (req, res) => {
         const { userId, sessionId, summary } = req.body;
 
 
-        const response = await axios.post("http://127.0.0.1:5000/api/chatreport", {
+        const response = await axios.post("https://apparent-wolf-obviously.ngrok-free.app/api/chatreport", {
             userId,
             sessionId,
             summary
